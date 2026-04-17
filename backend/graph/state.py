@@ -24,6 +24,9 @@ class CourseState(TypedDict):
     user_approved: bool
     user_revisions: str
 
+    # Preprocessor
+    knowledge_summary: dict               # serialised KnowledgeSummary from preprocessor node
+
     # Enrichment
     enriched_knowledge_base: str
 

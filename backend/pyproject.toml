@@ -8,4 +8,6 @@ dependencies = [
     "langchain>=1.2.15",
     "langchain-openai>=1.1.14",
     "langgraph>=1.1.7",
+    "pypdf>=6.10.2",
+    "pytest>=9.0.3",
 ]
