@@ -1,3 +1,4 @@
+import hashlib
 import logging
 
 # Severity level colors
@@ -26,7 +27,8 @@ _BOLD  = "\033[1m"
 
 
 def _name_color(name: str) -> str:
-    return _NAME_PALETTE[hash(name) % len(_NAME_PALETTE)]
+    index = int(hashlib.md5(name.encode()).hexdigest(), 16) % len(_NAME_PALETTE)
+    return _NAME_PALETTE[index]
 
 
 class _ColorFormatter(logging.Formatter):
