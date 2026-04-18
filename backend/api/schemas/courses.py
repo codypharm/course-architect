@@ -1,0 +1,66 @@
+"""Pydantic request and response schemas for the courses API."""
+from datetime import datetime
+
+from pydantic import BaseModel, Field
+
+
+class StartCourseRequest(BaseModel):
+    """Fields submitted by the tutor when starting a new course pipeline run.
+
+    Files must be uploaded first via POST /files. Pass the returned paths
+    in `uploaded_file_paths`.
+    """
+    user_id: str = Field(description="Clerk user ID — unverified in Phase 1, required for course listing")
+    subject: str
+    audience_age: str
+    audience_level: str
+    duration_weeks: int
+    sessions_per_week: int
+    sessions_total: int
+    preferred_formats: list[str] = Field(
+        description="e.g. ['lesson', 'video_script', 'quiz', 'worksheet']"
+    )
+    tone: str = Field(description="e.g. 'formal', 'casual', 'encouraging', 'socratic'")
+    include_quiz: bool
+    uploaded_file_paths: list[str] = Field(
+        default=[],
+        description="Absolute file paths returned by POST /files",
+    )
+    enrichment_urls: list[str] = []
+    additional_context: str = ""
+
+
+class ValidationResumeRequest(BaseModel):
+    """Tutor verdict at HITL checkpoint #1 (validation feasibility report)."""
+    approved: bool  # True → pipeline continues; False → routes to END
+
+
+class CurriculumResumeRequest(BaseModel):
+    """Tutor verdict at HITL checkpoint #2 (curriculum review)."""
+    approved: bool
+    retry_context: str = ""  # must be non-empty when approved=False
+
+
+class CourseStatusResponse(BaseModel):
+    """Standard response shape for all course pipeline endpoints.
+
+    Status values:
+    - awaiting_validation          graph paused at HITL #1; data = interrupt payload
+    - awaiting_curriculum_review   graph paused at HITL #2; data = interrupt payload
+    - completed                    curriculum approved; data = curriculum_plan + session_content
+    - rejected                     tutor declined at HITL #1; data = feasibility report
+    """
+    thread_id: str
+    status: str
+    data: dict
+
+
+class CourseListItem(BaseModel):
+    """Summary row returned by GET /users/{user_id}/courses."""
+    thread_id: str
+    subject: str
+    status: str
+    created_at: datetime
+    updated_at: datetime
+    curriculum_plan: dict | None = None
+    session_content: list | None = None

@@ -5,7 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "aiosqlite>=0.22.1",
     "beautifulsoup4>=4.12",
+    "fastapi>=0.136.0",
     "httpx>=0.28.1",
     "langchain>=1.2.15",
     "langchain-mcp-adapters>=0.2.2",
@@ -14,7 +16,10 @@ dependencies = [
     "langgraph>=1.1.7",
     "pypdf>=6.10.2",
     "pytest>=9.0.3",
+    "python-multipart>=0.0.26",
     "requests>=2.32",
+    "sqlalchemy[asyncio]>=2.0.49",
     "tavily-python>=0.7.23",
+    "uvicorn>=0.44.0",
     "youtube-transcript-api>=0.6.2",
 ]

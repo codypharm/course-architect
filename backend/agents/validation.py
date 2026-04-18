@@ -115,5 +115,4 @@ async def validation_agent(state: CourseState) -> dict:
         "suggestions": result.suggestions,
         "estimated_cost_usd": estimated_cost,
         "user_approved": verdict["approved"],
-        "user_revisions": verdict.get("revisions", ""),
     }
