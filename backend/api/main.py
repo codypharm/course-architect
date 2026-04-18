@@ -1,15 +1,19 @@
 """FastAPI application factory for AI Course Architect.
 
 Mounts all routes under /api/v1. On startup:
+  - Loads .env so LANGCHAIN_* and DATABASE_URL are available before any import
   - Creates the uploads/ directory for knowledge base file storage
   - Creates all DB tables (SQLite in Phase 1, Aurora asyncpg in Phase 2)
 """
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()  # must run before LangChain/LangGraph modules read env vars
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import text
 
 from api.routes.courses import router as courses_router
 from api.routes.files import router as files_router
