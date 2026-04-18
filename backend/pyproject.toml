@@ -8,11 +8,13 @@ dependencies = [
     "beautifulsoup4>=4.12",
     "httpx>=0.28.1",
     "langchain>=1.2.15",
+    "langchain-mcp-adapters>=0.2.2",
     "langchain-openai>=1.1.14",
     "langchain-text-splitters>=1.1.2",
     "langgraph>=1.1.7",
     "pypdf>=6.10.2",
     "pytest>=9.0.3",
     "requests>=2.32",
+    "tavily-python>=0.7.23",
     "youtube-transcript-api>=0.6.2",
 ]

@@ -29,9 +29,6 @@ class CourseState(TypedDict):
     knowledge_summary: dict               # serialised KnowledgeSummary from preprocessor node
     knowledge_base_ingested: bool         # True once rag_ingest_node has run
 
-    # Enrichment
-    enriched_knowledge_base: str
-
     # Generation
     curriculum_plan: dict                 # {week: int, session: int, topic: str, objectives: list}
     session_content: list[dict]           # per-session output objects
