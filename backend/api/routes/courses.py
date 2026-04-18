@@ -2,18 +2,20 @@
 
 Five endpoints drive the full tutor workflow:
 
-  POST   /courses                              — start pipeline, runs to HITL #1
-  GET    /courses/{thread_id}                  — poll current graph state
-  POST   /courses/{thread_id}/validation/resume    — resume HITL #1 with approval verdict
-  POST   /courses/{thread_id}/curriculum/resume    — resume HITL #2 with review verdict
+  POST   /courses                              — enqueue pipeline start, return immediately
+  GET    /courses/{thread_id}                  — poll current graph state (reads Redis + DB)
+  POST   /courses/{thread_id}/validation/resume    — enqueue HITL #1 resume
+  POST   /courses/{thread_id}/curriculum/resume    — enqueue HITL #2 resume
   GET    /users/{user_id}/courses              — list all courses for a user (from DB)
+
+All write endpoints return immediately with status="queued" or "processing".
+The client polls GET /courses/{thread_id} until status changes to a pause or terminal state.
 """
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
-from langgraph.types import Command
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -25,6 +27,8 @@ from api.schemas.courses import (
     ValidationResumeRequest,
 )
 from graph.graph import graph
+from utils.pipeline import derive_pipeline_status, graph_config
+from queue.tasks import pipeline_resume_curriculum, pipeline_resume_validation, pipeline_start
 from storage.database import get_db
 from storage.models import CourseRecord
 from utils.logging import get_logger
@@ -36,50 +40,6 @@ router = APIRouter(tags=["courses"])
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-def _config(thread_id: str) -> dict:
-    """Build the LangGraph config dict for a given thread."""
-    return {"configurable": {"thread_id": thread_id}}
-
-
-def _derive_status(values: dict, paused_at: tuple) -> tuple[str, dict]:
-    """Return (status, data) from the graph's current snapshot.
-
-    `paused_at` is LangGraph's state.next — the node(s) currently frozen mid-execution
-    by interrupt(). When a node calls interrupt(), it re-appears here because it still
-    needs to finish once the client resumes. Falls back to state field values when the
-    graph has completed (paused_at is empty).
-    """
-    paused_set = set(paused_at)
-
-    if "validation" in paused_set:
-        return "awaiting_validation", {
-            "feasibility_report": values.get("feasibility_report", {}),
-            "flags": values.get("flags", []),
-            "suggestions": values.get("suggestions", []),
-            "estimated_cost_usd": values.get("estimated_cost_usd", 0.0),
-        }
-
-    if "curriculum_review" in paused_set:
-        return "awaiting_curriculum_review", {
-            "curriculum_plan": values.get("curriculum_plan", {}),
-            "session_content": values.get("session_content", []),
-            "retry_count": values.get("retry_count", 0),
-        }
-
-    if values.get("curriculum_approved"):
-        return "completed", {
-            "curriculum_plan": values.get("curriculum_plan", {}),
-            "session_content": values.get("session_content", []),
-        }
-
-    # Tutor declined at HITL #1
-    return "rejected", {
-        "feasibility_report": values.get("feasibility_report", {}),
-        "flags": values.get("flags", []),
-        "suggestions": values.get("suggestions", []),
-    }
-
 
 async def _get_record_or_404(thread_id: str, db: AsyncSession) -> CourseRecord:
     """Fetch CourseRecord by thread_id or raise 404."""
@@ -104,10 +64,9 @@ async def start_course(
     """Start a new course generation pipeline.
 
     Upload files first via POST /files and pass their paths in `uploaded_file_paths`.
-    Runs the graph until it pauses at HITL #1 (validation feasibility report).
-    Returns the thread_id the client must use for all subsequent calls.
+    Enqueues pipeline_start on the high_priority queue and returns immediately.
+    Client should poll GET /courses/{thread_id} until status changes from "queued".
     """
-    # Validate that every referenced file actually exists on disk
     missing = [p for p in body.uploaded_file_paths if not Path(p).exists()]
     if missing:
         raise HTTPException(
@@ -117,14 +76,12 @@ async def start_course(
 
     thread_id = str(uuid4())
 
-    # Persist course record immediately so the user can see it even before the
-    # pipeline completes the first node
     record = CourseRecord(
         id=str(uuid4()),
         thread_id=thread_id,
         user_id=body.user_id,
         subject=body.subject,
-        status="awaiting_validation",
+        status="queued",
     )
     db.add(record)
     await db.commit()
@@ -147,20 +104,10 @@ async def start_course(
         "retry_history": [],
     }
 
-    logger.info("Starting course pipeline — thread_id=%s subject=%s", thread_id, body.subject)
-    try:
-        await graph.ainvoke(initial_state, config=_config(thread_id))
-    except Exception as exc:
-        # Mark as rejected so the record is not left in a phantom state
-        record.status = "rejected"
-        record.updated_at = datetime.now(timezone.utc)
-        await db.commit()
-        logger.error("Pipeline start error — thread_id=%s: %s", thread_id, exc, exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    pipeline_start.apply_async(args=[thread_id, initial_state])
+    logger.info("Enqueued pipeline_start — thread_id=%s subject=%s", thread_id, body.subject)
 
-    snapshot = graph.get_state(_config(thread_id))
-    status, data = _derive_status(snapshot.values, snapshot.next)  # snapshot.next = nodes frozen by interrupt()
-    return CourseStatusResponse(thread_id=thread_id, status=status, data=data)
+    return CourseStatusResponse(thread_id=thread_id, status="queued", data={})
 
 
 # ---------------------------------------------------------------------------
@@ -172,18 +119,24 @@ async def get_course(
     thread_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> CourseStatusResponse:
-    """Return the current state of a course pipeline run.
+    """Poll the current state of a course pipeline run.
 
-    Reads live graph state (authoritative) — not the DB snapshot.
-    Raises 404 if the thread_id is not found in either source.
+    Returns DB status during queued/processing/terminal states.
+    When paused at a HITL checkpoint, also returns the interrupt payload
+    from live graph state (reads RedisSaver directly).
     """
-    await _get_record_or_404(thread_id, db)   # confirm it exists
+    record = await _get_record_or_404(thread_id, db)
 
-    snapshot = graph.get_state(_config(thread_id))
+    # For terminal/transient statuses the DB is authoritative
+    if record.status in ("queued", "processing", "failed"):
+        return CourseStatusResponse(thread_id=thread_id, status=record.status, data={})
+
+    # For pause/completion statuses, read live graph state for the interrupt payload
+    snapshot = graph.get_state(graph_config(thread_id))
     if not snapshot or not snapshot.values:
-        raise HTTPException(status_code=404, detail=f"No graph state for thread_id={thread_id!r}")
+        return CourseStatusResponse(thread_id=thread_id, status=record.status, data={})
 
-    status, data = _derive_status(snapshot.values, snapshot.next)  # snapshot.next = nodes frozen by interrupt()
+    status, data = derive_pipeline_status(snapshot.values, snapshot.next)  # snapshot.next = nodes frozen by interrupt()
     return CourseStatusResponse(thread_id=thread_id, status=status, data=data)
 
 
@@ -197,31 +150,25 @@ async def resume_validation(
     body: ValidationResumeRequest,
     db: AsyncSession = Depends(get_db),
 ) -> CourseStatusResponse:
-    """Resume the pipeline after HITL #1 (validation feasibility report).
+    """Submit tutor verdict at HITL #1 (validation feasibility report).
 
-    approved=True  → graph continues: (gap_enrichment →) curriculum_planner → HITL #2
-    approved=False → graph routes to END (rejected)
+    approved=True  → enqueues pipeline_resume_validation on high_priority queue
+                     graph continues: (gap_enrichment →) curriculum_planner → HITL #2
+    approved=False → enqueues pipeline_resume_validation on high_priority queue
+                     graph routes to END (rejected)
+
+    Returns immediately with status="processing". Poll GET /courses/{thread_id} for result.
     """
     record = await _get_record_or_404(thread_id, db)
 
-    logger.info("Validation resume — thread_id=%s approved=%s", thread_id, body.approved)
-    try:
-        await graph.ainvoke(
-            Command(resume={"approved": body.approved}),
-            config=_config(thread_id),
-        )
-    except Exception as exc:
-        logger.error("Validation resume error — thread_id=%s: %s", thread_id, exc, exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
-
-    snapshot = graph.get_state(_config(thread_id))
-    status, data = _derive_status(snapshot.values, snapshot.next)  # snapshot.next = nodes frozen by interrupt()
-
-    record.status = status
+    record.status = "processing"
     record.updated_at = datetime.now(timezone.utc)
     await db.commit()
 
-    return CourseStatusResponse(thread_id=thread_id, status=status, data=data)
+    pipeline_resume_validation.apply_async(args=[thread_id, body.approved])
+    logger.info("Enqueued pipeline_resume_validation — thread_id=%s approved=%s", thread_id, body.approved)
+
+    return CourseStatusResponse(thread_id=thread_id, status="processing", data={})
 
 
 # ---------------------------------------------------------------------------
@@ -234,10 +181,13 @@ async def resume_curriculum(
     body: CurriculumResumeRequest,
     db: AsyncSession = Depends(get_db),
 ) -> CourseStatusResponse:
-    """Resume the pipeline after HITL #2 (curriculum review).
+    """Submit tutor verdict at HITL #2 (curriculum review).
 
-    approved=True              → graph ends; full curriculum persisted to DB
-    approved=False + context   → curriculum_planner re-runs with HARD CONSTRAINT injected
+    approved=True              → enqueues on generation queue; graph ends, curriculum saved
+    approved=False + context   → enqueues on retry queue; curriculum_planner re-runs
+                                 with HARD CONSTRAINT injected
+
+    Returns immediately with status="processing". Poll GET /courses/{thread_id} for result.
     """
     if not body.approved and not body.retry_context.strip():
         raise HTTPException(
@@ -247,33 +197,22 @@ async def resume_curriculum(
 
     record = await _get_record_or_404(thread_id, db)
 
-    logger.info(
-        "Curriculum resume — thread_id=%s approved=%s retry_context=%.60s",
-        thread_id, body.approved, body.retry_context,
-    )
-    try:
-        await graph.ainvoke(
-            Command(resume={"approved": body.approved, "retry_context": body.retry_context}),
-            config=_config(thread_id),
-        )
-    except Exception as exc:
-        logger.error("Curriculum resume error — thread_id=%s: %s", thread_id, exc, exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
-
-    snapshot = graph.get_state(_config(thread_id))
-    status, data = _derive_status(snapshot.values, snapshot.next)  # snapshot.next = nodes frozen by interrupt()
-
-    record.status = status
+    record.status = "processing"
     record.updated_at = datetime.now(timezone.utc)
-
-    # Persist the final output when the user approves
-    if status == "completed":
-        record.curriculum_plan = data.get("curriculum_plan")
-        record.session_content = data.get("session_content")
-
     await db.commit()
 
-    return CourseStatusResponse(thread_id=thread_id, status=status, data=data)
+    # Route retry requests to the dedicated retry queue
+    queue = "retry" if not body.approved else "generation"
+    pipeline_resume_curriculum.apply_async(
+        args=[thread_id, body.approved, body.retry_context],
+        queue=queue,
+    )
+    logger.info(
+        "Enqueued pipeline_resume_curriculum — thread_id=%s approved=%s queue=%s",
+        thread_id, body.approved, queue,
+    )
+
+    return CourseStatusResponse(thread_id=thread_id, status="processing", data={})
 
 
 # ---------------------------------------------------------------------------
@@ -287,7 +226,7 @@ async def list_user_courses(
 ) -> list[CourseListItem]:
     """Return all courses created by a user, newest first.
 
-    Returns an empty list if the user has no courses (not a 404).
+    Reads from DB — does not hit the graph. Returns empty list if user has no courses.
     """
     result = await db.execute(
         select(CourseRecord)

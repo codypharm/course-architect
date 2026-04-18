@@ -14,9 +14,23 @@ validation  (HITL #1 — tutor approves feasibility report)
                          ↓ _after_review
                          ├─ approved → END
                          └─ retry    → curriculum_planner  (retry_context injected as HARD CONSTRAINT)
+
+Checkpointer: RedisSaver — shared across all Celery workers and the API process so that
+graph state persists between task runs and survives worker restarts.
+Phase 2: swap REDIS_URL to point at ElastiCache; swap RedisSaver → AsyncPostgresSaver for Aurora.
 """
-from langgraph.checkpoint.memory import MemorySaver
+import os
+
+import redis as redis_lib
+from dotenv import load_dotenv
+from langgraph.checkpoint.redis import RedisSaver
 from langgraph.graph import END, START, StateGraph
+
+load_dotenv()
+
+_REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+_redis_client = redis_lib.from_url(_REDIS_URL)
+_checkpointer = RedisSaver(_redis_client)
 
 from agents.curriculum_planner import curriculum_planner_agent
 from agents.curriculum_review import curriculum_review_node
@@ -65,8 +79,7 @@ def build_graph() -> StateGraph:
         END: END,
     })
 
-    checkpointer = MemorySaver()
-    return builder.compile(checkpointer=checkpointer, interrupt_before=[])
+    return builder.compile(checkpointer=_checkpointer, interrupt_before=[])
 
 
 # Module-level compiled graph used by API / Celery tasks
