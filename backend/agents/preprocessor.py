@@ -1,14 +1,15 @@
 import json
-import logging
 from pathlib import Path
 
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage
 
 from graph.state import CourseState
+from rag.ingest import ingest
 from schemas.preprocessor import DocumentExtraction, KnowledgeSummary
+from utils.logging import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 EXTRACTION_PROMPT = """You are analysing a document to extract structured information for course planning.
 
@@ -113,8 +114,9 @@ def _merge(extractions: list[DocumentExtraction], state: CourseState, merger) ->
 
 
 def knowledge_base_preprocessor(state: CourseState) -> dict:
-    """LangGraph node. Reads all uploaded files, extracts structured knowledge from each,
-    and merges them into a unified KnowledgeSummary written to state['knowledge_summary']."""
+    """LangGraph node. Reads all uploaded files, extracts a structured KnowledgeSummary
+    for the curriculum planner, and chunks + embeds all content into the vector store
+    so every downstream agent can call retrieve() freely."""
     extractor, merger = _get_models()
 
     extractions = []
@@ -134,4 +136,11 @@ def knowledge_base_preprocessor(state: CourseState) -> dict:
         )
 
     summary = _merge(extractions, state, merger)
-    return {"knowledge_summary": summary.model_dump()}
+
+    chunk_count = ingest(state.get("uploaded_files", []))
+    logger.info("Vector store populated with %d chunks", chunk_count)
+
+    return {
+        "knowledge_summary": summary.model_dump(),
+        "knowledge_base_ingested": True,
+    }

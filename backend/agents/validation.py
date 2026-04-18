@@ -2,8 +2,11 @@ from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.types import interrupt
 
-from schemas.validation import ValidationOutput
 from graph.state import CourseState
+from schemas.validation import ValidationOutput
+from utils.logging import get_logger
+
+logger = get_logger(__name__)
 
 TOKEN_ESTIMATES = {
     "lesson": 2000,
@@ -70,12 +73,17 @@ def validation_agent(state: CourseState) -> dict:
 - Additional Context: {state.get('additional_context') or 'None provided'}
 """
 
+    logger.info("Running feasibility check for: %s", state["subject"])
     result = validator.invoke([
         SystemMessage(content=SYSTEM_PROMPT),
         HumanMessage(content=brief),
     ])
 
     estimated_cost = _estimate_cost(state["sessions_total"], state["preferred_formats"])
+    logger.info("Estimated cost: $%.4f | Flags: %d | Suggestions: %d", estimated_cost, len(result.flags), len(result.suggestions))
+    if result.flags:
+        for flag in result.flags:
+            logger.warning("FLAG: %s", flag)
 
     feasibility_report = {
         "age_appropriateness": {
@@ -92,6 +100,7 @@ def validation_agent(state: CourseState) -> dict:
         },
     }
 
+    logger.info("Awaiting tutor approval at HITL checkpoint")
     verdict = interrupt({
         "feasibility_report": feasibility_report,
         "flags": result.flags,
@@ -99,6 +108,7 @@ def validation_agent(state: CourseState) -> dict:
         "estimated_cost_usd": estimated_cost,
     })
 
+    logger.info("Tutor verdict: %s", "approved" if verdict["approved"] else "revision requested")
     return {
         "feasibility_report": feasibility_report,
         "flags": result.flags,

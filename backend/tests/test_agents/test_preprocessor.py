@@ -79,15 +79,18 @@ def test_preprocessor_populates_knowledge_summary(sample_txt, sample_pdf):
     extractor, merger = _mock_models()
     state = {**MINIMAL_STATE, "uploaded_files": [sample_txt, sample_pdf]}
 
-    with patch("agents.preprocessor._get_models", return_value=(extractor, merger)):
+    with patch("agents.preprocessor._get_models", return_value=(extractor, merger)), \
+         patch("agents.preprocessor.ingest", return_value=5) as mock_ingest:
         result = knowledge_base_preprocessor(state)
 
     assert "knowledge_summary" in result
+    assert result["knowledge_base_ingested"] is True
     summary = result["knowledge_summary"]
     assert isinstance(summary, dict)
     for field in KnowledgeSummary.model_fields:
         assert field in summary, f"Missing field: {field}"
     assert summary["total_topics"] == ["variables", "loops"]
+    mock_ingest.assert_called_once_with([sample_txt, sample_pdf])
 
 
 def test_preprocessor_skips_unreadable_file(sample_txt):
@@ -97,17 +100,19 @@ def test_preprocessor_skips_unreadable_file(sample_txt):
         "uploaded_files": ["/nonexistent/file.txt", sample_txt],
     }
 
-    with patch("agents.preprocessor._get_models", return_value=(extractor, merger)):
+    with patch("agents.preprocessor._get_models", return_value=(extractor, merger)), \
+         patch("agents.preprocessor.ingest", return_value=3):
         result = knowledge_base_preprocessor(state)
 
     assert "knowledge_summary" in result
-    assert result["knowledge_summary"]
+    assert result["knowledge_base_ingested"] is True
 
 
 def test_preprocessor_raises_when_all_files_fail():
     extractor, merger = _mock_models()
     state = {**MINIMAL_STATE, "uploaded_files": ["/bad/path1.txt", "/bad/path2.pdf"]}
 
-    with patch("agents.preprocessor._get_models", return_value=(extractor, merger)):
+    with patch("agents.preprocessor._get_models", return_value=(extractor, merger)), \
+         patch("agents.preprocessor.ingest", return_value=0):
         with pytest.raises(RuntimeError, match="No files could be successfully extracted"):
             knowledge_base_preprocessor(state)

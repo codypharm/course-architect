@@ -26,6 +26,7 @@ class CourseState(TypedDict):
 
     # Preprocessor
     knowledge_summary: dict               # serialised KnowledgeSummary from preprocessor node
+    knowledge_base_ingested: bool         # True once rag_ingest_node has run
 
     # Enrichment
     enriched_knowledge_base: str
