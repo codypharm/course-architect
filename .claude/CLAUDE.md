@@ -13,6 +13,8 @@ A tutor inputs their intent — subject, audience age, duration, preferred forma
 
 This is a **creator-facing AI product**, not a research tool. The end user is a tutor or independent educator who has real pain around curriculum preparation.
 
+NOTE: always comment your code and add doc strings
+
 ---
 
 ## Core User Flow
@@ -426,6 +428,7 @@ Do not write Docker Compose or Fargate task definitions speculatively. They desc
 - Do not re-run intake, validation, HITL, or MCP enrichment on retry
 - Do not treat retry_context as optional guidance — it is a hard constraint
 - Do not allow more than 5 retries per course — enforce at the API layer
+
 
 
 NOTE: I am taking the lea in this project, not you
