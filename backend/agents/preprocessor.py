@@ -171,7 +171,4 @@ async def knowledge_base_preprocessor(state: CourseState) -> dict:
     url_chunks = ingest_texts(url_contents)
     logger.info("Vector store populated with %d file chunks and %d URL chunks", file_chunks, url_chunks)
 
-    return {
-        "knowledge_summary": summary.model_dump(),
-        "knowledge_base_ingested": True,
-    }
+    return {"knowledge_summary": summary.model_dump()}

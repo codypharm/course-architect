@@ -1,18 +1,19 @@
 """LangGraph pipeline definition for AI Course Architect.
 
-Graph structure:
-    preprocessor → validation (HITL #1) → gap_enrichment? → curriculum_planner
-                                                                     ↓
-                                                          curriculum_review (HITL #2)
-                                                         /                         \
-                                                   (approved)                   (retry)
-                                                       ↓                           ↓
-                                                      END               curriculum_planner
-
-HITL #1 (validation): tutor reviews feasibility report, approves or revises brief.
-HITL #2 (curriculum_review): tutor reviews generated plan, approves or requests retry.
-On retry, curriculum_review writes retry_context to state; curriculum_planner picks it
-up via _build_constraint_block() and injects it as a HARD CONSTRAINT into the prompt.
+START
+  ↓
+preprocessor
+  ↓
+validation  (HITL #1 — tutor approves feasibility report)
+  ↓ _after_validation
+  ├─ not approved      → END
+  ├─ approved + gaps   → gap_enrichment → curriculum_planner
+  └─ approved, no gaps → curriculum_planner
+                               ↓
+                       curriculum_review  (HITL #2 — tutor approves generated plan)
+                         ↓ _after_review
+                         ├─ approved → END
+                         └─ retry    → curriculum_planner  (retry_context injected as HARD CONSTRAINT)
 """
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
@@ -25,8 +26,10 @@ from agents.validation import validation_agent
 from graph.state import CourseState
 
 
-def _should_enrich(state: CourseState) -> str:
-    """Route to gap_enrichment when the knowledge summary has unfilled gaps."""
+def _after_validation(state: CourseState) -> str:
+    """After validation HITL: abort if not approved, otherwise check for gaps."""
+    if not state.get("user_approved"):
+        return END
     gaps = state.get("knowledge_summary", {}).get("gaps", [])
     return "gap_enrichment" if gaps else "curriculum_planner"
 
@@ -50,10 +53,17 @@ def build_graph() -> StateGraph:
     # Edges
     builder.add_edge(START, "preprocessor")
     builder.add_edge("preprocessor", "validation")
-    builder.add_conditional_edges("validation", _should_enrich, ["gap_enrichment", "curriculum_planner"])
+    builder.add_conditional_edges("validation", _after_validation, {
+        "gap_enrichment": "gap_enrichment",
+        "curriculum_planner": "curriculum_planner",
+        END: END,
+    })
     builder.add_edge("gap_enrichment", "curriculum_planner")
     builder.add_edge("curriculum_planner", "curriculum_review")
-    builder.add_conditional_edges("curriculum_review", _after_review, ["curriculum_planner", END])
+    builder.add_conditional_edges("curriculum_review", _after_review, {
+        "curriculum_planner": "curriculum_planner",
+        END: END,
+    })
 
     checkpointer = MemorySaver()
     return builder.compile(checkpointer=checkpointer, interrupt_before=[])

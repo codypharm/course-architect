@@ -45,10 +45,7 @@ async def curriculum_review_node(state: CourseState) -> dict:
 
     if verdict["approved"]:
         logger.info("Curriculum approved by user")
-        return {
-            "curriculum_approved": True,
-            "curriculum_feedback": "",
-        }
+        return {"curriculum_approved": True}
 
     # Retry requested
     retry_context: str = verdict.get("retry_context", "").strip()
@@ -58,10 +55,7 @@ async def curriculum_review_node(state: CourseState) -> dict:
             "Retry limit (%d) reached — forcing curriculum approval",
             _MAX_RETRIES,
         )
-        return {
-            "curriculum_approved": True,
-            "curriculum_feedback": retry_context,
-        }
+        return {"curriculum_approved": True}
 
     new_count = retry_count + 1
     timestamp = datetime.now(timezone.utc).isoformat()
@@ -78,7 +72,6 @@ async def curriculum_review_node(state: CourseState) -> dict:
 
     return {
         "curriculum_approved": False,
-        "curriculum_feedback": retry_context,
         "retry_context": retry_context,     # picked up by _build_constraint_block() in curriculum_planner
         "retry_count": new_count,
         "retry_history": updated_history,

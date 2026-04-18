@@ -22,20 +22,17 @@ class CourseState(TypedDict):
     suggestions: list[str]
     estimated_cost_usd: float
 
-    # Human verdict
+    # Human verdict (validation HITL)
     user_approved: bool
-    user_revisions: str
 
     # Preprocessor
     knowledge_summary: dict               # serialised KnowledgeSummary from preprocessor node
-    knowledge_base_ingested: bool         # True once rag_ingest_node has run
 
     # Generation
     curriculum_plan: dict                 # {week: int, session: int, topic: str, objectives: list}
     session_content: list[dict]           # per-session output objects
 
     # Review (user is the reviewer — no AI critic)
-    curriculum_feedback: str             # user's retry feedback on the generated plan
     curriculum_approved: bool            # True once user approves the curriculum
 
     # Retry

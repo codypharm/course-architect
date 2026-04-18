@@ -87,7 +87,6 @@ async def test_preprocessor_populates_knowledge_summary(sample_txt, sample_pdf):
         result = await knowledge_base_preprocessor(state)
 
     assert "knowledge_summary" in result
-    assert result["knowledge_base_ingested"] is True
     summary = result["knowledge_summary"]
     assert isinstance(summary, dict)
     for field in KnowledgeSummary.model_fields:
@@ -110,7 +109,6 @@ async def test_preprocessor_skips_unreadable_file(sample_txt):
         result = await knowledge_base_preprocessor(state)
 
     assert "knowledge_summary" in result
-    assert result["knowledge_base_ingested"] is True
 
 
 @pytest.mark.anyio

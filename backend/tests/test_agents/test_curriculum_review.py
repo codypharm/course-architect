@@ -22,7 +22,6 @@ async def test_approval_sets_curriculum_approved_true():
         result = await curriculum_review_node(MINIMAL_STATE)
 
     assert result["curriculum_approved"] is True
-    assert result["curriculum_feedback"] == ""
 
 
 @pytest.mark.anyio
@@ -34,7 +33,6 @@ async def test_retry_sets_retry_fields():
 
     assert result["curriculum_approved"] is False
     assert result["retry_context"] == "Make week 2 more practical"
-    assert result["curriculum_feedback"] == "Make week 2 more practical"
     assert result["retry_count"] == 1
     assert len(result["retry_history"]) == 1
     assert result["retry_history"][0]["retry_context"] == "Make week 2 more practical"
