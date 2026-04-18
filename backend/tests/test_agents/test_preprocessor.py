@@ -1,6 +1,6 @@
 import io
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from pypdf import PdfWriter
@@ -18,6 +18,7 @@ MINIMAL_STATE = {
     "preferred_formats": ["lesson", "quiz"],
     "tone": "encouraging",
     "uploaded_files": [],
+    "enrichment_urls": [],
     "additional_context": "",
 }
 
@@ -59,7 +60,7 @@ def sample_txt(tmp_path: Path) -> str:
 @pytest.fixture
 def sample_pdf(tmp_path: Path) -> str:
     writer = PdfWriter()
-    page = writer.add_blank_page(width=612, height=792)
+    writer.add_blank_page(width=612, height=792)
     buf = io.BytesIO()
     writer.write(buf)
     pdf_path = tmp_path / "slides.pdf"
@@ -75,13 +76,15 @@ def _mock_models(extraction=SAMPLE_EXTRACTION, summary=SAMPLE_SUMMARY):
     return mock_extractor, mock_merger
 
 
-def test_preprocessor_populates_knowledge_summary(sample_txt, sample_pdf):
+@pytest.mark.anyio
+async def test_preprocessor_populates_knowledge_summary(sample_txt, sample_pdf):
     extractor, merger = _mock_models()
     state = {**MINIMAL_STATE, "uploaded_files": [sample_txt, sample_pdf]}
 
     with patch("agents.preprocessor._get_models", return_value=(extractor, merger)), \
-         patch("agents.preprocessor.ingest", return_value=5) as mock_ingest:
-        result = knowledge_base_preprocessor(state)
+         patch("agents.preprocessor.ingest", return_value=5) as mock_ingest, \
+         patch("agents.preprocessor.ingest_texts", return_value=0):
+        result = await knowledge_base_preprocessor(state)
 
     assert "knowledge_summary" in result
     assert result["knowledge_base_ingested"] is True
@@ -93,7 +96,8 @@ def test_preprocessor_populates_knowledge_summary(sample_txt, sample_pdf):
     mock_ingest.assert_called_once_with([sample_txt, sample_pdf])
 
 
-def test_preprocessor_skips_unreadable_file(sample_txt):
+@pytest.mark.anyio
+async def test_preprocessor_skips_unreadable_file(sample_txt):
     extractor, merger = _mock_models()
     state = {
         **MINIMAL_STATE,
@@ -101,18 +105,21 @@ def test_preprocessor_skips_unreadable_file(sample_txt):
     }
 
     with patch("agents.preprocessor._get_models", return_value=(extractor, merger)), \
-         patch("agents.preprocessor.ingest", return_value=3):
-        result = knowledge_base_preprocessor(state)
+         patch("agents.preprocessor.ingest", return_value=3), \
+         patch("agents.preprocessor.ingest_texts", return_value=0):
+        result = await knowledge_base_preprocessor(state)
 
     assert "knowledge_summary" in result
     assert result["knowledge_base_ingested"] is True
 
 
-def test_preprocessor_raises_when_all_files_fail():
+@pytest.mark.anyio
+async def test_preprocessor_raises_when_all_files_fail():
     extractor, merger = _mock_models()
     state = {**MINIMAL_STATE, "uploaded_files": ["/bad/path1.txt", "/bad/path2.pdf"]}
 
     with patch("agents.preprocessor._get_models", return_value=(extractor, merger)), \
-         patch("agents.preprocessor.ingest", return_value=0):
-        with pytest.raises(RuntimeError, match="No files could be successfully extracted"):
-            knowledge_base_preprocessor(state)
+         patch("agents.preprocessor.ingest", return_value=0), \
+         patch("agents.preprocessor.ingest_texts", return_value=0):
+        with pytest.raises(RuntimeError, match="No content could be successfully extracted"):
+            await knowledge_base_preprocessor(state)

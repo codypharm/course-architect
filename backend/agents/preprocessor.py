@@ -1,3 +1,10 @@
+"""Knowledge base preprocessor node.
+
+Reads all uploaded files and fetches all tutor-provided URLs, extracts a unified
+KnowledgeSummary across all sources, and chunks + embeds everything into the vector
+store so every downstream agent can call retrieve() freely.
+"""
+import asyncio
 import json
 from pathlib import Path
 
@@ -5,7 +12,8 @@ from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage
 
 from graph.state import CourseState
-from rag.ingest import ingest
+from utils.fetchers import fetch_url, fetch_youtube, is_youtube
+from rag.ingest import ingest, ingest_texts
 from schemas.preprocessor import DocumentExtraction, KnowledgeSummary
 from utils.logging import get_logger
 
@@ -64,6 +72,18 @@ def _get_models():
     return _extractor, _merger
 
 
+async def _fetch_urls(urls: list[str]) -> list[tuple[str, str]]:
+    """Fetch all URLs concurrently via asyncio.gather. Returns (content, url) pairs for successful fetches only."""
+    async def _fetch_one(url: str) -> tuple[str, str | None]:
+        content = await fetch_youtube(url) if is_youtube(url) else await fetch_url(url)
+        if content is None:
+            logger.warning("Failed to fetch URL — skipping: %s", url)
+        return url, content
+
+    pairs = await asyncio.gather(*[_fetch_one(url) for url in urls])
+    return [(content, url) for url, content in pairs if content]
+
+
 def _read_file(path: str) -> str | None:
     """Read a PDF, txt, or md file and return its text content. Returns None on any failure."""
     p = Path(path)
@@ -109,17 +129,21 @@ def _merge(extractions: list[DocumentExtraction], state: CourseState, merger) ->
         ])
     except Exception as e:
         raise RuntimeError(
-            f"Merge LLM call failed after successfully extracting {len(extractions)} file(s): {e}"
+            f"Merge LLM call failed after successfully extracting {len(extractions)} source(s): {e}"
         ) from e
 
 
-def knowledge_base_preprocessor(state: CourseState) -> dict:
-    """LangGraph node. Reads all uploaded files, extracts a structured KnowledgeSummary
-    for the curriculum planner, and chunks + embeds all content into the vector store
-    so every downstream agent can call retrieve() freely."""
+async def knowledge_base_preprocessor(state: CourseState) -> dict:
+    """LangGraph node. Reads all uploaded files and fetches all tutor-provided URLs,
+    extracts a unified KnowledgeSummary across all sources, and chunks + embeds
+    everything into the vector store so every downstream agent can call retrieve() freely."""
     extractor, merger = _get_models()
 
+    # Fetch URLs concurrently while files are read below
+    url_contents = await _fetch_urls(state.get("enrichment_urls", []))
+
     extractions = []
+
     for path in state.get("uploaded_files", []):
         content = _read_file(path)
         if content is None:
@@ -129,16 +153,23 @@ def knowledge_base_preprocessor(state: CourseState) -> dict:
             continue
         extractions.append(extraction)
 
+    for content, url in url_contents:
+        extraction = _extract(content, extractor)
+        if extraction is None:
+            continue
+        extractions.append(extraction)
+
     if not extractions:
         raise RuntimeError(
-            "No files could be successfully extracted from the knowledge base. "
-            "Check that uploaded_files contains valid paths to PDF, txt, or md files."
+            "No content could be successfully extracted from the knowledge base. "
+            "Check that uploaded_files contains valid paths and enrichment_urls are reachable."
         )
 
     summary = _merge(extractions, state, merger)
 
-    chunk_count = ingest(state.get("uploaded_files", []))
-    logger.info("Vector store populated with %d chunks", chunk_count)
+    file_chunks = ingest(state.get("uploaded_files", []))
+    url_chunks = ingest_texts(url_contents)
+    logger.info("Vector store populated with %d file chunks and %d URL chunks", file_chunks, url_chunks)
 
     return {
         "knowledge_summary": summary.model_dump(),

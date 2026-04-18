@@ -12,6 +12,7 @@ class CourseState(TypedDict):
     preferred_formats: list[str]          # ["lesson", "video_script", "quiz", "worksheet"]
     tone: str                             # e.g. "formal", "casual", "encouraging", "socratic"
     uploaded_files: list[str]
+    enrichment_urls: list[str]            # web pages or YouTube links provided by the tutor
     additional_context: str               # any extra info the tutor wants factored into generation
 
     # Validation

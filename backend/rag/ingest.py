@@ -29,6 +29,35 @@ def _read_file(path: str) -> str | None:
         return None
 
 
+def ingest_texts(texts: list[tuple[str, str]]) -> int:
+    """Chunk, embed, and store raw text strings.
+
+    Args:
+        texts: list of (content, source_label) pairs.
+               source_label is stored in chunk metadata for DB traceability.
+
+    Returns:
+        Total number of chunks stored.
+    """
+    store = get_store()
+    docs: list[Document] = []
+
+    for content, source in texts:
+        if not content:
+            continue
+        chunks = _splitter.split_text(content)
+        for i, chunk in enumerate(chunks):
+            docs.append(Document(page_content=chunk, metadata={"source": source, "chunk_index": i}))
+
+    if not docs:
+        logger.warning("No chunks produced from %d text source(s)", len(texts))
+        return 0
+
+    store.add_documents(docs)
+    logger.info("Ingested %d chunks from %d text source(s)", len(docs), len(texts))
+    return len(docs)
+
+
 def ingest(file_paths: list[str]) -> int:
     """Chunk, embed, and store all files. Returns total number of chunks stored."""
     store = get_store()

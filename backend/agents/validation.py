@@ -59,7 +59,7 @@ def _estimate_cost(sessions_total: int, preferred_formats: list[str]) -> float:
     return round(total_tokens * COST_PER_TOKEN, 4)
 
 
-def validation_agent(state: CourseState) -> dict:
+async def validation_agent(state: CourseState) -> dict:
     validator = _get_validator()
 
     brief = f"""Course Brief:
@@ -74,7 +74,7 @@ def validation_agent(state: CourseState) -> dict:
 """
 
     logger.info("Running feasibility check for: %s", state["subject"])
-    result = validator.invoke([
+    result = await validator.ainvoke([
         SystemMessage(content=SYSTEM_PROMPT),
         HumanMessage(content=brief),
     ])
