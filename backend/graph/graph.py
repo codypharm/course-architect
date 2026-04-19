@@ -32,11 +32,11 @@ _REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 _redis_client = redis_lib.from_url(_REDIS_URL)
 _checkpointer = RedisSaver(_redis_client)
 
-from agents.curriculum_planner import curriculum_planner_agent
-from agents.curriculum_review import curriculum_review_node
-from agents.gap_enrichment import gap_enrichment_agent
-from agents.preprocessor import knowledge_base_preprocessor
-from agents.validation import validation_agent
+from nodes.curriculum_planner import curriculum_planner_agent
+from nodes.curriculum_review import curriculum_review_node
+from nodes.gap_enrichment import gap_enrichment_agent
+from nodes.preprocessor import knowledge_base_preprocessor
+from nodes.validation import validation_agent
 from graph.state import CourseState
 
 

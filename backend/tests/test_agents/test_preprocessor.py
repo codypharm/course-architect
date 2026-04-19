@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from pypdf import PdfWriter
 
-from agents.preprocessor import knowledge_base_preprocessor
+from nodes.preprocessor import knowledge_base_preprocessor
 from schemas.preprocessor import DocumentExtraction, KnowledgeSummary
 
 MINIMAL_STATE = {

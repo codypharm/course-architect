@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, patch
 
 from langchain_core.messages import AIMessage, HumanMessage
 
-from agents.curriculum_planner import curriculum_planner_agent
+from nodes.curriculum_planner import curriculum_planner_agent
 from schemas.curriculum import CurriculumPlan, QuizQuestion, SessionPlan
 
 # ---------------------------------------------------------------------------

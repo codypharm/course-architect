@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
-from agents.gap_enrichment import gap_enrichment_agent, _extract_texts
+from nodes.gap_enrichment import gap_enrichment_agent, _extract_texts
 from schemas.preprocessor import KnowledgeSummary
 
 MINIMAL_STATE = {

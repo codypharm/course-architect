@@ -98,6 +98,136 @@ body { margin: 0; min-height: 100vh; }
   font-family: var(--font-mono);
 }
 
+/* ─── Responsive layout helpers ─── */
+
+/* Page horizontal padding */
+.px-page { padding-left: 20px; padding-right: 20px; }
+@media (min-width: 768px) { .px-page { padding-left: 40px; padding-right: 40px; } }
+@media (min-width: 1024px) { .px-page { padding-left: 48px; padding-right: 48px; } }
+
+/* Hero two-column → single column */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+@media (min-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr 420px; gap: 64px; }
+}
+
+/* Stats 2-up → 4-up */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 640px) {
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.stats-grid > * { border-left: none !important; }
+@media (min-width: 640px) {
+  .stats-grid > * + * { border-left: 1px solid var(--border) !important; }
+}
+
+/* Bento grid: 1 col → 3 col */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 768px) {
+  .bento-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .bento-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Bento wide card: no span on mobile */
+.bento-wide { grid-column: span 1; }
+@media (min-width: 1024px) { .bento-wide { grid-column: span 2; } }
+
+/* How-it-works two column */
+.how-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+}
+@media (min-width: 900px) {
+  .how-grid { grid-template-columns: 1fr 1fr; gap: 80px; }
+}
+
+/* Hide nav links on mobile */
+.nav-links { display: none; }
+@media (min-width: 640px) { .nav-links { display: flex; } }
+
+/* Dashboard course grid */
+.course-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 580px) { .course-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 900px) { .course-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* ─── Dashboard sidebar / mobile layout ─── */
+.dash-layout { display: flex; min-height: 100vh; }
+
+/* Sidebar: hidden on mobile, visible on desktop */
+.dash-sidebar {
+  display: none;
+  width: 240px;
+  flex-shrink: 0;
+  flex-direction: column;
+  background: #fff;
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+@media (min-width: 768px) { .dash-sidebar { display: flex; } }
+
+/* Mobile top bar: only on mobile */
+.dash-mobile-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 52px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+@media (min-width: 768px) { .dash-mobile-bar { display: none; } }
+
+/* Bottom tab bar: only on mobile */
+.dash-bottom-nav {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  z-index: 30;
+}
+@media (min-width: 768px) { .dash-bottom-nav { display: none; } }
+
+/* Pad content bottom on mobile so bottom nav doesn't overlap */
+.dash-content-pad {
+  padding-bottom: 80px;
+}
+@media (min-width: 768px) { .dash-content-pad { padding-bottom: 28px; } }
+
+/* Form two-column grid on wide screens */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 640px) { .form-grid-2 { grid-template-columns: 1fr 1fr; } }
+
 /* ─── Custom scrollbar ─── */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }

@@ -417,6 +417,7 @@ export default function LandingPage() {
 
       {/* ── Navbar ── */}
       <nav
+        className="px-page"
         style={{
           position: 'fixed',
           top: 0,
@@ -426,7 +427,6 @@ export default function LandingPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 48px',
           height: 56,
           background: 'rgba(251,251,250,0.85)',
           backdropFilter: 'blur(12px)',
@@ -447,8 +447,8 @@ export default function LandingPage() {
           </span>
         </div>
 
-        {/* Links */}
-        <div style={{ display: 'flex', gap: 32 }}>
+        {/* Links — hidden on mobile */}
+        <div className="nav-links" style={{ gap: 32 }}>
           {['Features', 'How it works'].map(l => (
             <a
               key={l}
@@ -466,7 +466,7 @@ export default function LandingPage() {
             Sign in
           </Link>
           <Link
-            to="/new"
+            to="/dashboard"
             style={{
               fontSize: 13,
               fontWeight: 500,
@@ -485,13 +485,12 @@ export default function LandingPage() {
 
       {/* ── Hero ── */}
       <section
+        className="hero-grid px-page"
         style={{
           maxWidth: 1100,
           margin: '0 auto',
-          padding: '140px 48px 96px',
-          display: 'grid',
-          gridTemplateColumns: '1fr 420px',
-          gap: 64,
+          paddingTop: 110,
+          paddingBottom: 72,
           alignItems: 'center',
           position: 'relative',
           zIndex: 1,
@@ -552,7 +551,7 @@ export default function LandingPage() {
           {/* CTA row */}
           <div className="enter" style={{ display: 'flex', gap: 12, alignItems: 'center', animationDelay: '240ms' }}>
             <Link
-              to="/new"
+              to="/dashboard"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -630,14 +629,8 @@ export default function LandingPage() {
       {/* ── Stats bar ── */}
       <div style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
         <div
-          style={{
-            maxWidth: 1100,
-            margin: '0 auto',
-            padding: '0 48px',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 0,
-          }}
+          className="stats-grid px-page"
+          style={{ maxWidth: 1100, margin: '0 auto' }}
         >
           {[
             { value: '10,000+', label: 'educators worldwide' },
@@ -668,7 +661,8 @@ export default function LandingPage() {
       {/* ── Features bento ── */}
       <section
         id="features"
-        style={{ maxWidth: 1100, margin: '0 auto', padding: '96px 48px' }}
+        className="px-page"
+        style={{ maxWidth: 1100, margin: '0 auto', padding: '72px 0' }}
       >
         {/* Heading */}
         <div style={{ maxWidth: 560, marginBottom: 56 }}>
@@ -687,18 +681,11 @@ export default function LandingPage() {
         </div>
 
         {/* Asymmetric bento grid */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gridTemplateRows: 'auto auto',
-            gap: 16,
-          }}
-        >
+        <div className="bento-grid">
           {/* Wide card */}
           <div
+            className="bento-wide"
             style={{
-              gridColumn: 'span 2',
               background: 'var(--surface)',
               border: '1px solid var(--border)',
               borderRadius: 12,
@@ -777,13 +764,12 @@ export default function LandingPage() {
         }}
       >
         <div
+          className="how-grid px-page"
           style={{
             maxWidth: 1100,
             margin: '0 auto',
-            padding: '96px 48px',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 80,
+            paddingTop: 72,
+            paddingBottom: 72,
           }}
         >
           {/* Left */}
@@ -922,7 +908,8 @@ export default function LandingPage() {
           style={{
             maxWidth: 1100,
             margin: '0 auto',
-            padding: '96px 48px',
+            paddingTop: 72,
+            paddingBottom: 72,
             textAlign: 'center',
           }}
         >
@@ -942,7 +929,7 @@ export default function LandingPage() {
             No credit card required. Start with your first course, free.
           </p>
           <Link
-            to="/new"
+            to="/dashboard"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -964,10 +951,12 @@ export default function LandingPage() {
 
       {/* ── Footer ── */}
       <footer
+        className="px-page"
         style={{
           borderTop: '1px solid var(--border)',
           background: 'var(--surface)',
-          padding: '28px 48px',
+          paddingTop: 24,
+          paddingBottom: 24,
         }}
       >
         <div

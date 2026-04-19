@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 
-from agents.curriculum_review import curriculum_review_node
+from nodes.curriculum_review import curriculum_review_node
 
 SAMPLE_PLAN = {"course_overview": "Python basics.", "sessions": []}
 SAMPLE_CONTENT = [{"week": 1, "session": 1, "topic": "Variables", "lesson_outline": [], "quiz_questions": []}]
