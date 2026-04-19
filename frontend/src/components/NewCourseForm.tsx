@@ -377,7 +377,7 @@ export default function NewCourseForm({ onCancel, onSuccess }: { onCancel: () =>
 
         {/* ── STEP 4: PIPELINE ── */}
         {step === 4 && threadId && (
-          <PipelineTracker threadId={threadId} onCancel={onCancel} />
+          <PipelineTracker threadId={threadId} />
         )}
 
         {/* ── Footer (steps 1–3 only) ── */}

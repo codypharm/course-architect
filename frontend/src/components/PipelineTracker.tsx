@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { api } from '@/lib/api'
 import { Ico, I } from './Icon'
 
@@ -371,7 +371,8 @@ function CompletedView({ threadId }: { threadId: string }) {
   )
 }
 
-function RejectedView({ onCancel }: { onCancel: () => void }) {
+function RejectedView() {
+  const navigate = useNavigate()
   return (
     <div style={{ textAlign: 'center', padding: '24px 0', animation: 'enter 400ms ease' }}>
       <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56, borderRadius: 16, background: 'var(--accent-red-bg)', marginBottom: 18 }}>
@@ -379,14 +380,15 @@ function RejectedView({ onCancel }: { onCancel: () => void }) {
       </div>
       <h3 className="serif" style={{ fontSize: 26, color: 'var(--ink)', margin: '0 0 8px', letterSpacing: '-0.02em' }}>Brief rejected</h3>
       <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: '0 0 28px', lineHeight: 1.5 }}>The validation check flagged this brief as not feasible. Start a new course with a revised brief.</p>
-      <button type="button" onClick={onCancel} style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', background: '#fff', border: '1px solid var(--border)', padding: '11px 28px', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+      <button type="button" onClick={() => navigate('/dashboard')} style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', background: '#fff', border: '1px solid var(--border)', padding: '11px 28px', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
         Start over
       </button>
     </div>
   )
 }
 
-function FailedView({ onCancel }: { onCancel: () => void }) {
+function FailedView() {
+  const navigate = useNavigate()
   return (
     <div style={{ textAlign: 'center', padding: '24px 0', animation: 'enter 400ms ease' }}>
       <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56, borderRadius: 16, background: 'var(--accent-red-bg)', marginBottom: 18 }}>
@@ -394,7 +396,7 @@ function FailedView({ onCancel }: { onCancel: () => void }) {
       </div>
       <h3 className="serif" style={{ fontSize: 26, color: 'var(--ink)', margin: '0 0 8px', letterSpacing: '-0.02em' }}>Something went wrong</h3>
       <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: '0 0 28px' }}>The pipeline encountered an error. Try submitting again.</p>
-      <button type="button" onClick={onCancel} style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', background: '#fff', border: '1px solid var(--border)', padding: '11px 28px', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+      <button type="button" onClick={() => navigate('/dashboard')} style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', background: '#fff', border: '1px solid var(--border)', padding: '11px 28px', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
         Try again
       </button>
     </div>
@@ -404,7 +406,7 @@ function FailedView({ onCancel }: { onCancel: () => void }) {
 /* ══════════════════════════════════════
    Step 4 container — owns polling
 ══════════════════════════════════════ */
-export default function PipelineTracker({ threadId, onCancel }: { threadId: string; onCancel: () => void }) {
+export default function PipelineTracker({ threadId }: { threadId: string }) {
   // Track what the backend last told us (allow mutations to override without waiting for refetch)
   const [overrideStatus, setOverrideStatus] = useState<string | null>(null)
   const [overrideData,   setOverrideData]   = useState<Record<string, unknown> | null>(null)
@@ -438,8 +440,8 @@ export default function PipelineTracker({ threadId, onCancel }: { threadId: stri
         <CurriculumView data={payload} threadId={threadId} onResume={handleResume} />
       )}
       {status === 'completed'  && <CompletedView threadId={threadId} />}
-      {status === 'rejected'   && <RejectedView  onCancel={onCancel} />}
-      {status === 'failed'     && <FailedView     onCancel={onCancel} />}
+      {status === 'rejected'   && <RejectedView />}
+      {status === 'failed'     && <FailedView />}
     </div>
   )
 }

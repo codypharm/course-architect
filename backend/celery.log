@@ -213,3 +213,417 @@ Traceback (most recent call last):
   File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/base/__init__.py", line 340, in aget_tuple
     raise NotImplementedError
 NotImplementedError
+[2026-04-19 07:37:07,097: INFO/MainProcess] Task queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722] received
+[2026-04-19 07:37:07,098: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722]: pipeline_start — thread_id=0c79939b-b49d-4ace-aafe-dd3d4979ac4f
+[2026-04-19 07:37:07,103: ERROR/ForkPoolWorker-15] queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722]: pipeline_start failed — thread_id=0c79939b-b49d-4ace-aafe-dd3d4979ac4f: 
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/base/__init__.py", line 340, in aget_tuple
+    raise NotImplementedError
+NotImplementedError
+[2026-04-19 07:37:07,111: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722]: DB updated — thread_id=0c79939b-b49d-4ace-aafe-dd3d4979ac4f status=failed
+[2026-04-19 07:37:07,120: INFO/MainProcess] Task queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722] received
+[2026-04-19 07:37:07,127: INFO/ForkPoolWorker-15] Task queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722] retry: Retry in 1s: NotImplementedError()
+[2026-04-19 07:37:08,114: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722]: pipeline_start — thread_id=0c79939b-b49d-4ace-aafe-dd3d4979ac4f
+[2026-04-19 07:37:08,121: ERROR/ForkPoolWorker-15] queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722]: pipeline_start failed — thread_id=0c79939b-b49d-4ace-aafe-dd3d4979ac4f: 
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/base/__init__.py", line 340, in aget_tuple
+    raise NotImplementedError
+NotImplementedError
+[2026-04-19 07:37:08,130: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722]: DB updated — thread_id=0c79939b-b49d-4ace-aafe-dd3d4979ac4f status=failed
+[2026-04-19 07:37:08,136: INFO/MainProcess] Task queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722] received
+[2026-04-19 07:37:08,142: INFO/ForkPoolWorker-15] Task queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722] retry: Retry in 2s: NotImplementedError()
+[2026-04-19 07:37:10,133: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722]: pipeline_start — thread_id=0c79939b-b49d-4ace-aafe-dd3d4979ac4f
+[2026-04-19 07:37:10,138: ERROR/ForkPoolWorker-15] queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722]: pipeline_start failed — thread_id=0c79939b-b49d-4ace-aafe-dd3d4979ac4f: 
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/base/__init__.py", line 340, in aget_tuple
+    raise NotImplementedError
+NotImplementedError
+[2026-04-19 07:37:10,145: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722]: DB updated — thread_id=0c79939b-b49d-4ace-aafe-dd3d4979ac4f status=failed
+[2026-04-19 07:37:10,150: INFO/MainProcess] Task queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722] received
+[2026-04-19 07:37:10,156: INFO/ForkPoolWorker-15] Task queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722] retry: Retry in 4s: NotImplementedError()
+[2026-04-19 07:37:14,148: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722]: pipeline_start — thread_id=0c79939b-b49d-4ace-aafe-dd3d4979ac4f
+[2026-04-19 07:37:14,153: ERROR/ForkPoolWorker-15] queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722]: pipeline_start failed — thread_id=0c79939b-b49d-4ace-aafe-dd3d4979ac4f: 
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/base/__init__.py", line 340, in aget_tuple
+    raise NotImplementedError
+NotImplementedError
+[2026-04-19 07:37:14,160: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722]: DB updated — thread_id=0c79939b-b49d-4ace-aafe-dd3d4979ac4f status=failed
+[2026-04-19 07:37:14,170: ERROR/ForkPoolWorker-15] Task queue.tasks.pipeline_start[af7c769c-2c4e-4395-9d74-1fe16af6f722] raised unexpected: NotImplementedError()
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/trace.py", line 585, in trace_task
+    R = retval = fun(*args, **kwargs)
+                 ~~~^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/trace.py", line 858, in __protected_call__
+    return self.run(*args, **kwargs)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 101, in pipeline_start
+    raise self.retry(exc=exc, countdown=2 ** self.request.retries)
+          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/task.py", line 769, in retry
+    raise_with_context(exc)
+    ~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/base/__init__.py", line 340, in aget_tuple
+    raise NotImplementedError
+NotImplementedError
+[2026-04-19 07:45:19,191: INFO/MainProcess] Task queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560] received
+[2026-04-19 07:45:19,193: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560]: pipeline_start — thread_id=58ec0e7f-5cf5-46d7-86aa-2e0719429116
+[2026-04-19 07:45:19,197: ERROR/ForkPoolWorker-15] queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560]: pipeline_start failed — thread_id=58ec0e7f-5cf5-46d7-86aa-2e0719429116: 
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/base/__init__.py", line 340, in aget_tuple
+    raise NotImplementedError
+NotImplementedError
+[2026-04-19 07:45:19,205: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560]: DB updated — thread_id=58ec0e7f-5cf5-46d7-86aa-2e0719429116 status=failed
+[2026-04-19 07:45:19,214: INFO/MainProcess] Task queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560] received
+[2026-04-19 07:45:19,230: INFO/ForkPoolWorker-15] Task queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560] retry: Retry in 1s: NotImplementedError()
+[2026-04-19 07:45:20,209: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560]: pipeline_start — thread_id=58ec0e7f-5cf5-46d7-86aa-2e0719429116
+[2026-04-19 07:45:20,216: ERROR/ForkPoolWorker-15] queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560]: pipeline_start failed — thread_id=58ec0e7f-5cf5-46d7-86aa-2e0719429116: 
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/base/__init__.py", line 340, in aget_tuple
+    raise NotImplementedError
+NotImplementedError
+[2026-04-19 07:45:20,222: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560]: DB updated — thread_id=58ec0e7f-5cf5-46d7-86aa-2e0719429116 status=failed
+[2026-04-19 07:45:20,226: INFO/MainProcess] Task queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560] received
+[2026-04-19 07:45:20,230: INFO/ForkPoolWorker-15] Task queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560] retry: Retry in 2s: NotImplementedError()
+[2026-04-19 07:45:22,224: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560]: pipeline_start — thread_id=58ec0e7f-5cf5-46d7-86aa-2e0719429116
+[2026-04-19 07:45:22,227: ERROR/ForkPoolWorker-15] queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560]: pipeline_start failed — thread_id=58ec0e7f-5cf5-46d7-86aa-2e0719429116: 
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/base/__init__.py", line 340, in aget_tuple
+    raise NotImplementedError
+NotImplementedError
+[2026-04-19 07:45:22,233: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560]: DB updated — thread_id=58ec0e7f-5cf5-46d7-86aa-2e0719429116 status=failed
+[2026-04-19 07:45:22,240: INFO/MainProcess] Task queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560] received
+[2026-04-19 07:45:22,244: INFO/ForkPoolWorker-15] Task queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560] retry: Retry in 4s: NotImplementedError()
+[2026-04-19 07:45:26,236: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560]: pipeline_start — thread_id=58ec0e7f-5cf5-46d7-86aa-2e0719429116
+[2026-04-19 07:45:26,239: ERROR/ForkPoolWorker-15] queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560]: pipeline_start failed — thread_id=58ec0e7f-5cf5-46d7-86aa-2e0719429116: 
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/base/__init__.py", line 340, in aget_tuple
+    raise NotImplementedError
+NotImplementedError
+[2026-04-19 07:45:26,245: INFO/ForkPoolWorker-15] queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560]: DB updated — thread_id=58ec0e7f-5cf5-46d7-86aa-2e0719429116 status=failed
+[2026-04-19 07:45:26,251: ERROR/ForkPoolWorker-15] Task queue.tasks.pipeline_start[838f1a59-d654-41c9-92fd-4271fdd13560] raised unexpected: NotImplementedError()
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/trace.py", line 585, in trace_task
+    R = retval = fun(*args, **kwargs)
+                 ~~~^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/trace.py", line 858, in __protected_call__
+    return self.run(*args, **kwargs)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 101, in pipeline_start
+    raise self.retry(exc=exc, countdown=2 ** self.request.retries)
+          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/task.py", line 769, in retry
+    raise_with_context(exc)
+    ~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/base/__init__.py", line 340, in aget_tuple
+    raise NotImplementedError
+NotImplementedError

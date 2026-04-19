@@ -152,9 +152,10 @@ export default function DashboardPage() {
     ? (courses ?? []).filter(c => c.subject.toLowerCase().includes(search.toLowerCase()))
     : null
 
-  function handleSuccess(threadId: string) {
+  function handleSuccess(_threadId: string) {
+    // Refresh the course list in the background.
+    // PipelineTracker owns navigation — it links to /courses/:id only when completed.
     qc.invalidateQueries({ queryKey: ['courses', USER_ID] })
-    window.location.href = `/courses/${threadId}`
   }
 
   /* ── Logo mark ── */
