@@ -1,0 +1,8 @@
+[2026-04-19 07:24:30,880: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-19 07:24:30,888: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-19 07:24:31,909: INFO/MainProcess] mingle: all alone
+[2026-04-19 07:24:31,945: INFO/MainProcess] celery@codypharm ready.
+[2026-04-19 07:25:50,175: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-19 07:25:50,181: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-19 07:25:51,201: INFO/MainProcess] mingle: all alone
+[2026-04-19 07:25:51,235: INFO/MainProcess] celery@codypharm ready.

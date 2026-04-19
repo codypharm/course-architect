@@ -21,7 +21,6 @@ Phase 2: swap REDIS_URL to point at ElastiCache; swap RedisSaver → AsyncPostgr
 """
 import os
 
-import redis as redis_lib
 from dotenv import load_dotenv
 from langgraph.checkpoint.redis import RedisSaver
 from langgraph.graph import END, START, StateGraph
@@ -29,8 +28,7 @@ from langgraph.graph import END, START, StateGraph
 load_dotenv()
 
 _REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-_redis_client = redis_lib.from_url(_REDIS_URL)
-_checkpointer = RedisSaver(_redis_client)
+_checkpointer = RedisSaver(_REDIS_URL)
 
 from nodes.curriculum_planner import curriculum_planner_agent
 from nodes.curriculum_review import curriculum_review_node

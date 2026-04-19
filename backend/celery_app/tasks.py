@@ -20,7 +20,7 @@ from sqlalchemy import select
 
 from graph.graph import graph
 from utils.pipeline import derive_pipeline_status, graph_config
-from queue.worker import celery_app
+from celery_app.worker import celery_app
 from storage.database import AsyncSessionLocal
 from storage.models import CourseRecord
 

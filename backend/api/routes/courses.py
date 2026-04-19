@@ -28,7 +28,7 @@ from api.schemas.courses import (
 )
 from graph.graph import graph
 from utils.pipeline import derive_pipeline_status, graph_config
-from queue.tasks import pipeline_resume_curriculum, pipeline_resume_validation, pipeline_start
+from celery_app.tasks import pipeline_resume_curriculum, pipeline_resume_validation, pipeline_start
 from storage.database import get_db
 from storage.models import CourseRecord
 from utils.logging import get_logger

@@ -45,6 +45,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Root — human-readable entry point
+@app.get("/", tags=["meta"])
+async def root():
+    """API home. Lists available route groups."""
+    return {
+        "name": "AI Course Architect API",
+        "version": "0.1.0",
+        "docs": "/docs",
+        "health": "/health",
+        "endpoints": {
+            "start_course":        "POST /api/v1/courses",
+            "get_course":          "GET  /api/v1/courses/{thread_id}",
+            "validation_resume":   "POST /api/v1/courses/{thread_id}/validation/resume",
+            "curriculum_resume":   "POST /api/v1/courses/{thread_id}/curriculum/resume",
+            "list_user_courses":   "GET  /api/v1/users/{user_id}/courses",
+            "upload_files":        "POST /api/v1/files",
+        },
+    }
+
+
 # Health check — no /api/v1 prefix so ALB probes can hit it directly
 @app.get("/health", tags=["health"])
 async def health_check():

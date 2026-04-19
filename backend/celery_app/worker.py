@@ -2,9 +2,9 @@
 
 This module is the single entry point for all three Fargate services:
 
-  Worker:  celery -A queue.worker worker -Q high_priority,generation,retry --loglevel=info
-  Beat:    celery -A queue.worker beat   --loglevel=info
-  Flower:  celery -A queue.worker flower --port=5555
+  Worker:  celery -A celery_app.worker worker -Q high_priority,generation,retry --loglevel=info
+  Beat:    celery -A celery_app.worker beat   --loglevel=info
+  Flower:  celery -A celery_app.worker flower --port=5555
 """
 import os
 
@@ -19,7 +19,7 @@ celery_app = Celery(
     "ai_course_architect",
     broker=REDIS_URL,
     backend=REDIS_URL,
-    include=["queue.tasks"],
+    include=["celery_app.tasks"],
 )
 
 celery_app.conf.update(
