@@ -8,13 +8,24 @@ from utils.logging import get_logger
 
 logger = get_logger(__name__)
 
-TOKEN_ESTIMATES = {
-    "lesson": 2000,
-    "video_script": 3000,
-    "quiz": 1000,
-    "worksheet": 1500,
+# gpt-4o-mini pricing (USD per token)
+INPUT_COST_PER_TOKEN  = 0.15  / 1_000_000
+OUTPUT_COST_PER_TOKEN = 0.60  / 1_000_000
+
+# Estimated OUTPUT tokens per content item per session
+_CONTENT_OUTPUT = {
+    "lesson":       2_000,
+    "video_script": 3_000,
+    "quiz":         1_000,
+    "worksheet":    1_500,
 }
-COST_PER_TOKEN = 0.6 / 1_000_000  # gpt-4o-mini output pricing per token
+
+# Fixed OUTPUT token budgets for non-content pipeline stages
+_PREPROCESSING_PER_DOC   = 600   # extraction + merge per uploaded file
+_VALIDATION_OUTPUT        = 300   # feasibility report
+_GAP_ENRICHMENT_OUTPUT    = 400   # per gap (rough average: assume 2 gaps)
+_CURRICULUM_PLAN_OUTPUT   = 150   # per session (schedule + objectives)
+_CRITIC_OUTPUT            = 100   # per session (review pass)
 
 SYSTEM_PROMPT = """You are a curriculum validation expert reviewing course briefs submitted by tutors.
 
@@ -53,10 +64,43 @@ def _get_validator():
     return _validator
 
 
-def _estimate_cost(sessions_total: int, preferred_formats: list[str]) -> float:
-    tokens_per_session = sum(TOKEN_ESTIMATES.get(f, 1500) for f in preferred_formats)
-    total_tokens = sessions_total * tokens_per_session
-    return round(total_tokens * COST_PER_TOKEN, 4)
+def _estimate_cost(state: dict) -> float:
+    """Estimate total pipeline cost in USD across all stages.
+
+    Covers: preprocessing, validation, gap enrichment, curriculum planning,
+    content generation, and critic review.  Uses gpt-4o-mini output pricing
+    as the dominant cost driver; input tokens are included at their rate.
+    """
+    sessions_total: int = state.get("sessions_total", 0)
+    formats: list[str] = state.get("preferred_formats", [])
+    n_docs: int = len(state.get("uploaded_files", []))
+    n_urls: int = len(state.get("enrichment_urls", []))
+    n_gaps: int = 2  # conservative average; flagged gaps often number 1-3
+
+    output_tokens = 0
+
+    # Preprocessing: one extraction call per file/URL + one merge call
+    output_tokens += (n_docs + n_urls) * _PREPROCESSING_PER_DOC
+    if n_docs + n_urls > 0:
+        output_tokens += _PREPROCESSING_PER_DOC  # merge call
+
+    # Validation
+    output_tokens += _VALIDATION_OUTPUT
+
+    # Gap enrichment (runs only when gaps exist — include as expected cost)
+    output_tokens += n_gaps * _GAP_ENRICHMENT_OUTPUT
+
+    # Curriculum planning
+    output_tokens += sessions_total * _CURRICULUM_PLAN_OUTPUT
+
+    # Content generation per session
+    content_per_session = sum(_CONTENT_OUTPUT.get(f, 1_500) for f in formats)
+    output_tokens += sessions_total * content_per_session
+
+    # Critic review
+    output_tokens += sessions_total * _CRITIC_OUTPUT
+
+    return round(output_tokens * OUTPUT_COST_PER_TOKEN, 4)
 
 
 async def validation_agent(state: CourseState) -> dict:
@@ -79,7 +123,7 @@ async def validation_agent(state: CourseState) -> dict:
         HumanMessage(content=brief),
     ])
 
-    estimated_cost = _estimate_cost(state["sessions_total"], state["preferred_formats"])
+    estimated_cost = _estimate_cost(state)
     logger.info("Estimated cost: $%.4f | Flags: %d | Suggestions: %d", estimated_cost, len(result.flags), len(result.suggestions))
     if result.flags:
         for flag in result.flags:

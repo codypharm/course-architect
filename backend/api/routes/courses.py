@@ -137,7 +137,7 @@ async def get_course(
     if not snapshot or not snapshot.values:
         return CourseStatusResponse(thread_id=thread_id, status=record.status, data={})
 
-    status, data = derive_pipeline_status(snapshot.values, snapshot.next)  # snapshot.next = nodes frozen by interrupt()
+    status, data = derive_pipeline_status(snapshot.values, snapshot.next, snapshot.tasks)
     return CourseStatusResponse(thread_id=thread_id, status=status, data=data)
 
 

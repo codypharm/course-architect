@@ -87,7 +87,7 @@ async def _run_pipeline_start(thread_id: str, initial_state: dict) -> None:
     async with _fresh_graph() as g:
         await g.ainvoke(initial_state, config=graph_config(thread_id))
         snapshot = await g.aget_state(graph_config(thread_id))
-    status, data = derive_pipeline_status(snapshot.values, snapshot.next)
+    status, data = derive_pipeline_status(snapshot.values, snapshot.next, snapshot.tasks)
     await _update_db(thread_id, status, data)
 
 
@@ -99,7 +99,7 @@ async def _run_resume_validation(thread_id: str, approved: bool) -> None:
             config=graph_config(thread_id),
         )
         snapshot = await g.aget_state(graph_config(thread_id))
-    status, data = derive_pipeline_status(snapshot.values, snapshot.next)
+    status, data = derive_pipeline_status(snapshot.values, snapshot.next, snapshot.tasks)
     await _update_db(thread_id, status, data)
 
 
@@ -113,7 +113,7 @@ async def _run_resume_curriculum(
             config=graph_config(thread_id),
         )
         snapshot = await g.aget_state(graph_config(thread_id))
-    status, data = derive_pipeline_status(snapshot.values, snapshot.next)
+    status, data = derive_pipeline_status(snapshot.values, snapshot.next, snapshot.tasks)
     await _update_db(thread_id, status, data)
 
 

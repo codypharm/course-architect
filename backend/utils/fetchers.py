@@ -47,8 +47,10 @@ async def fetch_youtube(url: str) -> str | None:
         return None
     try:
         from youtube_transcript_api import YouTubeTranscriptApi
-        snippets = await asyncio.to_thread(YouTubeTranscriptApi.get_transcript, video_id)
-        return " ".join(s["text"] for s in snippets)
+        # v0.6+ uses an instance method; FetchedTranscript is iterable with .text on each snippet
+        api = YouTubeTranscriptApi()
+        transcript = await asyncio.to_thread(api.fetch, video_id)
+        return " ".join(s.text for s in transcript)
     except Exception:
         logger.warning("Failed to fetch YouTube transcript for %s", url, exc_info=True)
         return None

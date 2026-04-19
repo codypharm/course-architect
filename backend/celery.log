@@ -2253,3 +2253,36 @@ Trying again in 8.00 seconds... (4/100)
 [2026-04-19 20:30:20,545: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 [2026-04-19 20:30:20,590: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[8d2d1c66-3c51-48f9-a651-ef728d139251]: DB updated — thread_id=bb82bc79-7fd1-4b99-93fd-d16bf3150128 status=awaiting_validation
 [2026-04-19 20:30:20,600: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[8d2d1c66-3c51-48f9-a651-ef728d139251] succeeded in 23.803100102995813s: None
+[2026-04-19 20:32:45,667: INFO/MainProcess] Task queue.tasks.pipeline_resume_validation[e012cf45-70fd-47a2-a6f7-ff993dc56645] received
+[2026-04-19 20:32:45,668: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[e012cf45-70fd-47a2-a6f7-ff993dc56645]: pipeline_resume_validation — thread_id=bb82bc79-7fd1-4b99-93fd-d16bf3150128 approved=False
+[2026-04-19 20:32:45,675: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 20:32:45,676: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 20:32:45,677: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 20:32:45,716: INFO/ForkPoolWorker-16] Retrying request to /chat/completions in 0.429504 seconds
+[2026-04-19 20:32:50,513: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 20:32:50,537: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[e012cf45-70fd-47a2-a6f7-ff993dc56645]: DB updated — thread_id=bb82bc79-7fd1-4b99-93fd-d16bf3150128 status=rejected
+[2026-04-19 20:32:50,541: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_validation[e012cf45-70fd-47a2-a6f7-ff993dc56645] succeeded in 4.8730145009976695s: None
+[2026-04-19 20:39:58,087: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-19 20:39:58,100: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-19 20:39:59,119: INFO/MainProcess] mingle: all alone
+[2026-04-19 20:39:59,153: INFO/MainProcess] celery@codypharm ready.
+[2026-04-19 20:40:47,380: INFO/MainProcess] Task queue.tasks.pipeline_start[4efb7c9d-8385-4bf8-b376-8a1eea8c4bf7] received
+[2026-04-19 20:40:47,382: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[4efb7c9d-8385-4bf8-b376-8a1eea8c4bf7]: pipeline_start — thread_id=13f64b6b-5c32-43bd-a786-6c80e4c2731a
+[2026-04-19 20:40:47,407: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 20:40:47,410: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 20:40:47,410: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 20:40:58,922: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 20:41:07,422: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 20:41:09,865: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 20:41:14,013: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 20:41:14,055: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[4efb7c9d-8385-4bf8-b376-8a1eea8c4bf7]: DB updated — thread_id=13f64b6b-5c32-43bd-a786-6c80e4c2731a status=awaiting_validation
+[2026-04-19 20:41:14,063: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[4efb7c9d-8385-4bf8-b376-8a1eea8c4bf7] succeeded in 26.681775124001433s: None
+[2026-04-19 20:42:35,714: INFO/MainProcess] Task queue.tasks.pipeline_resume_validation[132116ec-46d2-4ac7-8467-df862695b317] received
+[2026-04-19 20:42:35,715: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[132116ec-46d2-4ac7-8467-df862695b317]: pipeline_resume_validation — thread_id=13f64b6b-5c32-43bd-a786-6c80e4c2731a approved=False
+[2026-04-19 20:42:35,721: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 20:42:35,722: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 20:42:35,723: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 20:42:35,765: INFO/ForkPoolWorker-16] Retrying request to /chat/completions in 0.468398 seconds
+[2026-04-19 20:42:42,631: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 20:42:42,652: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[132116ec-46d2-4ac7-8467-df862695b317]: DB updated — thread_id=13f64b6b-5c32-43bd-a786-6c80e4c2731a status=rejected
+[2026-04-19 20:42:42,655: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_validation[132116ec-46d2-4ac7-8467-df862695b317] succeeded in 6.939750175006338s: None
