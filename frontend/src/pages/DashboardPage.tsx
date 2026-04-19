@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import type { CourseListItem, CourseStatus } from '@/types/course'
@@ -14,7 +14,15 @@ async function fetchCourses(): Promise<CourseListItem[]> {
   return res.data
 }
 
+interface QuizQuestion { question: string; options: string[]; answer: string; explanation: string }
+interface SessionPlan  { week: number; session: number; topic: string; objectives: string[]; lesson_outline: string[]; lesson_content: string; video_script: string; quiz_questions: QuizQuestion[]; worksheet_exercises: string[] }
+interface CurriculumPlan { course_overview: string; sessions: SessionPlan[] }
+interface CourseDetail { thread_id: string; status: string; data: { curriculum_plan?: CurriculumPlan; session_content?: SessionPlan[] } }
 
+async function fetchCourseDetail(threadId: string): Promise<CourseDetail> {
+  const res = await api.get<CourseDetail>(`/courses/${threadId}`)
+  return res.data
+}
 
 /* ─── Status helpers ─── */
 const STATUS_BADGE: Record<CourseStatus, { label: string; bg: string; color: string; live?: boolean }> = {
@@ -39,9 +47,7 @@ function timeAgo(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
-
-
-/* ─── Status badge ─── */
+/* ─── Badge ─── */
 function Badge({ status }: { status: CourseStatus }) {
   const b = STATUS_BADGE[status]
   return (
@@ -52,22 +58,20 @@ function Badge({ status }: { status: CourseStatus }) {
   )
 }
 
-/* ─── Course thumbnail ─── */
+/* ─── Thumb ─── */
 function Thumb({ subject }: { subject: string }) {
   const paths = [I.book, I.layers, I.settings, I.grid]
-  const p = paths[subject.length % paths.length]
   return (
     <div style={{ width: 42, height: 42, borderRadius: 8, background: '#F7F6F3', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <Ico d={p} size={19} color="var(--ink-muted)" />
+      <Ico d={paths[subject.length % paths.length]} size={19} color="var(--ink-muted)" />
     </div>
   )
 }
 
-/* ─── Active project card ─── */
+/* ─── Active card ─── */
 function ActiveCard({ course }: { course: CourseListItem }) {
   const processing = course.status === 'processing'
   const actionable = course.status === 'awaiting_validation' || course.status === 'awaiting_curriculum_review'
-
   return (
     <Link to={`/courses/${course.thread_id}`} style={{ display: 'block', textDecoration: 'none', background: '#fff', border: '1px solid var(--border)', borderRadius: 10, padding: '18px', transition: 'box-shadow 200ms' }}
       onMouseEnter={e => (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)'}
@@ -122,24 +126,269 @@ function CompletedRow({ course }: { course: CourseListItem }) {
   )
 }
 
+/* ─── Quiz card ─── */
+function QuizCard({ q, idx }: { q: QuizQuestion; idx: number }) {
+  const [revealed, setRevealed] = useState(false)
+  return (
+    <div style={{ background: '#F7F6F3', borderRadius: 10, padding: '14px 16px', marginBottom: 8 }}>
+      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', margin: '0 0 10px', lineHeight: 1.4 }}>Q{idx + 1}. {q.question}</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 10 }}>
+        {q.options.map((opt, i) => {
+          const correct = revealed && opt === q.answer
+          return (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 7, border: `1px solid ${correct ? 'var(--accent-green-text)' : 'var(--border)'}`, background: correct ? 'var(--accent-green-bg)' : '#fff', transition: 'all 200ms' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: correct ? 'var(--accent-green-text)' : 'var(--ink-muted)', minWidth: 16 }}>{['A','B','C','D'][i]}</span>
+              <span style={{ fontSize: 13, color: correct ? 'var(--accent-green-text)' : 'var(--ink)' }}>{opt}</span>
+            </div>
+          )
+        })}
+      </div>
+      {revealed
+        ? <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: 0, lineHeight: 1.4, borderTop: '1px solid var(--border)', paddingTop: 8 }}><strong style={{ color: 'var(--ink)' }}>Explanation:</strong> {q.explanation}</p>
+        : <button onClick={() => setRevealed(true)} style={{ fontSize: 12, fontWeight: 500, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-sans)' }}>Reveal answer →</button>
+      }
+    </div>
+  )
+}
 
+type FormatTab = 'lesson' | 'video_script' | 'quiz' | 'worksheet'
+
+const FORMAT_TAB_LABELS: Record<FormatTab, string> = {
+  lesson:       'Lesson',
+  video_script: 'Video Script',
+  quiz:         'Quiz',
+  worksheet:    'Worksheet',
+}
+
+/** Returns the format tabs that have actual content for this session. */
+function activeFormatTabs(s: SessionPlan): FormatTab[] {
+  const tabs: FormatTab[] = []
+  if (s.lesson_content?.trim() || s.lesson_outline?.length) tabs.push('lesson')
+  if (s.video_script?.trim())                               tabs.push('video_script')
+  if (s.quiz_questions?.length)                             tabs.push('quiz')
+  if (s.worksheet_exercises?.length)                        tabs.push('worksheet')
+  return tabs
+}
+
+/* ─── Session format tab content ─── */
+function SessionFormatContent({ session, tab }: { session: SessionPlan; tab: FormatTab }) {
+  if (tab === 'lesson') return (
+    <div>
+      {session.lesson_content?.trim() ? (
+        <div style={{ fontSize: 14, color: 'var(--ink)', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
+          {session.lesson_content}
+        </div>
+      ) : session.lesson_outline?.length ? (
+        <ol style={{ margin: 0, padding: '0 0 0 20px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {session.lesson_outline.map((pt, i) => (
+            <li key={i} style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.6 }}>{pt}</li>
+          ))}
+        </ol>
+      ) : null}
+    </div>
+  )
+
+  if (tab === 'video_script') return (
+    <div style={{ background: '#FAFAF8', border: '1px solid var(--border)', borderRadius: 10, padding: '18px 20px' }}>
+      <p style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.8, margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'var(--font-sans)' }}>
+        {session.video_script}
+      </p>
+    </div>
+  )
+
+  if (tab === 'quiz') return (
+    <div>
+      {session.quiz_questions.map((q, i) => <QuizCard key={i} q={q} idx={i} />)}
+    </div>
+  )
+
+  if (tab === 'worksheet') return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {session.worksheet_exercises.map((ex, i) => (
+        <div key={i} style={{ display: 'flex', gap: 12, padding: '12px 14px', background: '#FAFAF8', border: '1px solid var(--border)', borderRadius: 8 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink-muted)', flexShrink: 0, minWidth: 20 }}>{i + 1}.</span>
+          <span style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.5 }}>{ex}</span>
+        </div>
+      ))}
+    </div>
+  )
+
+  return null
+}
+
+/* ─── Course detail view (rendered inside dashboard main area) ─── */
+function CourseView({ threadId, onBack }: { threadId: string; onBack: () => void }) {
+  const [activeSession, setActiveSession] = useState(0)
+  const [activeTab, setActiveTab]         = useState<FormatTab | null>(null)
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['course-detail', threadId],
+    queryFn: () => fetchCourseDetail(threadId),
+  })
+
+  const plan: CurriculumPlan | null = (data?.data?.curriculum_plan as CurriculumPlan) ?? null
+  const sessions: SessionPlan[] = plan?.sessions ?? (data?.data?.session_content as SessionPlan[]) ?? []
+
+  const byWeek: Record<number, SessionPlan[]> = {}
+  sessions.forEach(s => { if (!byWeek[s.week]) byWeek[s.week] = []; byWeek[s.week].push(s) })
+
+  const current = sessions[activeSession] ?? null
+
+  if (isLoading) return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 8 }}>
+      {[200, 140, 180, 120].map((w, i) => <div key={i} style={{ height: 16, width: w, background: '#EAEAEA', borderRadius: 4 }} />)}
+    </div>
+  )
+
+  if (isError) return (
+    <div style={{ padding: '32px 0', textAlign: 'center' }}>
+      <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: 0 }}>Could not load course content.</p>
+    </div>
+  )
+
+  return (
+    <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+      {/* Session sidebar */}
+      <aside style={{ width: 220, flexShrink: 0, background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 0', position: 'sticky', top: 16, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
+        {/* Back to overview */}
+        <button onClick={() => setActiveSession(-1)} style={{ width: '100%', textAlign: 'left', padding: '8px 14px', background: activeSession === -1 ? '#F7F6F3' : 'transparent', border: 'none', borderLeft: `3px solid ${activeSession === -1 ? 'var(--ink)' : 'transparent'}`, cursor: 'pointer', fontFamily: 'var(--font-sans)', marginBottom: 4 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>Overview</span>
+        </button>
+        {Object.entries(byWeek).map(([week, rows]) => (
+          <div key={week}>
+            <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: '8px 14px 3px' }}>Week {week}</p>
+            {rows.map(s => {
+              const idx = sessions.indexOf(s)
+              const on  = activeSession === idx
+              return (
+                <button key={idx} onClick={() => setActiveSession(idx)} style={{ width: '100%', textAlign: 'left', padding: '6px 14px', background: on ? '#F7F6F3' : 'transparent', border: 'none', borderLeft: `3px solid ${on ? 'var(--ink)' : 'transparent'}`, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+                  <span style={{ fontSize: 10, color: 'var(--ink-faint)', display: 'block' }}>Session {s.session}</span>
+                  <span style={{ fontSize: 12, fontWeight: on ? 600 : 400, color: 'var(--ink)', lineHeight: 1.3, display: 'block' }}>{s.topic}</span>
+                </button>
+              )
+            })}
+          </div>
+        ))}
+      </aside>
+
+      {/* Main content */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        {/* Back button */}
+        <button onClick={onBack} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-sans)', marginBottom: 16 }}>
+          ← Back to dashboard
+        </button>
+
+        {/* Overview panel */}
+        {(activeSession === -1 || !current) && plan?.course_overview && (
+          <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: '22px', marginBottom: 16 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-muted)', margin: '0 0 8px' }}>Course Overview</p>
+            <p style={{ fontSize: 15, color: 'var(--ink)', lineHeight: 1.7, margin: '0 0 16px' }}>{plan.course_overview}</p>
+            <div style={{ display: 'flex', gap: 20, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
+              {[['Sessions', sessions.length], ['Weeks', Object.keys(byWeek).length], ['Quiz questions', sessions.reduce((a, s) => a + s.quiz_questions.length, 0)]].map(([label, val]) => (
+                <div key={label as string}>
+                  <p style={{ fontSize: 11, color: 'var(--ink-faint)', margin: '0 0 2px' }}>{label}</p>
+                  <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)', margin: 0, fontFamily: 'var(--font-mono)' }}>{val}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Session panel */}
+        {activeSession >= 0 && current && (() => {
+          const tabs = activeFormatTabs(current)
+          const resolvedTab = (activeTab && tabs.includes(activeTab)) ? activeTab : (tabs[0] ?? null)
+          return (
+            <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: '22px' }}>
+              {/* Header row */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+                <div>
+                  <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-muted)', margin: '0 0 4px' }}>Week {current.week} · Session {current.session}</p>
+                  <h2 className="serif" style={{ fontSize: 22, color: 'var(--ink)', margin: 0, letterSpacing: '-0.02em' }}>{current.topic}</h2>
+                </div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button onClick={() => { setActiveSession(i => Math.max(0, i - 1)); setActiveTab(null) }} disabled={activeSession === 0}
+                    style={{ width: 30, height: 30, borderRadius: 6, border: '1px solid var(--border)', background: '#fff', cursor: activeSession === 0 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: activeSession === 0 ? 0.3 : 1 }}>
+                    <span style={{ display: 'inline-flex', transform: 'rotate(180deg)' }}><Ico d={I.arrow} size={12} color="var(--ink)" /></span>
+                  </button>
+                  <button onClick={() => { setActiveSession(i => Math.min(sessions.length - 1, i + 1)); setActiveTab(null) }} disabled={activeSession === sessions.length - 1}
+                    style={{ width: 30, height: 30, borderRadius: 6, border: '1px solid var(--border)', background: '#fff', cursor: activeSession === sessions.length - 1 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: activeSession === sessions.length - 1 ? 0.3 : 1 }}>
+                    <Ico d={I.arrow} size={12} color="var(--ink)" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Objectives — always shown above tabs */}
+              {current.objectives.length > 0 && (
+                <div style={{ marginBottom: 18 }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-muted)', margin: '0 0 8px' }}>Learning Objectives</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    {current.objectives.map((o, i) => (
+                      <div key={i} style={{ display: 'flex', gap: 8, padding: '7px 12px', background: '#F7F6F3', borderRadius: 7 }}>
+                        <span style={{ fontSize: 13, color: 'var(--ink-muted)', flexShrink: 0 }}>→</span>
+                        <span style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.4 }}>{o}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Format tabs */}
+              {tabs.length > 0 && (
+                <>
+                  <div style={{ display: 'flex', gap: 4, marginBottom: 16, borderBottom: '1px solid var(--border)', paddingBottom: 0 }}>
+                    {tabs.map(t => (
+                      <button key={t} onClick={() => setActiveTab(t)} style={{
+                        fontSize: 12, fontWeight: resolvedTab === t ? 700 : 500,
+                        color: resolvedTab === t ? 'var(--ink)' : 'var(--ink-muted)',
+                        background: 'none', border: 'none', borderBottom: `2px solid ${resolvedTab === t ? 'var(--ink)' : 'transparent'}`,
+                        padding: '6px 12px', cursor: 'pointer', fontFamily: 'var(--font-sans)',
+                        marginBottom: -1, transition: 'all 150ms',
+                      }}>
+                        {FORMAT_TAB_LABELS[t]}
+                      </button>
+                    ))}
+                  </div>
+                  {resolvedTab && <SessionFormatContent session={current} tab={resolvedTab} />}
+                </>
+              )}
+            </div>
+          )
+        })()}
+
+        {sessions.length === 0 && !isLoading && (
+          <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: '36px', textAlign: 'center' }}>
+            <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: 0 }}>No session content available.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
 
 /* ══════════════════════════════════════
    DASHBOARD PAGE
 ══════════════════════════════════════ */
-type NavItem = 'dashboard' | 'new' | 'settings'
+type NavItem = 'dashboard' | 'new' | 'settings' | 'course'
 
-const NAV_ITEMS: { id: NavItem; label: string; icon: string }[] = [
+const NAV_ITEMS: { id: Exclude<NavItem, 'course'>; label: string; icon: string }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: I.grid },
   { id: 'new',       label: 'New Course', icon: I.plus },
   { id: 'settings',  label: 'Settings',   icon: I.settings },
 ]
 
 export default function DashboardPage() {
-  const [nav, setNav]         = useState<NavItem>('dashboard')
-  const [search, setSearch]   = useState('')
-  const [formKey, setFormKey] = useState(0)
+  const { threadId }          = useParams<{ threadId: string }>()
+  const navigate               = useNavigate()
+  const [nav, setNav]          = useState<NavItem>(threadId ? 'course' : 'dashboard')
+  const [search, setSearch]    = useState('')
+  const [formKey, setFormKey]  = useState(0)
   const qc = useQueryClient()
+
+  // When navigating to /courses/:threadId, switch to course view
+  useEffect(() => {
+    if (threadId) setNav('course')
+  }, [threadId])
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ['courses', USER_ID],
@@ -153,13 +402,15 @@ export default function DashboardPage() {
     ? (courses ?? []).filter(c => c.subject.toLowerCase().includes(search.toLowerCase()))
     : null
 
-  function handleSuccess(_threadId: string) {
-    // Refresh the course list in the background.
-    // PipelineTracker owns navigation — it links to /courses/:id only when completed.
+  function handleSuccess(_id: string) {
     qc.invalidateQueries({ queryKey: ['courses', USER_ID] })
   }
 
-  /* ── Logo mark ── */
+  function goToDashboard() {
+    setNav('dashboard')
+    navigate('/dashboard')
+  }
+
   const Logo = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
       <rect x="3" y="3" width="7" height="7" rx="1"/>
@@ -193,7 +444,7 @@ export default function DashboardPage() {
           {NAV_ITEMS.map(item => {
             const on = nav === item.id
             return (
-              <button key={item.id} onClick={() => setNav(item.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '9px 12px', borderRadius: 7, marginBottom: 2, background: on ? '#F7F6F3' : 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)', color: on ? 'var(--ink)' : 'var(--ink-muted)', fontWeight: on ? 600 : 400, fontSize: 14, textAlign: 'left', transition: 'background 150ms' }}>
+              <button key={item.id} onClick={() => { setNav(item.id); if (item.id === 'dashboard') navigate('/dashboard') }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '9px 12px', borderRadius: 7, marginBottom: 2, background: on ? '#F7F6F3' : 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)', color: on ? 'var(--ink)' : 'var(--ink-muted)', fontWeight: on ? 600 : 400, fontSize: 14, textAlign: 'left', transition: 'background 150ms' }}>
                 <Ico d={item.icon} size={15} color={on ? 'var(--ink)' : 'var(--ink-muted)'} />
                 {item.label}
                 {on && <div style={{ marginLeft: 'auto', width: 3, height: 14, borderRadius: 2, background: 'var(--ink)' }} />}
@@ -223,21 +474,21 @@ export default function DashboardPage() {
           </button>
         )}
         {nav !== 'dashboard' && (
-          <button onClick={() => setNav('dashboard')} style={{ fontSize: 12, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>Cancel</button>
+          <button onClick={goToDashboard} style={{ fontSize: 12, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>← Back</button>
         )}
       </div>
 
       {/* ── Main content ── */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-        {/* Desktop header */}
         <header style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '0 24px', height: 58, background: '#fff', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
           <div style={{ flex: 1 }}>
             {nav === 'dashboard' && <>
               <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', margin: 0 }}>Welcome back</h1>
               <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: 0 }}>Here is the status of your course portfolio.</p>
             </>}
-            {nav === 'new' && <h1 style={{ fontSize: 17, fontWeight: 700, color: 'var(--ink)', margin: 0 }}>New Course</h1>}
+            {nav === 'new'      && <h1 style={{ fontSize: 17, fontWeight: 700, color: 'var(--ink)', margin: 0 }}>New Course</h1>}
             {nav === 'settings' && <h1 style={{ fontSize: 17, fontWeight: 700, color: 'var(--ink)', margin: 0 }}>Settings</h1>}
+            {nav === 'course'   && <h1 style={{ fontSize: 17, fontWeight: 700, color: 'var(--ink)', margin: 0 }}>Course Content</h1>}
           </div>
           {nav === 'dashboard' && <>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#F5F6FA', border: '1px solid var(--border)', borderRadius: 7, padding: '6px 11px' }}>
@@ -250,13 +501,10 @@ export default function DashboardPage() {
           </>}
         </header>
 
-        {/* Page body */}
         <main className="dash-content-pad" style={{ flex: 1, padding: '24px', paddingTop: '68px', overflowY: 'auto' }}>
-
           {/* ── Dashboard ── */}
           {nav === 'dashboard' && (
-            <div style={{ paddingTop: 0 }}>
-              {/* Search results */}
+            <div>
               {searched && (
                 <section style={{ marginBottom: 32 }}>
                   <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)', margin: '0 0 4px' }}>Search results</h2>
@@ -264,14 +512,12 @@ export default function DashboardPage() {
                   <div className="course-grid">{searched.map(c => isActive(c.status) ? <ActiveCard key={c.thread_id} course={c} /> : <CompletedRow key={c.thread_id} course={c} />)}</div>
                 </section>
               )}
-
               {!searched && <>
-                {/* Active projects */}
                 <section style={{ marginBottom: 32 }}>
                   <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)', margin: '0 0 3px' }}>Active Projects</h2>
                   <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: '0 0 14px' }}>Courses currently in the generation pipeline.</p>
                   {isLoading ? (
-                    <div className="course-grid">{[1, 2].map(i => <div key={i} style={{ height: 170, borderRadius: 10, background: '#EAEAEA', animation: `enter 400ms ease both ${i * 80}ms` }} />)}</div>
+                    <div className="course-grid">{[1,2].map(i => <div key={i} style={{ height: 170, borderRadius: 10, background: '#EAEAEA' }} />)}</div>
                   ) : active.length === 0 ? (
                     <div style={{ padding: '28px 20px', background: '#fff', border: '1px solid var(--border)', borderRadius: 10, textAlign: 'center' }}>
                       <p style={{ fontSize: 13, color: 'var(--ink-muted)', margin: '0 0 12px' }}>No active courses.</p>
@@ -283,15 +529,11 @@ export default function DashboardPage() {
                     <div className="course-grid">{active.map(c => <ActiveCard key={c.thread_id} course={c} />)}</div>
                   )}
                 </section>
-
-                {/* Completed */}
                 {completed.length > 0 && (
                   <section>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 3 }}>
                       <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)', margin: 0 }}>Completed Courses</h2>
-                      <span style={{ fontSize: 13, color: 'var(--ink-muted)', cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4 }}>
-                        View All <Ico d={I.arrow} size={12} color="var(--ink-muted)" />
-                      </span>
+                      <span style={{ fontSize: 13, color: 'var(--ink-muted)', cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4 }}>View All <Ico d={I.arrow} size={12} color="var(--ink-muted)" /></span>
                     </div>
                     <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: '0 0 14px' }}>Finalised course packs ready to use.</p>
                     <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 10, padding: '0 18px' }}>
@@ -304,10 +546,13 @@ export default function DashboardPage() {
           )}
 
           {/* ── New Course ── */}
-          {nav === 'new' && <NewCourseForm key={formKey} onCancel={() => setNav('dashboard')} onSuccess={handleSuccess} onReset={() => setFormKey(k => k + 1)} />}
+          {nav === 'new' && <NewCourseForm key={formKey} onCancel={goToDashboard} onSuccess={handleSuccess} onReset={() => setFormKey(k => k + 1)} />}
 
           {/* ── Settings ── */}
           {nav === 'settings' && <p style={{ fontSize: 14, color: 'var(--ink-muted)', paddingTop: 12 }}>Settings coming soon.</p>}
+
+          {/* ── Course detail ── */}
+          {nav === 'course' && threadId && <CourseView threadId={threadId} onBack={goToDashboard} />}
         </main>
       </div>
 
@@ -316,7 +561,7 @@ export default function DashboardPage() {
         {NAV_ITEMS.map(item => {
           const on = nav === item.id
           return (
-            <button key={item.id} onClick={() => setNav(item.id)} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, border: 'none', background: 'transparent', cursor: 'pointer', color: on ? 'var(--ink)' : 'var(--ink-faint)', fontFamily: 'var(--font-sans)' }}>
+            <button key={item.id} onClick={() => { setNav(item.id); if (item.id === 'dashboard') navigate('/dashboard') }} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, border: 'none', background: 'transparent', cursor: 'pointer', color: on ? 'var(--ink)' : 'var(--ink-faint)', fontFamily: 'var(--font-sans)' }}>
               <Ico d={item.icon} size={18} color={on ? 'var(--ink)' : 'var(--ink-faint)'} />
               <span style={{ fontSize: 10, fontWeight: on ? 600 : 400 }}>{item.label}</span>
             </button>

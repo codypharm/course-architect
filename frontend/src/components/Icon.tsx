@@ -1,6 +1,8 @@
-export function Ico({ d, size = 16, color = 'currentColor' }: { d: string; size?: number; color?: string }) {
+import React from 'react'
+
+export function Ico({ d, size = 16, color = 'currentColor', style }: { d: string; size?: number; color?: string; style?: React.CSSProperties }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={style}>
       <path d={d} />
     </svg>
   )

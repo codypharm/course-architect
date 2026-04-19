@@ -2849,3 +2849,17 @@ During task with name 'gap_enrichment' and id '7921ab8d-9862-e425-a804-53839a335
 [2026-04-19 21:14:04,526: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 [2026-04-19 21:14:04,564: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[ce63ceed-463c-4cb9-bea1-215e222b2461]: DB updated — thread_id=7fcc5efa-32f3-4895-9efc-69e999c8f030 status=awaiting_curriculum_review
 [2026-04-19 21:14:04,570: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_validation[ce63ceed-463c-4cb9-bea1-215e222b2461] succeeded in 117.93249846599792s: None
+[2026-04-19 21:16:36,401: INFO/MainProcess] Task queue.tasks.pipeline_resume_curriculum[f1c220d2-06f5-410f-87f5-22dcf016fd92] received
+[2026-04-19 21:16:36,401: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[f1c220d2-06f5-410f-87f5-22dcf016fd92]: pipeline_resume_curriculum — thread_id=7fcc5efa-32f3-4895-9efc-69e999c8f030 approved=True
+[2026-04-19 21:16:36,408: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:16:36,409: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:16:36,410: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 21:16:36,458: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[f1c220d2-06f5-410f-87f5-22dcf016fd92]: DB updated — thread_id=7fcc5efa-32f3-4895-9efc-69e999c8f030 status=completed
+[2026-04-19 21:16:36,461: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_curriculum[f1c220d2-06f5-410f-87f5-22dcf016fd92] succeeded in 0.060019619995728135s: None
+[2026-04-19 21:46:54,389: INFO/MainProcess] Task queue.tasks.pipeline_start[1fe400ed-9e3f-4e7b-9d05-c17f5997627a] received
+[2026-04-19 21:46:54,390: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[1fe400ed-9e3f-4e7b-9d05-c17f5997627a]: pipeline_start — thread_id=ed130d42-0e62-4083-81a8-6135137a9c8c
+[2026-04-19 21:46:54,395: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:46:54,397: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:46:54,397: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 21:47:03,559: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:47:08,018: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"

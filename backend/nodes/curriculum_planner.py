@@ -69,8 +69,10 @@ Course parameters:
 - Audience age: {audience_age}
 - Audience level: {audience_level}
 - Duration: {duration_weeks} week(s), {sessions_per_week} session(s)/week ({sessions_total} sessions total)
-- Preferred formats: {preferred_formats}
 - Tone: {tone}
+
+Formats selected by the tutor (populate these fields per session; leave all others empty):
+{format_populate}
 
 Knowledge base summary:
 {knowledge_summary}
@@ -78,20 +80,46 @@ Knowledge base summary:
 Research notes (retrieved knowledge base content per session):
 {research_notes}
 
-Instructions:
-- Cover all {sessions_total} sessions, distributing topics logically across weeks
-- Each session: 2–4 measurable learning objectives, 4–8 ordered lesson outline points
-- Quiz questions: {include_quiz}
-- Tone calibration: {tone_guidance}
-- Do NOT invent topics or content not present in the research notes or knowledge base summary
+REQUIRED sessions — output one SessionPlan for every entry below, in order:
+{session_slots}
+
+Rules:
+- Output exactly {sessions_total} sessions — do NOT stop early, do NOT skip any
+- lesson_outline and objectives are always populated for every session
+- Every format field has its generation spec in the JSON schema description — follow it exactly
+- Tone: {tone_guidance}
+- Do NOT invent content not present in the research notes or knowledge base summary
 """
 
 _TONE_GUIDANCE = {
-    "formal": "Use precise academic language. Avoid colloquialisms.",
-    "casual": "Use friendly, conversational language. Short sentences.",
+    "formal":      "Use precise academic language. Avoid colloquialisms.",
+    "casual":      "Use friendly, conversational language. Short sentences.",
     "encouraging": "Use positive framing. Celebrate small wins. Motivate learners.",
-    "socratic": "Frame teaching points as questions that lead students to discover answers.",
+    "socratic":    "Frame teaching points as questions that lead students to discover answers.",
 }
+
+# Maps format id → the SessionPlan field name it populates
+_FORMAT_FIELD = {
+    "lesson":       "lesson_content",
+    "video_script": "video_script",
+    "quiz":         "quiz_questions",
+    "worksheet":    "worksheet_exercises",
+}
+
+
+def _build_format_populate(preferred_formats: list[str]) -> str:
+    """Return a short populate/skip list so the model knows which fields to fill.
+
+    Full generation specs live in the Pydantic Field descriptions on SessionPlan
+    and are passed to the model automatically via the JSON schema.
+    """
+    lines = []
+    for fmt, field in _FORMAT_FIELD.items():
+        if fmt in preferred_formats:
+            lines.append(f"  ✓ populate  {field}")
+        else:
+            lines.append(f"  ✗ leave empty  {field}")
+    return "\n".join(lines)
 
 # ---------------------------------------------------------------------------
 # Lazy singletons — two separate model instances to avoid binding conflicts
@@ -111,10 +139,15 @@ def _get_react_llm():
 
 
 def _get_planner():
-    """Lazily initialise the structured-output LLM used for synthesis."""
+    """Lazily initialise the structured-output LLM used for synthesis.
+
+    Uses gpt-4o rather than gpt-4o-mini: the full CurriculumPlan for a multi-week
+    course (sessions × objectives + lesson points + quiz questions) can exceed
+    gpt-4o-mini's output token budget, causing silent truncation of later weeks.
+    """
     global _synthesizer_llm, _planner
     if _synthesizer_llm is None:
-        _synthesizer_llm = init_chat_model(model="gpt-4o-mini", temperature=0.3)
+        _synthesizer_llm = init_chat_model(model="gpt-4o", temperature=0.3)
         _planner = _synthesizer_llm.with_structured_output(CurriculumPlan)
     return _planner
 
@@ -205,8 +238,15 @@ async def curriculum_planner_agent(state: CourseState) -> dict:
 
     # --- Phase 2: Structured synthesis ---
 
-    include_quiz_flag = "YES" if include_quiz else "NO — set quiz_questions to []"
     tone_guidance = _TONE_GUIDANCE.get(tone, "Use a clear, accessible tone appropriate for the audience.")
+
+    # Explicit slot list so the LLM cannot stop early
+    slot_lines = [
+        f"  - Week {w}, Session {s}"
+        for w in range(1, duration_weeks + 1)
+        for s in range(1, sessions_per_week + 1)
+    ]
+    session_slots = "\n".join(slot_lines)
 
     synthesis_content = _SYNTHESIS_PROMPT.format(
         subject=subject,
@@ -215,12 +255,12 @@ async def curriculum_planner_agent(state: CourseState) -> dict:
         duration_weeks=duration_weeks,
         sessions_per_week=sessions_per_week,
         sessions_total=sessions_total,
-        preferred_formats=", ".join(preferred_formats) if preferred_formats else "none specified",
         tone=tone,
-        include_quiz=include_quiz_flag,
         knowledge_summary=json.dumps(knowledge_summary, indent=2),
         research_notes=research_summary,
         tone_guidance=tone_guidance,
+        session_slots=session_slots,
+        format_populate=_build_format_populate(preferred_formats),
     )
 
     plan: CurriculumPlan = await _get_planner().ainvoke([
@@ -228,21 +268,18 @@ async def curriculum_planner_agent(state: CourseState) -> dict:
     ])
 
     logger.info(
-        "Curriculum plan produced — %d session(s), retry: %d",
-        len(plan.sessions), retry_count,
+        "Curriculum plan produced — %d/%d session(s), retry: %d",
+        len(plan.sessions), sessions_total, retry_count,
     )
+    if len(plan.sessions) < sessions_total:
+        logger.warning(
+            "LLM returned fewer sessions than requested (%d vs %d) — consider retrying",
+            len(plan.sessions), sessions_total,
+        )
 
-    # session_content omits objectives (those live in curriculum_plan) — just production content
-    session_content = [
-        {
-            "week": s.week,
-            "session": s.session,
-            "topic": s.topic,
-            "lesson_outline": s.lesson_outline,
-            "quiz_questions": [q.model_dump() for q in s.quiz_questions],
-        }
-        for s in plan.sessions
-    ]
+    # session_content carries all format fields; empty fields are omitted from the dict
+    # when they were not requested so the UI can gate display on presence.
+    session_content = [s.model_dump() for s in plan.sessions]
 
     return {
         "curriculum_plan": plan.model_dump(),

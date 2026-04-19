@@ -34,14 +34,14 @@ const PIPELINE_STAGES = [
   { key: 'reviewing',   label: 'Reviewing output',           sub: 'Critic agent checking coherence' },
 ]
 
-function stageFromStatus(status: string): number {
-  if (status === 'queued')   return 0
-  if (status === 'processing') return 1 // advances visually; true stage is unknown
+function stageFromStatus(status: string, minStage = 0): number {
+  if (status === 'queued')     return 0
+  if (status === 'processing') return Math.max(1, minStage)
   return -1
 }
 
-function ProcessingView({ status }: { status: string }) {
-  const activeIdx = stageFromStatus(status)
+function ProcessingView({ status, minStage = 0 }: { status: string; minStage?: number }) {
+  const activeIdx = stageFromStatus(status, minStage)
   return (
     <div style={{ animation: 'enter 300ms ease' }}>
       <div style={{ textAlign: 'center', marginBottom: 32, padding: '8px 0 4px' }}>
@@ -96,7 +96,7 @@ function ProcessingView({ status }: { status: string }) {
 function ValidationView({ data, threadId, onResume }: {
   data: Record<string, unknown>
   threadId: string
-  onResume: (status: string, d: Record<string, unknown>) => void
+  onResume: (status: string, d: Record<string, unknown>, minStage?: number) => void
 }) {
   const flags       = (data.flags as string[])       ?? []
   const suggestions = (data.suggestions as string[]) ?? []
@@ -105,7 +105,7 @@ function ValidationView({ data, threadId, onResume }: {
 
   const approveM = useMutation({
     mutationFn: () => resumeValidation(threadId, true),
-    onSuccess: r => onResume(r.status, r.data),
+    onSuccess: r => onResume(r.status, r.data, 2), // post-validation: enriching stage
   })
   const rejectM = useMutation({
     mutationFn: () => resumeValidation(threadId, false),
@@ -217,12 +217,102 @@ function ValidationView({ data, threadId, onResume }: {
 }
 
 /** HITL #2 — Curriculum review */
-interface SessionRow { week: number; session: number; topic: string; objectives: string[] }
+interface SessionRow {
+  week: number; session: number; topic: string; objectives: string[]
+  lesson_outline: string[]; lesson_content: string
+  video_script: string; quiz_questions: unknown[]; worksheet_exercises: string[]
+}
+
+const FORMAT_BADGE: { key: keyof SessionRow; label: string }[] = [
+  { key: 'lesson_content',        label: 'Lesson' },
+  { key: 'video_script',          label: 'Script' },
+  { key: 'quiz_questions',        label: 'Quiz' },
+  { key: 'worksheet_exercises',   label: 'Worksheet' },
+]
+
+function hasContent(v: unknown): boolean {
+  if (typeof v === 'string')  return v.trim().length > 0
+  if (Array.isArray(v))       return v.length > 0
+  return false
+}
+
+/** Expandable session row with format badges and content preview. */
+function SessionRowCard({ s }: { s: SessionRow }) {
+  const [open, setOpen] = useState(false)
+  const badges = FORMAT_BADGE.filter(b => hasContent(s[b.key]))
+
+  return (
+    <div style={{ borderBottom: '1px solid var(--border)' }}>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        style={{ width: '100%', textAlign: 'left', padding: '12px 16px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: badges.length ? 6 : 0 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-faint)', minWidth: 64, flexShrink: 0 }}>Session {s.session}</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', flex: 1 }}>{s.topic}</span>
+          <span style={{ fontSize: 11, color: 'var(--ink-faint)', flexShrink: 0 }}>{open ? '▲' : '▼'}</span>
+        </div>
+        {badges.length > 0 && (
+          <div style={{ paddingLeft: 72, display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+            {badges.map(b => (
+              <span key={b.key} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', padding: '2px 7px', borderRadius: 9999, background: 'var(--accent-green-bg)', color: 'var(--accent-green-text)' }}>
+                ✓ {b.label}
+              </span>
+            ))}
+          </div>
+        )}
+      </button>
+
+      {open && (
+        <div style={{ padding: '0 16px 14px', paddingLeft: 88 }}>
+          {/* Objectives */}
+          {s.objectives?.length > 0 && (
+            <div style={{ marginBottom: 10 }}>
+              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: '0 0 5px' }}>Objectives</p>
+              {s.objectives.map((o, i) => <p key={i} style={{ fontSize: 12, color: 'var(--ink-muted)', margin: '0 0 2px', lineHeight: 1.4 }}>· {o}</p>)}
+            </div>
+          )}
+          {/* Lesson preview */}
+          {s.lesson_content?.trim() && (
+            <div style={{ marginBottom: 10 }}>
+              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: '0 0 5px' }}>Lesson preview</p>
+              <p style={{ fontSize: 12, color: 'var(--ink)', lineHeight: 1.5, margin: 0 }}>
+                {s.lesson_content.slice(0, 260)}{s.lesson_content.length > 260 ? '…' : ''}
+              </p>
+            </div>
+          )}
+          {/* Video script preview */}
+          {s.video_script?.trim() && (
+            <div style={{ marginBottom: 10 }}>
+              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: '0 0 5px' }}>Script preview</p>
+              <p style={{ fontSize: 12, color: 'var(--ink)', lineHeight: 1.5, margin: 0 }}>
+                {s.video_script.slice(0, 260)}{s.video_script.length > 260 ? '…' : ''}
+              </p>
+            </div>
+          )}
+          {/* Quiz count */}
+          {s.quiz_questions?.length > 0 && (
+            <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: 0 }}>
+              {s.quiz_questions.length} quiz question{s.quiz_questions.length !== 1 ? 's' : ''} generated
+            </p>
+          )}
+          {/* Worksheet count */}
+          {s.worksheet_exercises?.length > 0 && (
+            <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: '4px 0 0' }}>
+              {s.worksheet_exercises.length} worksheet exercise{s.worksheet_exercises.length !== 1 ? 's' : ''} generated
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
 
 function CurriculumView({ data, threadId, onResume }: {
   data: Record<string, unknown>
   threadId: string
-  onResume: (status: string, d: Record<string, unknown>) => void
+  onResume: (status: string, d: Record<string, unknown>, minStage?: number) => void
 }) {
   const [retryContext, setRetryContext] = useState('')
   const [showRetry, setShowRetry]       = useState(false)
@@ -240,11 +330,11 @@ function CurriculumView({ data, threadId, onResume }: {
 
   const approveM = useMutation({
     mutationFn: () => resumeCurriculum(threadId, true, ''),
-    onSuccess: r => onResume(r.status, r.data),
+    onSuccess: r => onResume(r.status, r.data, 4), // post-curriculum: reviewing stage
   })
   const retryM = useMutation({
     mutationFn: () => resumeCurriculum(threadId, false, retryContext.trim()),
-    onSuccess: r => onResume(r.status, r.data),
+    onSuccess: r => onResume(r.status, r.data, 3), // retry: back to generating
   })
 
   const busy = approveM.isPending || retryM.isPending
@@ -261,35 +351,26 @@ function CurriculumView({ data, threadId, onResume }: {
           )}
         </div>
         <h3 className="serif" style={{ fontSize: 26, color: 'var(--ink)', margin: 0, letterSpacing: '-0.02em' }}>Review the curriculum plan</h3>
-        <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: '5px 0 0' }}>Approve to generate full session content, or request a revision.</p>
+        <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: '5px 0 0' }}>Full content has been generated. Review each session below, then approve or request changes.</p>
       </div>
 
       {/* Curriculum plan */}
       {sessions.length > 0 ? (
-        <div style={{ background: '#FAFAF8', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginBottom: 20, maxHeight: 420, overflowY: 'auto' }}>
-          {Object.entries(byWeek).map(([week, rows]) => (
-            <div key={week}>
-              <div style={{ padding: '10px 16px', background: '#F7F6F3', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-muted)', margin: 0 }}>Week {week}</p>
-              </div>
-              {rows.map((s, i) => (
-                <div key={i} style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-faint)', minWidth: 64 }}>Session {s.session}</span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>{s.topic}</span>
-                  </div>
-                  {Array.isArray(s.objectives) && s.objectives.length > 0 && (
-                    <div style={{ paddingLeft: 72, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                      {(s.objectives as string[]).map((o, j) => (
-                        <p key={j} style={{ fontSize: 12, color: 'var(--ink-muted)', margin: 0, lineHeight: 1.4 }}>· {o}</p>
-                      ))}
-                    </div>
-                  )}
+        <>
+          <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: '0 0 8px' }}>
+            {Object.keys(byWeek).length} week{Object.keys(byWeek).length !== 1 ? 's' : ''} · {sessions.length} session{sessions.length !== 1 ? 's' : ''}
+          </p>
+          <div style={{ background: '#FAFAF8', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>
+            {Object.entries(byWeek).map(([week, rows]) => (
+              <div key={week}>
+                <div style={{ padding: '10px 16px', background: '#F7F6F3', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0 }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-muted)', margin: 0 }}>Week {week}</p>
                 </div>
-              ))}
-            </div>
-          ))}
-        </div>
+                {rows.map((s, i) => <SessionRowCard key={i} s={s} />)}
+              </div>
+            ))}
+          </div>
+        </>
       ) : (
         /* Fallback: render raw plan as JSON if sessions aren't structured */
         <div style={{ background: '#FAFAF8', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px', marginBottom: 20, maxHeight: 320, overflowY: 'auto' }}>
@@ -418,8 +499,9 @@ function FailedView({ onReset }: { onReset: () => void }) {
 ══════════════════════════════════════ */
 export default function PipelineTracker({ threadId, onReset }: { threadId: string; onReset: () => void }) {
   // Track what the backend last told us (allow mutations to override without waiting for refetch)
-  const [overrideStatus, setOverrideStatus] = useState<string | null>(null)
-  const [overrideData,   setOverrideData]   = useState<Record<string, unknown> | null>(null)
+  const [overrideStatus,   setOverrideStatus]   = useState<string | null>(null)
+  const [overrideData,     setOverrideData]     = useState<Record<string, unknown> | null>(null)
+  const [processingMinStage, setProcessingMinStage] = useState(0)
 
   const { data } = useQuery({
     queryKey: ['course-status', threadId],
@@ -440,9 +522,10 @@ export default function PipelineTracker({ threadId, onReset }: { threadId: strin
     }
   }, [data?.status])
 
-  function handleResume(status: string, d: Record<string, unknown>) {
+  function handleResume(status: string, d: Record<string, unknown>, minStage = 0) {
     setOverrideStatus(status)
     setOverrideData(d)
+    if (minStage > 0) setProcessingMinStage(minStage)
   }
 
   const status = overrideStatus ?? data?.status ?? 'queued'
@@ -451,7 +534,7 @@ export default function PipelineTracker({ threadId, onReset }: { threadId: strin
   return (
     <div>
       {(status === 'queued' || status === 'processing') && (
-        <ProcessingView status={status} />
+        <ProcessingView status={status} minStage={processingMinStage} />
       )}
       {status === 'awaiting_validation' && (
         <ValidationView data={payload} threadId={threadId} onResume={handleResume} />
