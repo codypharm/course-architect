@@ -160,10 +160,25 @@ async def knowledge_base_preprocessor(state: CourseState) -> dict:
         extractions.append(extraction)
 
     if not extractions:
-        raise RuntimeError(
-            "No content could be successfully extracted from the knowledge base. "
-            "Check that uploaded_files contains valid paths and enrichment_urls are reachable."
+        # Knowledge base is optional — proceed with subject-only context.
+        # Validation agent will flag missing material in the feasibility report.
+        logger.warning(
+            "No knowledge base content extracted (no files or URLs provided). "
+            "Proceeding with subject-only context for thread_id=%s",
+            state.get("thread_id", "unknown"),
         )
+        return {
+            "knowledge_summary": {
+                "content_summary": "",
+                "topics": [],
+                "depth": "introductory",
+                "subtopics": [],
+                "teaching_minutes": 0,
+                "prerequisites": [],
+                "gaps": ["No knowledge base provided — content will be generated from subject brief alone."],
+                "source_count": 0,
+            }
+        }
 
     summary = _merge(extractions, state, merger)
 
