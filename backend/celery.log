@@ -2400,3 +2400,452 @@ Trying again in 8.00 seconds... (4/100)
 [2026-04-19 21:06:16,200: INFO/ForkPoolWorker-16] Redis client is a standalone client
 [2026-04-19 21:06:25,849: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 [2026-04-19 21:06:33,266: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:06:42,169: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:06:43,113: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:06:43,578: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:06:43,643: INFO/ForkPoolWorker-16] Retrying request to /chat/completions in 0.499311 seconds
+[2026-04-19 21:06:48,340: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:06:48,367: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[10f3eab1-102b-4780-beb3-51e1d80b4b1e]: DB updated — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a status=awaiting_validation
+[2026-04-19 21:06:48,370: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[10f3eab1-102b-4780-beb3-51e1d80b4b1e] succeeded in 32.181299424002646s: None
+[2026-04-19 21:06:51,603: INFO/MainProcess] Task queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635] received
+[2026-04-19 21:06:51,603: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: pipeline_resume_validation — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a approved=True
+[2026-04-19 21:06:51,608: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:06:51,610: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:06:51,610: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 21:06:51,646: INFO/ForkPoolWorker-16] Retrying request to /chat/completions in 0.483445 seconds
+[2026-04-19 21:06:56,614: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:06:56,637: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: pipeline_resume_validation failed — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a: As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:
+1. client = MultiServerMCPClient(...)
+   tools = await client.get_tools()
+2. client = MultiServerMCPClient(...)
+   async with client.session(server_name) as session:
+       tools = await load_mcp_tools(session)
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 159, in pipeline_resume_validation
+    def pipeline_start(self, thread_id: str, initial_state: dict) -> None:
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 115, in _run_resume_validation
+    # ---------------------------------------------------------------------------
+    ...<2 lines>...
+    
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3181, in astream
+    async for _ in runner.atick(
+    ...<16 lines>...
+            yield o
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_runner.py", line 304, in atick
+    await arun_with_retry(
+    ...<15 lines>...
+    )
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_retry.py", line 242, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 705, in ainvoke
+    input = await asyncio.create_task(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        step.ainvoke(input, config, **kwargs), context=context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 473, in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/nodes/gap_enrichment.py", line 137, in gap_enrichment_agent
+    async with MultiServerMCPClient(
+               ~~~~~~~~~~~~~~~~~~~~^
+        {
+        ^
+    ...<6 lines>...
+        }
+        ^
+    ) as mcp_client:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langchain_mcp_adapters/client.py", line 261, in __aenter__
+    raise NotImplementedError(ASYNC_CONTEXT_MANAGER_ERROR)
+NotImplementedError: As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:
+1. client = MultiServerMCPClient(...)
+   tools = await client.get_tools()
+2. client = MultiServerMCPClient(...)
+   async with client.session(server_name) as session:
+       tools = await load_mcp_tools(session)
+During task with name 'gap_enrichment' and id '7921ab8d-9862-e425-a804-53839a335936'
+[2026-04-19 21:06:56,645: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: Deleted uploaded file /Users/a0000/projects/andela/capstone/backend/uploads/61d99d13-b869-4ad4-b2a0-28f37d0ad730/intro_to_genomics.pdf (thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a)
+[2026-04-19 21:06:56,647: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: DB updated — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a status=failed
+[2026-04-19 21:06:56,665: INFO/MainProcess] Task queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635] received
+[2026-04-19 21:06:56,677: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635] retry: Retry in 1s: NotImplementedError('As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:\n1. client = MultiServerMCPClient(...)\n   tools = await client.get_tools()\n2. client = MultiServerMCPClient(...)\n   async with client.session(server_name) as session:\n       tools = await load_mcp_tools(session)')
+[2026-04-19 21:06:57,651: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: pipeline_resume_validation — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a approved=True
+[2026-04-19 21:06:57,657: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:06:57,658: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:06:57,658: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 21:06:57,692: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: pipeline_resume_validation failed — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a: As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:
+1. client = MultiServerMCPClient(...)
+   tools = await client.get_tools()
+2. client = MultiServerMCPClient(...)
+   async with client.session(server_name) as session:
+       tools = await load_mcp_tools(session)
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 159, in pipeline_resume_validation
+    def pipeline_start(self, thread_id: str, initial_state: dict) -> None:
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 115, in _run_resume_validation
+    # ---------------------------------------------------------------------------
+    ...<2 lines>...
+    
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3181, in astream
+    async for _ in runner.atick(
+    ...<16 lines>...
+            yield o
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_runner.py", line 304, in atick
+    await arun_with_retry(
+    ...<15 lines>...
+    )
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_retry.py", line 242, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 705, in ainvoke
+    input = await asyncio.create_task(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        step.ainvoke(input, config, **kwargs), context=context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 473, in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/nodes/gap_enrichment.py", line 137, in gap_enrichment_agent
+    async with MultiServerMCPClient(
+               ~~~~~~~~~~~~~~~~~~~~^
+        {
+        ^
+    ...<6 lines>...
+        }
+        ^
+    ) as mcp_client:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langchain_mcp_adapters/client.py", line 261, in __aenter__
+    raise NotImplementedError(ASYNC_CONTEXT_MANAGER_ERROR)
+NotImplementedError: As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:
+1. client = MultiServerMCPClient(...)
+   tools = await client.get_tools()
+2. client = MultiServerMCPClient(...)
+   async with client.session(server_name) as session:
+       tools = await load_mcp_tools(session)
+During task with name 'gap_enrichment' and id '7921ab8d-9862-e425-a804-53839a335936'
+[2026-04-19 21:06:57,696: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: Deleted uploaded file /Users/a0000/projects/andela/capstone/backend/uploads/61d99d13-b869-4ad4-b2a0-28f37d0ad730/intro_to_genomics.pdf (thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a)
+[2026-04-19 21:06:57,700: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: DB updated — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a status=failed
+[2026-04-19 21:06:57,703: INFO/MainProcess] Task queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635] received
+[2026-04-19 21:06:57,708: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635] retry: Retry in 2s: NotImplementedError('As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:\n1. client = MultiServerMCPClient(...)\n   tools = await client.get_tools()\n2. client = MultiServerMCPClient(...)\n   async with client.session(server_name) as session:\n       tools = await load_mcp_tools(session)')
+[2026-04-19 21:06:59,702: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: pipeline_resume_validation — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a approved=True
+[2026-04-19 21:06:59,709: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:06:59,710: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:06:59,710: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 21:06:59,744: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: pipeline_resume_validation failed — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a: As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:
+1. client = MultiServerMCPClient(...)
+   tools = await client.get_tools()
+2. client = MultiServerMCPClient(...)
+   async with client.session(server_name) as session:
+       tools = await load_mcp_tools(session)
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 159, in pipeline_resume_validation
+    def pipeline_start(self, thread_id: str, initial_state: dict) -> None:
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 115, in _run_resume_validation
+    # ---------------------------------------------------------------------------
+    ...<2 lines>...
+    
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3181, in astream
+    async for _ in runner.atick(
+    ...<16 lines>...
+            yield o
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_runner.py", line 304, in atick
+    await arun_with_retry(
+    ...<15 lines>...
+    )
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_retry.py", line 242, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 705, in ainvoke
+    input = await asyncio.create_task(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        step.ainvoke(input, config, **kwargs), context=context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 473, in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/nodes/gap_enrichment.py", line 137, in gap_enrichment_agent
+    async with MultiServerMCPClient(
+               ~~~~~~~~~~~~~~~~~~~~^
+        {
+        ^
+    ...<6 lines>...
+        }
+        ^
+    ) as mcp_client:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langchain_mcp_adapters/client.py", line 261, in __aenter__
+    raise NotImplementedError(ASYNC_CONTEXT_MANAGER_ERROR)
+NotImplementedError: As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:
+1. client = MultiServerMCPClient(...)
+   tools = await client.get_tools()
+2. client = MultiServerMCPClient(...)
+   async with client.session(server_name) as session:
+       tools = await load_mcp_tools(session)
+During task with name 'gap_enrichment' and id '7921ab8d-9862-e425-a804-53839a335936'
+[2026-04-19 21:06:59,748: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: Deleted uploaded file /Users/a0000/projects/andela/capstone/backend/uploads/61d99d13-b869-4ad4-b2a0-28f37d0ad730/intro_to_genomics.pdf (thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a)
+[2026-04-19 21:06:59,751: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: DB updated — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a status=failed
+[2026-04-19 21:06:59,755: INFO/MainProcess] Task queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635] received
+[2026-04-19 21:06:59,759: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635] retry: Retry in 4s: NotImplementedError('As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:\n1. client = MultiServerMCPClient(...)\n   tools = await client.get_tools()\n2. client = MultiServerMCPClient(...)\n   async with client.session(server_name) as session:\n       tools = await load_mcp_tools(session)')
+[2026-04-19 21:07:03,754: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: pipeline_resume_validation — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a approved=True
+[2026-04-19 21:07:03,760: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:07:03,761: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:07:03,762: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 21:07:03,798: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: pipeline_resume_validation failed — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a: As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:
+1. client = MultiServerMCPClient(...)
+   tools = await client.get_tools()
+2. client = MultiServerMCPClient(...)
+   async with client.session(server_name) as session:
+       tools = await load_mcp_tools(session)
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 159, in pipeline_resume_validation
+    def pipeline_start(self, thread_id: str, initial_state: dict) -> None:
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 115, in _run_resume_validation
+    # ---------------------------------------------------------------------------
+    ...<2 lines>...
+    
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3181, in astream
+    async for _ in runner.atick(
+    ...<16 lines>...
+            yield o
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_runner.py", line 304, in atick
+    await arun_with_retry(
+    ...<15 lines>...
+    )
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_retry.py", line 242, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 705, in ainvoke
+    input = await asyncio.create_task(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        step.ainvoke(input, config, **kwargs), context=context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 473, in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/nodes/gap_enrichment.py", line 137, in gap_enrichment_agent
+    async with MultiServerMCPClient(
+               ~~~~~~~~~~~~~~~~~~~~^
+        {
+        ^
+    ...<6 lines>...
+        }
+        ^
+    ) as mcp_client:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langchain_mcp_adapters/client.py", line 261, in __aenter__
+    raise NotImplementedError(ASYNC_CONTEXT_MANAGER_ERROR)
+NotImplementedError: As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:
+1. client = MultiServerMCPClient(...)
+   tools = await client.get_tools()
+2. client = MultiServerMCPClient(...)
+   async with client.session(server_name) as session:
+       tools = await load_mcp_tools(session)
+During task with name 'gap_enrichment' and id '7921ab8d-9862-e425-a804-53839a335936'
+[2026-04-19 21:07:03,802: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: Deleted uploaded file /Users/a0000/projects/andela/capstone/backend/uploads/61d99d13-b869-4ad4-b2a0-28f37d0ad730/intro_to_genomics.pdf (thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a)
+[2026-04-19 21:07:03,804: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635]: DB updated — thread_id=e1fc5b29-bb2e-4b25-a81f-9f6b0f38c13a status=failed
+[2026-04-19 21:07:03,815: ERROR/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_validation[835dcc3d-37d4-4c60-82f5-cc3b2d253635] raised unexpected: NotImplementedError('As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:\n1. client = MultiServerMCPClient(...)\n   tools = await client.get_tools()\n2. client = MultiServerMCPClient(...)\n   async with client.session(server_name) as session:\n       tools = await load_mcp_tools(session)')
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/trace.py", line 585, in trace_task
+    R = retval = fun(*args, **kwargs)
+                 ~~~^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/trace.py", line 858, in __protected_call__
+    return self.run(*args, **kwargs)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 165, in pipeline_resume_validation
+    logger.error("pipeline_start failed — thread_id=%s: %s", thread_id, exc, exc_info=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/task.py", line 769, in retry
+    raise_with_context(exc)
+    ~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 159, in pipeline_resume_validation
+    def pipeline_start(self, thread_id: str, initial_state: dict) -> None:
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 115, in _run_resume_validation
+    # ---------------------------------------------------------------------------
+    ...<2 lines>...
+    
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3181, in astream
+    async for _ in runner.atick(
+    ...<16 lines>...
+            yield o
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_runner.py", line 304, in atick
+    await arun_with_retry(
+    ...<15 lines>...
+    )
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_retry.py", line 242, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 705, in ainvoke
+    input = await asyncio.create_task(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        step.ainvoke(input, config, **kwargs), context=context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 473, in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/nodes/gap_enrichment.py", line 137, in gap_enrichment_agent
+    async with MultiServerMCPClient(
+               ~~~~~~~~~~~~~~~~~~~~^
+        {
+        ^
+    ...<6 lines>...
+        }
+        ^
+    ) as mcp_client:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langchain_mcp_adapters/client.py", line 261, in __aenter__
+    raise NotImplementedError(ASYNC_CONTEXT_MANAGER_ERROR)
+NotImplementedError: As of langchain-mcp-adapters 0.1.0, MultiServerMCPClient cannot be used as a context manager (e.g., async with MultiServerMCPClient(...)). Instead, you can do one of the following:
+1. client = MultiServerMCPClient(...)
+   tools = await client.get_tools()
+2. client = MultiServerMCPClient(...)
+   async with client.session(server_name) as session:
+       tools = await load_mcp_tools(session)
+During task with name 'gap_enrichment' and id '7921ab8d-9862-e425-a804-53839a335936'
+[2026-04-19 21:10:34,148: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-19 21:10:34,156: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-19 21:10:35,173: INFO/MainProcess] mingle: all alone
+[2026-04-19 21:10:35,210: INFO/MainProcess] celery@codypharm ready.
+[2026-04-19 21:11:24,987: INFO/MainProcess] Task queue.tasks.pipeline_start[28fc35e8-ef74-4a20-b406-567895bb160c] received
+[2026-04-19 21:11:24,989: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[28fc35e8-ef74-4a20-b406-567895bb160c]: pipeline_start — thread_id=7fcc5efa-32f3-4895-9efc-69e999c8f030
+[2026-04-19 21:11:25,012: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:11:25,015: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:11:25,015: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 21:11:35,245: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:11:40,328: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:11:49,977: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:11:51,928: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:11:52,439: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:11:56,730: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:11:56,776: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[28fc35e8-ef74-4a20-b406-567895bb160c]: DB updated — thread_id=7fcc5efa-32f3-4895-9efc-69e999c8f030 status=awaiting_validation
+[2026-04-19 21:11:56,785: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[28fc35e8-ef74-4a20-b406-567895bb160c] succeeded in 31.79723455000203s: None
+[2026-04-19 21:12:06,618: INFO/MainProcess] Task queue.tasks.pipeline_resume_validation[ce63ceed-463c-4cb9-bea1-215e222b2461] received
+[2026-04-19 21:12:06,618: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[ce63ceed-463c-4cb9-bea1-215e222b2461]: pipeline_resume_validation — thread_id=7fcc5efa-32f3-4895-9efc-69e999c8f030 approved=True
+[2026-04-19 21:12:06,626: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:12:06,627: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 21:12:06,628: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 21:12:06,667: INFO/ForkPoolWorker-16] Retrying request to /chat/completions in 0.469331 seconds
+[2026-04-19 21:12:12,401: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:12:29,103: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:09,343: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:16,611: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,416: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,483: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,484: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,484: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,485: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,523: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,531: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,534: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,539: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,540: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,550: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,552: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,556: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,556: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,578: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,587: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,610: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:18,639: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,673: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,724: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,778: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,789: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,790: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,816: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,844: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,845: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,857: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,865: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,866: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,908: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,916: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:19,954: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:20,039: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:20,514: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:20,591: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:20,728: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:13:58,162: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:14:04,526: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 21:14:04,564: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[ce63ceed-463c-4cb9-bea1-215e222b2461]: DB updated — thread_id=7fcc5efa-32f3-4895-9efc-69e999c8f030 status=awaiting_curriculum_review
+[2026-04-19 21:14:04,570: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_validation[ce63ceed-463c-4cb9-bea1-215e222b2461] succeeded in 117.93249846599792s: None

@@ -134,7 +134,9 @@ async def gap_enrichment_agent(state: CourseState) -> dict:
 
     logger.info("Enriching %d gap(s) via Tavily MCP: %s", len(gaps), ", ".join(gaps))
 
-    async with MultiServerMCPClient(
+    # langchain-mcp-adapters >= 0.1.0 removed async context manager support.
+    # Use get_tools() directly on the client instance instead.
+    mcp_client = MultiServerMCPClient(
         {
             "tavily": {
                 "command": "npx",
@@ -143,24 +145,24 @@ async def gap_enrichment_agent(state: CourseState) -> dict:
                 "transport": "stdio",
             }
         }
-    ) as mcp_client:
-        tools = mcp_client.get_tools()
-        llm = init_chat_model(model="gpt-4o-mini", temperature=0)
-        agent = create_react_agent(llm, tools)
+    )
+    tools = await mcp_client.get_tools()
+    llm = init_chat_model(model="gpt-4o-mini", temperature=0)
+    agent = create_react_agent(llm, tools)
 
-        prompt = _SEARCH_PROMPT.format(
-            subject=state.get("subject", ""),
-            audience_age=state.get("audience_age", ""),
-            audience_level=state.get("audience_level", ""),
-            gaps="\n".join(f"- {gap}" for gap in gaps),
-        )
+    prompt = _SEARCH_PROMPT.format(
+        subject=state.get("subject", ""),
+        audience_age=state.get("audience_age", ""),
+        audience_level=state.get("audience_level", ""),
+        gaps="\n".join(f"- {gap}" for gap in gaps),
+    )
 
-        result = await agent.ainvoke({
-            "messages": [
-                SystemMessage(content=prompt),
-                HumanMessage(content="Search for content to fill each of the knowledge gaps listed above."),
-            ]
-        })
+    result = await agent.ainvoke({
+        "messages": [
+            SystemMessage(content=prompt),
+            HumanMessage(content="Search for content to fill each of the knowledge gaps listed above."),
+        ]
+    })
 
     texts = _extract_texts(result["messages"])
 
