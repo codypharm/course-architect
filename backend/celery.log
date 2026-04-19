@@ -923,3 +923,1333 @@ NotImplementedError
 [2026-04-19 07:58:08,591: INFO/MainProcess] mingle: searching for neighbors
 [2026-04-19 07:58:09,609: INFO/MainProcess] mingle: all alone
 [2026-04-19 07:58:09,644: INFO/MainProcess] celery@codypharm ready.
+[2026-04-19 08:00:07,123: INFO/MainProcess] Task queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e] received
+[2026-04-19 08:00:07,125: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e]: pipeline_start — thread_id=890242d4-e1e6-4a6c-929b-61bcfe41a7b5
+[2026-04-19 08:00:13,076: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 08:00:18,808: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 08:00:28,165: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 08:00:28,202: ERROR/ForkPoolWorker-16] Error while loading data to Redis
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 1873, in load
+    return await self._storage.awrite(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/storage.py", line 506, in awrite
+    await pipe.execute()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1909, in execute
+    response = await conn.retry.call_with_retry(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1792, in _execute_pipeline
+    self.raise_first_error(commands, response)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1799, in raise_first_error
+    raise r
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1786, in _execute_pipeline
+    await self.parse_response(connection, args[0], **options)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1814, in parse_response
+    result = await super().parse_response(connection, command_name, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 823, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: Command # 1 (JSON.SET checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd6-609d-6dee-...) of pipeline caused error: ('unknown command \'JSON.SET\', with args beginning with: \'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd6-609d-6dee-bfff-3c2d37b6fcec\' \'$\' \'{"thread_id": "890242d4-e1e\' ',)
+[2026-04-19 08:00:28,218: ERROR/ForkPoolWorker-16] Error while loading data to Redis
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 1873, in load
+    return await self._storage.awrite(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/storage.py", line 506, in awrite
+    await pipe.execute()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1909, in execute
+    response = await conn.retry.call_with_retry(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1792, in _execute_pipeline
+    self.raise_first_error(commands, response)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1799, in raise_first_error
+    raise r
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1786, in _execute_pipeline
+    await self.parse_response(connection, args[0], **options)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1814, in parse_response
+    result = await super().parse_response(connection, command_name, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 823, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: Command # 1 (JSON.SET...) of pipeline caused error: ('unknown command \'JSON.SET\', with args beginning with: \'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd6-60ba-6516-8000-d012a57b33b6\' \'$\' \'{"thread_id": "890242d4-e1e\' ',)
+[2026-04-19 08:00:28,230: ERROR/ForkPoolWorker-16] Error while loading data to Redis
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 1873, in load
+    return await self._storage.awrite(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/storage.py", line 506, in awrite
+    await pipe.execute()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1909, in execute
+    response = await conn.retry.call_with_retry(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1792, in _execute_pipeline
+    self.raise_first_error(commands, response)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1799, in raise_first_error
+    raise r
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1786, in _execute_pipeline
+    await self.parse_response(connection, args[0], **options)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1814, in parse_response
+    result = await super().parse_response(connection, command_name, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 823, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: Command # 1 (JSON.SET...) of pipeline caused error: ('unknown command \'JSON.SET\', with args beginning with: \'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-2908-69e6-8001-9aaa771eb42d\' \'$\' \'{"thread_id": "890242d4-e1e\' ',)
+[2026-04-19 08:00:32,656: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 08:00:32,682: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e]: pipeline_start failed — thread_id=890242d4-e1e6-4a6c-929b-61bcfe41a7b5: Failed to load data: Command # 1 (JSON.SET checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd6-609d-6dee-...) of pipeline caused error: ('unknown command \'JSON.SET\', with args beginning with: \'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd6-609d-6dee-bfff-3c2d37b6fcec\' \'$\' \'{"thread_id": "890242d4-e1e\' ',)
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 1873, in load
+    return await self._storage.awrite(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/storage.py", line 506, in awrite
+    await pipe.execute()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1909, in execute
+    response = await conn.retry.call_with_retry(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1792, in _execute_pipeline
+    self.raise_first_error(commands, response)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1799, in raise_first_error
+    raise r
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1786, in _execute_pipeline
+    await self.parse_response(connection, args[0], **options)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1814, in parse_response
+    result = await super().parse_response(connection, command_name, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 823, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: Command # 1 (JSON.SET checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd6-609d-6dee-...) of pipeline caused error: ('unknown command \'JSON.SET\', with args beginning with: \'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd6-609d-6dee-bfff-3c2d37b6fcec\' \'$\' \'{"thread_id": "890242d4-e1e\' ',)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1497, in __aexit__
+    return await exit_task
+           ^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/contextlib.py", line 768, in __aexit__
+    raise exc
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/contextlib.py", line 751, in __aexit__
+    cb_suppress = await cb(*exc_details)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_executor.py", line 209, in __aexit__
+    raise exc
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1363, in _checkpointer_put_after_previous
+    await prev
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1365, in _checkpointer_put_after_previous
+    await cast(BaseCheckpointSaver, self.checkpointer).aput(
+        config, checkpoint, metadata, new_versions
+    )
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 1081, in aput
+    raise e
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 988, in aput
+    await self.checkpoints_index.load(
+    ...<3 lines>...
+    )
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 1890, in load
+    raise RedisVLError(f"Failed to load data: {str(exc)}") from exc
+redisvl.exceptions.RedisVLError: Failed to load data: Command # 1 (JSON.SET checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd6-609d-6dee-...) of pipeline caused error: ('unknown command \'JSON.SET\', with args beginning with: \'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd6-609d-6dee-bfff-3c2d37b6fcec\' \'$\' \'{"thread_id": "890242d4-e1e\' ',)
+[2026-04-19 08:00:32,772: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e]: DB updated — thread_id=890242d4-e1e6-4a6c-929b-61bcfe41a7b5 status=failed
+[2026-04-19 08:00:32,800: INFO/MainProcess] Task queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e] received
+[2026-04-19 08:00:32,812: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e] retry: Retry in 1s: RedisVLError('Failed to load data: Command # 1 (JSON.SET checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd6-609d-6dee-...) of pipeline caused error: (\'unknown command \\\'JSON.SET\\\', with args beginning with: \\\'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd6-609d-6dee-bfff-3c2d37b6fcec\\\' \\\'$\\\' \\\'{"thread_id": "890242d4-e1e\\\' \',)')
+[2026-04-19 08:00:33,776: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e]: pipeline_start — thread_id=890242d4-e1e6-4a6c-929b-61bcfe41a7b5
+[2026-04-19 08:00:33,788: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e]: pipeline_start failed — thread_id=890242d4-e1e6-4a6c-929b-61bcfe41a7b5: Event loop is closed
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 734, in read_response
+    response = await self._parser.read_response(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        disable_decoding=disable_decoding
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/resp2.py", line 82, in read_response
+    response = await self._read_response(disable_decoding=disable_decoding)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/resp2.py", line 90, in _read_response
+    raw = await self._readline()
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/base.py", line 559, in _readline
+    data = await self._stream.readline()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/streams.py", line 562, in readline
+    line = await self.readuntil(sep)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/streams.py", line 677, in readuntil
+    await self._wait_for_data('readuntil')
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/streams.py", line 539, in _wait_for_data
+    await self._waiter
+RuntimeError: Task <Task pending name='Task-29' coro=<_run_pipeline_start() running at /Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py:58> cb=[_run_until_complete_cb() at /Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py:181]> got Future <Future pending> attached to a different loop
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 412, in aget_tuple
+    checkpoint_key = await self._redis.get(latest_pointer_key)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 781, in execute_command
+    result = await conn.retry.call_with_retry(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 722, in _send_command_parse_response
+    return await self.parse_response(conn, command_name, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 823, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 754, in read_response
+    await self.disconnect(nowait=True)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 585, in disconnect
+    self._writer.close()  # type: ignore[union-attr]
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/streams.py", line 352, in close
+    return self._transport.close()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/selector_events.py", line 1212, in close
+    super().close()
+    ~~~~~~~~~~~~~^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/selector_events.py", line 865, in close
+    self._loop.call_soon(self._call_connection_lost, None)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 833, in call_soon
+    self._check_closed()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 556, in _check_closed
+    raise RuntimeError('Event loop is closed')
+RuntimeError: Event loop is closed
+[2026-04-19 08:00:33,796: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e]: DB updated — thread_id=890242d4-e1e6-4a6c-929b-61bcfe41a7b5 status=failed
+[2026-04-19 08:00:33,802: INFO/MainProcess] Task queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e] received
+[2026-04-19 08:00:33,808: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e] retry: Retry in 2s: RuntimeError('Event loop is closed')
+[2026-04-19 08:00:35,799: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e]: pipeline_start — thread_id=890242d4-e1e6-4a6c-929b-61bcfe41a7b5
+[2026-04-19 08:00:40,619: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 08:00:46,844: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 08:00:47,740: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 08:00:49,585: ERROR/ForkPoolWorker-16] Error while loading data to Redis
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 1873, in load
+    return await self._storage.awrite(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/storage.py", line 506, in awrite
+    await pipe.execute()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1909, in execute
+    response = await conn.retry.call_with_retry(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1792, in _execute_pipeline
+    self.raise_first_error(commands, response)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1799, in raise_first_error
+    raise r
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1786, in _execute_pipeline
+    await self.parse_response(connection, args[0], **options)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1814, in parse_response
+    result = await super().parse_response(connection, command_name, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 823, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: Command # 1 (JSON.SET checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-7179-6612-bfff-...) of pipeline caused error: ('unknown command \'JSON.SET\', with args beginning with: \'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-7179-6612-bfff-afa9efb23ded\' \'$\' \'{"thread_id": "890242d4-e1e\' ',)
+[2026-04-19 08:00:49,591: ERROR/ForkPoolWorker-16] Error while loading data to Redis
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 1873, in load
+    return await self._storage.awrite(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/storage.py", line 506, in awrite
+    await pipe.execute()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1909, in execute
+    response = await conn.retry.call_with_retry(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1792, in _execute_pipeline
+    self.raise_first_error(commands, response)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1799, in raise_first_error
+    raise r
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1786, in _execute_pipeline
+    await self.parse_response(connection, args[0], **options)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1814, in parse_response
+    result = await super().parse_response(connection, command_name, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 823, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: Command # 1 (JSON.SET...) of pipeline caused error: ('unknown command \'JSON.SET\', with args beginning with: \'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-717d-6a50-8000-34b575f30538\' \'$\' \'{"thread_id": "890242d4-e1e\' ',)
+[2026-04-19 08:00:49,596: INFO/ForkPoolWorker-16] Retrying request to /chat/completions in 0.379243 seconds
+[2026-04-19 08:00:49,599: ERROR/ForkPoolWorker-16] Error while loading data to Redis
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 1873, in load
+    return await self._storage.awrite(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/storage.py", line 506, in awrite
+    await pipe.execute()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1909, in execute
+    response = await conn.retry.call_with_retry(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1792, in _execute_pipeline
+    self.raise_first_error(commands, response)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1799, in raise_first_error
+    raise r
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1786, in _execute_pipeline
+    await self.parse_response(connection, args[0], **options)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1814, in parse_response
+    result = await super().parse_response(connection, command_name, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 823, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: Command # 1 (JSON.SET...) of pipeline caused error: ('unknown command \'JSON.SET\', with args beginning with: \'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-f4e3-6016-8001-06d53d0f3a24\' \'$\' \'{"thread_id": "890242d4-e1e\' ',)
+[2026-04-19 08:00:53,816: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 08:00:53,834: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e]: pipeline_start failed — thread_id=890242d4-e1e6-4a6c-929b-61bcfe41a7b5: Failed to load data: Command # 1 (JSON.SET checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-7179-6612-bfff-...) of pipeline caused error: ('unknown command \'JSON.SET\', with args beginning with: \'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-7179-6612-bfff-afa9efb23ded\' \'$\' \'{"thread_id": "890242d4-e1e\' ',)
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 1873, in load
+    return await self._storage.awrite(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/storage.py", line 506, in awrite
+    await pipe.execute()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1909, in execute
+    response = await conn.retry.call_with_retry(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1792, in _execute_pipeline
+    self.raise_first_error(commands, response)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1799, in raise_first_error
+    raise r
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1786, in _execute_pipeline
+    await self.parse_response(connection, args[0], **options)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 1814, in parse_response
+    result = await super().parse_response(connection, command_name, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 823, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: Command # 1 (JSON.SET checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-7179-6612-bfff-...) of pipeline caused error: ('unknown command \'JSON.SET\', with args beginning with: \'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-7179-6612-bfff-afa9efb23ded\' \'$\' \'{"thread_id": "890242d4-e1e\' ',)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1497, in __aexit__
+    return await exit_task
+           ^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/contextlib.py", line 768, in __aexit__
+    raise exc
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/contextlib.py", line 751, in __aexit__
+    cb_suppress = await cb(*exc_details)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_executor.py", line 209, in __aexit__
+    raise exc
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1363, in _checkpointer_put_after_previous
+    await prev
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1365, in _checkpointer_put_after_previous
+    await cast(BaseCheckpointSaver, self.checkpointer).aput(
+        config, checkpoint, metadata, new_versions
+    )
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 1081, in aput
+    raise e
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 988, in aput
+    await self.checkpoints_index.load(
+    ...<3 lines>...
+    )
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 1890, in load
+    raise RedisVLError(f"Failed to load data: {str(exc)}") from exc
+redisvl.exceptions.RedisVLError: Failed to load data: Command # 1 (JSON.SET checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-7179-6612-bfff-...) of pipeline caused error: ('unknown command \'JSON.SET\', with args beginning with: \'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-7179-6612-bfff-afa9efb23ded\' \'$\' \'{"thread_id": "890242d4-e1e\' ',)
+[2026-04-19 08:00:53,843: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e]: DB updated — thread_id=890242d4-e1e6-4a6c-929b-61bcfe41a7b5 status=failed
+[2026-04-19 08:00:53,849: INFO/MainProcess] Task queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e] received
+[2026-04-19 08:00:53,862: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e] retry: Retry in 4s: RedisVLError('Failed to load data: Command # 1 (JSON.SET checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-7179-6612-bfff-...) of pipeline caused error: (\'unknown command \\\'JSON.SET\\\', with args beginning with: \\\'checkpoint:890242d4-e1e6-4a6c-929b-61bcfe41a7b5:__empty__:1f13bbd7-7179-6612-bfff-afa9efb23ded\\\' \\\'$\\\' \\\'{"thread_id": "890242d4-e1e\\\' \',)')
+[2026-04-19 08:00:57,846: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e]: pipeline_start — thread_id=890242d4-e1e6-4a6c-929b-61bcfe41a7b5
+[2026-04-19 08:00:57,854: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e]: pipeline_start failed — thread_id=890242d4-e1e6-4a6c-929b-61bcfe41a7b5: Event loop is closed
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 734, in read_response
+    response = await self._parser.read_response(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        disable_decoding=disable_decoding
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/resp2.py", line 82, in read_response
+    response = await self._read_response(disable_decoding=disable_decoding)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/resp2.py", line 90, in _read_response
+    raw = await self._readline()
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/base.py", line 559, in _readline
+    data = await self._stream.readline()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/streams.py", line 562, in readline
+    line = await self.readuntil(sep)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/streams.py", line 677, in readuntil
+    await self._wait_for_data('readuntil')
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/streams.py", line 539, in _wait_for_data
+    await self._waiter
+RuntimeError: Task <Task pending name='Task-66' coro=<_run_pipeline_start() running at /Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py:58> cb=[_run_until_complete_cb() at /Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py:181]> got Future <Future pending> attached to a different loop
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 412, in aget_tuple
+    checkpoint_key = await self._redis.get(latest_pointer_key)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 781, in execute_command
+    result = await conn.retry.call_with_retry(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 722, in _send_command_parse_response
+    return await self.parse_response(conn, command_name, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 823, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 754, in read_response
+    await self.disconnect(nowait=True)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 585, in disconnect
+    self._writer.close()  # type: ignore[union-attr]
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/streams.py", line 352, in close
+    return self._transport.close()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/selector_events.py", line 1212, in close
+    super().close()
+    ~~~~~~~~~~~~~^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/selector_events.py", line 865, in close
+    self._loop.call_soon(self._call_connection_lost, None)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 833, in call_soon
+    self._check_closed()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 556, in _check_closed
+    raise RuntimeError('Event loop is closed')
+RuntimeError: Event loop is closed
+[2026-04-19 08:00:57,862: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e]: DB updated — thread_id=890242d4-e1e6-4a6c-929b-61bcfe41a7b5 status=failed
+[2026-04-19 08:00:57,876: ERROR/ForkPoolWorker-16] Task queue.tasks.pipeline_start[37fc647e-7cb9-4c7b-b732-90be7b00b04e] raised unexpected: RuntimeError('Event loop is closed')
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 734, in read_response
+    response = await self._parser.read_response(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        disable_decoding=disable_decoding
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/resp2.py", line 82, in read_response
+    response = await self._read_response(disable_decoding=disable_decoding)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/resp2.py", line 90, in _read_response
+    raw = await self._readline()
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/base.py", line 559, in _readline
+    data = await self._stream.readline()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/streams.py", line 562, in readline
+    line = await self.readuntil(sep)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/streams.py", line 677, in readuntil
+    await self._wait_for_data('readuntil')
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/streams.py", line 539, in _wait_for_data
+    await self._waiter
+RuntimeError: Task <Task pending name='Task-66' coro=<_run_pipeline_start() running at /Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py:58> cb=[_run_until_complete_cb() at /Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py:181]> got Future <Future pending> attached to a different loop
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/trace.py", line 585, in trace_task
+    R = retval = fun(*args, **kwargs)
+                 ~~~^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/trace.py", line 858, in __protected_call__
+    return self.run(*args, **kwargs)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 101, in pipeline_start
+    raise self.retry(exc=exc, countdown=2 ** self.request.retries)
+          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/task.py", line 769, in retry
+    raise_with_context(exc)
+    ~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 97, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 58, in _run_pipeline_start
+    await graph.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 412, in aget_tuple
+    checkpoint_key = await self._redis.get(latest_pointer_key)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 781, in execute_command
+    result = await conn.retry.call_with_retry(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 722, in _send_command_parse_response
+    return await self.parse_response(conn, command_name, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 823, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 754, in read_response
+    await self.disconnect(nowait=True)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 585, in disconnect
+    self._writer.close()  # type: ignore[union-attr]
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/streams.py", line 352, in close
+    return self._transport.close()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/selector_events.py", line 1212, in close
+    super().close()
+    ~~~~~~~~~~~~~^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/selector_events.py", line 865, in close
+    self._loop.call_soon(self._call_connection_lost, None)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 833, in call_soon
+    self._check_closed()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 556, in _check_closed
+    raise RuntimeError('Event loop is closed')
+RuntimeError: Event loop is closed
+[2026-04-19 08:07:17,930: WARNING/MainProcess] consumer: Connection to broker lost. Trying to re-establish the connection...
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/worker/consumer/consumer.py", line 346, in start
+    blueprint.start(self)
+    ~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/bootsteps.py", line 116, in start
+    step.start(parent)
+    ~~~~~~~~~~^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/worker/consumer/consumer.py", line 788, in start
+    c.loop(*c.loop_args())
+    ~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/worker/loops.py", line 97, in asynloop
+    next(loop)
+    ~~~~^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/kombu/asynchronous/hub.py", line 377, in create_loop
+    cb(*cbargs)
+    ~~^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/kombu/transport/redis.py", line 1394, in on_readable
+    self.cycle.on_readable(fileno)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/kombu/transport/redis.py", line 579, in on_readable
+    chan.handlers[type]()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/kombu/transport/redis.py", line 982, in _brpop_read
+    dest__item = self.client.parse_response(self.client.connection,
+                                            'BRPOP',
+                                            **options)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/client.py", line 780, in parse_response
+    response = connection.read_response()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/connection.py", line 1342, in read_response
+    response = self._parser.read_response(disable_decoding=disable_decoding)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/resp2.py", line 15, in read_response
+    result = self._read_response(disable_decoding=disable_decoding)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/resp2.py", line 25, in _read_response
+    raw = self._buffer.readline()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/socket.py", line 115, in readline
+    self._read_from_socket()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/socket.py", line 68, in _read_from_socket
+    raise ConnectionError(SERVER_CLOSED_CONNECTION_ERROR)
+redis.exceptions.ConnectionError: Connection closed by server.
+[2026-04-19 08:07:17,947: WARNING/MainProcess] /Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/worker/consumer/consumer.py:397: CPendingDeprecationWarning: 
+In Celery 5.1 we introduced an optional breaking change which
+on connection loss cancels all currently executed tasks with late acknowledgement enabled.
+These tasks cannot be acknowledged as the connection is gone, and the tasks are automatically redelivered
+back to the queue. You can enable this behavior using the worker_cancel_long_running_tasks_on_connection_loss
+setting. In Celery 5.1 it is set to False by default. The setting will be set to True by default in Celery 6.0.
+
+  warnings.warn(CANCEL_TASKS_BY_DEFAULT, CPendingDeprecationWarning)
+
+[2026-04-19 08:07:17,957: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379/0: Connection closed by server..
+Trying again in 2.00 seconds... (1/100)
+
+[2026-04-19 08:07:19,964: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379/0: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 4.00 seconds... (2/100)
+
+[2026-04-19 08:07:23,981: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379/0: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 6.00 seconds... (3/100)
+
+[2026-04-19 08:07:30,014: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379/0: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 8.00 seconds... (4/100)
+
+[2026-04-19 08:07:38,048: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379/0: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 10.00 seconds... (5/100)
+
+[2026-04-19 08:07:48,086: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379/0: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 12.00 seconds... (6/100)
+
+[2026-04-19 08:08:00,131: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379/0: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 14.00 seconds... (7/100)
+
+[2026-04-19 08:08:09,311: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-19 08:08:09,317: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-19 08:08:10,339: INFO/MainProcess] mingle: all alone
+[2026-04-19 08:08:10,375: INFO/MainProcess] celery@codypharm ready.
+[2026-04-19 08:10:02,100: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-19 08:10:02,106: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-19 08:10:03,121: INFO/MainProcess] mingle: all alone
+[2026-04-19 08:10:03,156: INFO/MainProcess] celery@codypharm ready.
+[2026-04-19 08:10:47,876: INFO/MainProcess] Task queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88] received
+[2026-04-19 08:10:47,878: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88]: pipeline_start — thread_id=0e69e82a-cfb3-4a35-b2b2-021b84d691f3
+[2026-04-19 08:10:57,174: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 08:11:04,237: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 08:11:05,214: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 08:11:10,142: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 08:11:10,166: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88]: pipeline_start failed — thread_id=0e69e82a-cfb3-4a35-b2b2-021b84d691f3: Error while searching: No such index checkpoint_write
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 2046, in search
+    return await client.ft(self.schema.index.name).search(*args, **kwargs)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/commands/search/commands.py", line 1048, in search
+    res = await self.execute_command(SEARCH_CMD, *args, **options)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 781, in execute_command
+    result = await conn.retry.call_with_retry(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 722, in _send_command_parse_response
+    return await self.parse_response(conn, command_name, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 820, in parse_response
+    response = await connection.read_response(disable_decoding=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: No such index checkpoint_write
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 118, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 78, in _run_pipeline_start
+    snapshot = await g.aget_state(graph_config(thread_id))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 1347, in aget_state
+    saved = await checkpointer.aget_tuple(config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 551, in aget_tuple
+    results = await asyncio.gather(*tasks)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 1575, in _aload_pending_sends
+    res = await self.checkpoint_writes_index.search(parent_writes_query)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 2052, in search
+    raise RedisSearchError(f"Error while searching: {str(e)}") from e
+redisvl.exceptions.RedisSearchError: Error while searching: No such index checkpoint_write
+[2026-04-19 08:11:10,202: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88]: DB updated — thread_id=0e69e82a-cfb3-4a35-b2b2-021b84d691f3 status=failed
+[2026-04-19 08:11:10,221: INFO/MainProcess] Task queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88] received
+[2026-04-19 08:11:10,235: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88] retry: Retry in 1s: RedisSearchError('Error while searching: No such index checkpoint_write')
+[2026-04-19 08:11:11,207: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88]: pipeline_start — thread_id=0e69e82a-cfb3-4a35-b2b2-021b84d691f3
+[2026-04-19 08:11:11,244: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88]: pipeline_start failed — thread_id=0e69e82a-cfb3-4a35-b2b2-021b84d691f3: Error while searching: No such index checkpoint_write
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 2046, in search
+    return await client.ft(self.schema.index.name).search(*args, **kwargs)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/commands/search/commands.py", line 1048, in search
+    res = await self.execute_command(SEARCH_CMD, *args, **options)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 781, in execute_command
+    result = await conn.retry.call_with_retry(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 722, in _send_command_parse_response
+    return await self.parse_response(conn, command_name, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 820, in parse_response
+    response = await connection.read_response(disable_decoding=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: No such index checkpoint_write
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 118, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 77, in _run_pipeline_start
+    await g.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 551, in aget_tuple
+    results = await asyncio.gather(*tasks)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 1575, in _aload_pending_sends
+    res = await self.checkpoint_writes_index.search(parent_writes_query)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 2052, in search
+    raise RedisSearchError(f"Error while searching: {str(e)}") from e
+redisvl.exceptions.RedisSearchError: Error while searching: No such index checkpoint_write
+[2026-04-19 08:11:11,251: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88]: DB updated — thread_id=0e69e82a-cfb3-4a35-b2b2-021b84d691f3 status=failed
+[2026-04-19 08:11:11,255: INFO/MainProcess] Task queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88] received
+[2026-04-19 08:11:11,261: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88] retry: Retry in 2s: RedisSearchError('Error while searching: No such index checkpoint_write')
+[2026-04-19 08:11:13,255: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88]: pipeline_start — thread_id=0e69e82a-cfb3-4a35-b2b2-021b84d691f3
+[2026-04-19 08:11:13,289: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88]: pipeline_start failed — thread_id=0e69e82a-cfb3-4a35-b2b2-021b84d691f3: Error while searching: No such index checkpoint_write
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 2046, in search
+    return await client.ft(self.schema.index.name).search(*args, **kwargs)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/commands/search/commands.py", line 1048, in search
+    res = await self.execute_command(SEARCH_CMD, *args, **options)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 781, in execute_command
+    result = await conn.retry.call_with_retry(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 722, in _send_command_parse_response
+    return await self.parse_response(conn, command_name, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 820, in parse_response
+    response = await connection.read_response(disable_decoding=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: No such index checkpoint_write
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 118, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 77, in _run_pipeline_start
+    await g.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 551, in aget_tuple
+    results = await asyncio.gather(*tasks)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 1575, in _aload_pending_sends
+    res = await self.checkpoint_writes_index.search(parent_writes_query)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 2052, in search
+    raise RedisSearchError(f"Error while searching: {str(e)}") from e
+redisvl.exceptions.RedisSearchError: Error while searching: No such index checkpoint_write
+[2026-04-19 08:11:13,296: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88]: DB updated — thread_id=0e69e82a-cfb3-4a35-b2b2-021b84d691f3 status=failed
+[2026-04-19 08:11:13,300: INFO/MainProcess] Task queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88] received
+[2026-04-19 08:11:13,305: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88] retry: Retry in 4s: RedisSearchError('Error while searching: No such index checkpoint_write')
+[2026-04-19 08:11:17,299: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88]: pipeline_start — thread_id=0e69e82a-cfb3-4a35-b2b2-021b84d691f3
+[2026-04-19 08:11:17,331: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88]: pipeline_start failed — thread_id=0e69e82a-cfb3-4a35-b2b2-021b84d691f3: Error while searching: No such index checkpoint_write
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 2046, in search
+    return await client.ft(self.schema.index.name).search(*args, **kwargs)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/commands/search/commands.py", line 1048, in search
+    res = await self.execute_command(SEARCH_CMD, *args, **options)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 781, in execute_command
+    result = await conn.retry.call_with_retry(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 722, in _send_command_parse_response
+    return await self.parse_response(conn, command_name, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 820, in parse_response
+    response = await connection.read_response(disable_decoding=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: No such index checkpoint_write
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 118, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 77, in _run_pipeline_start
+    await g.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 551, in aget_tuple
+    results = await asyncio.gather(*tasks)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 1660, in _aload_pending_writes
+    writes_results = await self.checkpoint_writes_index.search(writes_query)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 2052, in search
+    raise RedisSearchError(f"Error while searching: {str(e)}") from e
+redisvl.exceptions.RedisSearchError: Error while searching: No such index checkpoint_write
+[2026-04-19 08:11:17,338: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88]: DB updated — thread_id=0e69e82a-cfb3-4a35-b2b2-021b84d691f3 status=failed
+[2026-04-19 08:11:17,399: ERROR/ForkPoolWorker-16] Task queue.tasks.pipeline_start[81095987-fdda-4a53-b7a1-3fd88b374e88] raised unexpected: RedisSearchError('Error while searching: No such index checkpoint_write')
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 2046, in search
+    return await client.ft(self.schema.index.name).search(*args, **kwargs)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/commands/search/commands.py", line 1048, in search
+    res = await self.execute_command(SEARCH_CMD, *args, **options)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 781, in execute_command
+    result = await conn.retry.call_with_retry(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 722, in _send_command_parse_response
+    return await self.parse_response(conn, command_name, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/client.py", line 820, in parse_response
+    response = await connection.read_response(disable_decoding=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/asyncio/connection.py", line 762, in read_response
+    raise response from None
+redis.exceptions.ResponseError: No such index checkpoint_write
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/trace.py", line 585, in trace_task
+    R = retval = fun(*args, **kwargs)
+                 ~~~^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/trace.py", line 858, in __protected_call__
+    return self.run(*args, **kwargs)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 122, in pipeline_start
+    raise self.retry(exc=exc, countdown=2 ** self.request.retries)
+          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/app/task.py", line 769, in retry
+    raise_with_context(exc)
+    ~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 118, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 77, in _run_pipeline_start
+    await g.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3096, in astream
+    async with AsyncPregelLoop(
+               ~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<18 lines>...
+        has_graph_lifecycle_callbacks=bool(graph_callback_manager.handlers),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as loop:
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py", line 1440, in __aenter__
+    saved = await self.checkpointer.aget_tuple(self.checkpoint_config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 551, in aget_tuple
+    results = await asyncio.gather(*tasks)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/checkpoint/redis/aio.py", line 1660, in _aload_pending_writes
+    writes_results = await self.checkpoint_writes_index.search(writes_query)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redisvl/index/index.py", line 2052, in search
+    raise RedisSearchError(f"Error while searching: {str(e)}") from e
+redisvl.exceptions.RedisSearchError: Error while searching: No such index checkpoint_write
+[2026-04-19 08:18:42,128: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-19 08:18:42,151: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-19 08:18:43,181: INFO/MainProcess] mingle: all alone
+[2026-04-19 08:18:43,242: INFO/MainProcess] celery@codypharm ready.
+[2026-04-19 08:19:30,838: WARNING/MainProcess] consumer: Connection to broker lost. Trying to re-establish the connection...
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/retry.py", line 120, in call_with_retry
+    return do()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/client.py", line 1115, in <lambda>
+    lambda: command(*args, **kwargs),
+            ~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/client.py", line 1159, in try_read
+    return conn.read_response(disconnect_on_error=False, push_request=True)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/connection.py", line 1342, in read_response
+    response = self._parser.read_response(disable_decoding=disable_decoding)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/resp2.py", line 15, in read_response
+    result = self._read_response(disable_decoding=disable_decoding)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/resp2.py", line 25, in _read_response
+    raw = self._buffer.readline()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/socket.py", line 115, in readline
+    self._read_from_socket()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/socket.py", line 68, in _read_from_socket
+    raise ConnectionError(SERVER_CLOSED_CONNECTION_ERROR)
+redis.exceptions.ConnectionError: Connection closed by server.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/worker/consumer/consumer.py", line 346, in start
+    blueprint.start(self)
+    ~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/bootsteps.py", line 116, in start
+    step.start(parent)
+    ~~~~~~~~~~^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/worker/consumer/consumer.py", line 788, in start
+    c.loop(*c.loop_args())
+    ~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/worker/loops.py", line 97, in asynloop
+    next(loop)
+    ~~~~^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/kombu/asynchronous/hub.py", line 377, in create_loop
+    cb(*cbargs)
+    ~~^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/kombu/transport/redis.py", line 1394, in on_readable
+    self.cycle.on_readable(fileno)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/kombu/transport/redis.py", line 579, in on_readable
+    chan.handlers[type]()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/kombu/transport/redis.py", line 931, in _receive
+    ret.append(self._receive_one(c))
+               ~~~~~~~~~~~~~~~~~^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/kombu/transport/redis.py", line 941, in _receive_one
+    response = c.parse_response()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/client.py", line 1161, in parse_response
+    response = self._execute(conn, try_read)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/client.py", line 1114, in _execute
+    response = conn.retry.call_with_retry(
+        lambda: command(*args, **kwargs),
+        failure_callback,
+        with_failure_count=True,
+    )
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/retry.py", line 127, in call_with_retry
+    fail(error, failures)
+    ~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/client.py", line 1111, in failure_callback
+    self._reconnect(conn, error, failure_count, start_time, command_name)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/client.py", line 1085, in _reconnect
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/connection.py", line 976, in connect
+    self.retry.call_with_retry(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        lambda: self.connect_check_health(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        lambda error: self.disconnect(error),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/retry.py", line 132, in call_with_retry
+    raise error
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/retry.py", line 120, in call_with_retry
+    return do()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/connection.py", line 977, in <lambda>
+    lambda: self.connect_check_health(
+            ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        check_health=True, retry_socket_connect=False
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/connection.py", line 1031, in connect_check_health
+    self.on_connect_check_health(check_health=check_health)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/connection.py", line 1156, in on_connect_check_health
+    self.read_response()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/connection.py", line 1342, in read_response
+    response = self._parser.read_response(disable_decoding=disable_decoding)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/resp2.py", line 15, in read_response
+    result = self._read_response(disable_decoding=disable_decoding)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/resp2.py", line 25, in _read_response
+    raw = self._buffer.readline()
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/socket.py", line 115, in readline
+    self._read_from_socket()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/redis/_parsers/socket.py", line 68, in _read_from_socket
+    raise ConnectionError(SERVER_CLOSED_CONNECTION_ERROR)
+redis.exceptions.ConnectionError: Connection closed by server.
+[2026-04-19 08:19:30,875: WARNING/MainProcess] /Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/celery/worker/consumer/consumer.py:397: CPendingDeprecationWarning: 
+In Celery 5.1 we introduced an optional breaking change which
+on connection loss cancels all currently executed tasks with late acknowledgement enabled.
+These tasks cannot be acknowledged as the connection is gone, and the tasks are automatically redelivered
+back to the queue. You can enable this behavior using the worker_cancel_long_running_tasks_on_connection_loss
+setting. In Celery 5.1 it is set to False by default. The setting will be set to True by default in Celery 6.0.
+
+  warnings.warn(CANCEL_TASKS_BY_DEFAULT, CPendingDeprecationWarning)
+
+[2026-04-19 08:19:30,890: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379/0: Connection closed by server..
+Trying again in 2.00 seconds... (1/100)
+
+[2026-04-19 08:19:32,900: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379/0: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 4.00 seconds... (2/100)
+
+[2026-04-19 08:19:36,919: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379/0: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 6.00 seconds... (3/100)
+
+[2026-04-19 08:19:42,941: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379/0: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 8.00 seconds... (4/100)
+
+[2026-04-19 08:19:57,507: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-19 08:19:57,530: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-19 08:19:58,560: INFO/MainProcess] mingle: all alone
+[2026-04-19 08:19:58,614: INFO/MainProcess] celery@codypharm ready.
+[2026-04-19 08:20:22,033: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-19 08:20:22,045: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-19 08:20:23,078: INFO/MainProcess] mingle: all alone
+[2026-04-19 08:20:23,153: INFO/MainProcess] celery@codypharm ready.
+[2026-04-19 20:29:16,406: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-19 20:29:16,417: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-19 20:29:17,434: INFO/MainProcess] mingle: all alone
+[2026-04-19 20:29:17,464: INFO/MainProcess] celery@codypharm ready.
+[2026-04-19 20:29:56,796: INFO/MainProcess] Task queue.tasks.pipeline_start[8d2d1c66-3c51-48f9-a651-ef728d139251] received
+[2026-04-19 20:29:56,798: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[8d2d1c66-3c51-48f9-a651-ef728d139251]: pipeline_start — thread_id=bb82bc79-7fd1-4b99-93fd-d16bf3150128
+[2026-04-19 20:29:56,820: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 20:29:56,823: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 20:29:56,823: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 20:30:05,312: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 20:30:13,701: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 20:30:16,201: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-19 20:30:20,545: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-19 20:30:20,590: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[8d2d1c66-3c51-48f9-a651-ef728d139251]: DB updated — thread_id=bb82bc79-7fd1-4b99-93fd-d16bf3150128 status=awaiting_validation
+[2026-04-19 20:30:20,600: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[8d2d1c66-3c51-48f9-a651-ef728d139251] succeeded in 23.803100102995813s: None

@@ -17,6 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes.courses import router as courses_router
 from api.routes.files import router as files_router
+from graph.graph import _checkpointer
 from storage.database import Base, engine
 
 UPLOAD_DIR = Path("uploads")
@@ -24,10 +25,13 @@ UPLOAD_DIR = Path("uploads")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup: create uploads dir and ensure all DB tables exist."""
+    """Startup: create uploads dir, DB tables, and Redis checkpoint indexes."""
     UPLOAD_DIR.mkdir(exist_ok=True)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    # Creates the Redis search indexes (checkpoint, checkpoint_write) that
+    # AsyncRedisSaver needs before it can store or retrieve any state.
+    await _checkpointer.asetup()
     yield
 
 

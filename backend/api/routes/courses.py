@@ -132,7 +132,8 @@ async def get_course(
         return CourseStatusResponse(thread_id=thread_id, status=record.status, data={})
 
     # For pause/completion statuses, read live graph state for the interrupt payload
-    snapshot = graph.get_state(graph_config(thread_id))
+    # AsyncRedisSaver only implements async methods — must use aget_state.
+    snapshot = await graph.aget_state(graph_config(thread_id))
     if not snapshot or not snapshot.values:
         return CourseStatusResponse(thread_id=thread_id, status=record.status, data={})
 

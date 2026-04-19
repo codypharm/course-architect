@@ -52,8 +52,16 @@ def _after_review(state: CourseState) -> str:
     return END if state.get("curriculum_approved") else "curriculum_planner"
 
 
-def build_graph() -> StateGraph:
-    """Construct and compile the LangGraph pipeline."""
+def build_graph(checkpointer=None):
+    """Construct and compile the LangGraph pipeline.
+
+    Accepts an optional checkpointer so Celery tasks can supply a freshly
+    created AsyncRedisSaver bound to the current event loop.  When omitted
+    the module-level AsyncRedisSaver (suitable for the long-lived FastAPI
+    event loop) is used.
+    """
+    cp = checkpointer if checkpointer is not None else _checkpointer
+
     builder = StateGraph(CourseState)
 
     # Nodes
@@ -78,8 +86,11 @@ def build_graph() -> StateGraph:
         END: END,
     })
 
-    return builder.compile(checkpointer=_checkpointer, interrupt_before=[])
+    return builder.compile(checkpointer=cp, interrupt_before=[])
 
 
-# Module-level compiled graph used by API / Celery tasks
+# Module-level compiled graph — used by the FastAPI process only.
+# Celery tasks must NOT use this instance; each task builds its own graph
+# with a fresh AsyncRedisSaver so connections stay bound to the correct
+# event loop (asyncio.run() creates a new loop per task invocation).
 graph = build_graph()
