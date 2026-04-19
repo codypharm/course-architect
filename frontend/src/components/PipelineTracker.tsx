@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { api } from '@/lib/api'
 import { Ico, I } from './Icon'
+import { Markdown } from './Markdown'
 
 export interface CourseStatusResponse {
   thread_id: string
@@ -275,20 +276,20 @@ function SessionRowCard({ s }: { s: SessionRow }) {
           )}
           {/* Lesson preview */}
           {s.lesson_content?.trim() && (
-            <div style={{ marginBottom: 10 }}>
+            <div style={{ marginBottom: 14 }}>
               <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: '0 0 5px' }}>Lesson preview</p>
-              <p style={{ fontSize: 12, color: 'var(--ink)', lineHeight: 1.5, margin: 0 }}>
-                {s.lesson_content.slice(0, 260)}{s.lesson_content.length > 260 ? '…' : ''}
-              </p>
+              <div style={{ maxHeight: 90, overflow: 'hidden', WebkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)', pointerEvents: 'none' }}>
+                <Markdown content={s.lesson_content} />
+              </div>
             </div>
           )}
           {/* Video script preview */}
           {s.video_script?.trim() && (
-            <div style={{ marginBottom: 10 }}>
+            <div style={{ marginBottom: 14 }}>
               <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: '0 0 5px' }}>Script preview</p>
-              <p style={{ fontSize: 12, color: 'var(--ink)', lineHeight: 1.5, margin: 0 }}>
-                {s.video_script.slice(0, 260)}{s.video_script.length > 260 ? '…' : ''}
-              </p>
+              <div style={{ maxHeight: 90, overflow: 'hidden', WebkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)', pointerEvents: 'none' }}>
+                <Markdown content={s.video_script} />
+              </div>
             </div>
           )}
           {/* Quiz count */}

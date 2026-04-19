@@ -129,8 +129,10 @@ async def gap_enrichment_agent(state: CourseState) -> dict:
 
     api_key = os.environ.get("TAVILY_API_KEY")
     if not api_key:
-        logger.warning("TAVILY_API_KEY not set — skipping gap enrichment")
-        return {}
+        logger.warning("TAVILY_API_KEY not set — skipping gap enrichment, clearing gaps")
+        cleared = dict(knowledge_summary)
+        cleared["gaps"] = []
+        return {"knowledge_summary": cleared}
 
     logger.info("Enriching %d gap(s) via Tavily MCP: %s", len(gaps), ", ".join(gaps))
 
@@ -167,8 +169,12 @@ async def gap_enrichment_agent(state: CourseState) -> dict:
     texts = _extract_texts(result["messages"])
 
     if not texts:
-        logger.warning("No usable content extracted from MCP search results")
-        return {}
+        logger.warning("No usable content extracted from MCP search results — clearing gaps so pipeline advances")
+        # Return knowledge_summary with gaps cleared so infer_processing_stage
+        # correctly reports stage 3 (curriculum planner) instead of stage 2 (enriching).
+        cleared = dict(knowledge_summary)
+        cleared["gaps"] = []
+        return {"knowledge_summary": cleared}
 
     # Ingest full raw content into vector store (keeps full detail for RAG retrieval)
     chunk_count = ingest_texts(texts)

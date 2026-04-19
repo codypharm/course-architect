@@ -3198,3 +3198,10 @@ During task with name 'curriculum_planner' and id '092f4e98-fb87-151a-8056-a5b79
 [2026-04-19 22:25:03,696: INFO/ForkPoolWorker-16] Redis client is a standalone client
 [2026-04-19 22:25:03,777: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[c43417ff-c1fe-49d1-ae9c-e92c11d29dd7]: DB updated — thread_id=5024695b-68a4-486e-9e55-941e80130983 status=completed
 [2026-04-19 22:25:03,781: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_curriculum[c43417ff-c1fe-49d1-ae9c-e92c11d29dd7] succeeded in 0.09317936400475446s: None
+[2026-04-19 22:35:02,717: INFO/MainProcess] Task queue.tasks.pipeline_resume_curriculum[e73acde1-4636-4ad3-92f6-8f991d2bd8dc] received
+[2026-04-19 22:35:02,718: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[e73acde1-4636-4ad3-92f6-8f991d2bd8dc]: pipeline_resume_curriculum — thread_id=606fb43c-f57f-4148-94ca-b0003e0722e6 approved=True
+[2026-04-19 22:35:02,723: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 22:35:02,725: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-19 22:35:02,725: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-19 22:35:02,799: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[e73acde1-4636-4ad3-92f6-8f991d2bd8dc]: DB updated — thread_id=606fb43c-f57f-4148-94ca-b0003e0722e6 status=completed
+[2026-04-19 22:35:02,802: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_curriculum[e73acde1-4636-4ad3-92f6-8f991d2bd8dc] succeeded in 0.08461699299368775s: None

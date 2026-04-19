@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import type { CourseListItem, CourseStatus } from '@/types/course'
 import { Ico, I } from '@/components/Icon'
 import NewCourseForm from '@/components/NewCourseForm'
+import PipelineTracker from '@/components/PipelineTracker'
 
 const USER_ID = 'demo-user'
 
@@ -170,13 +171,15 @@ function activeFormatTabs(s: SessionPlan): FormatTab[] {
   return tabs
 }
 
+import { Markdown } from '@/components/Markdown'
+
 /* ─── Session format tab content ─── */
 function SessionFormatContent({ session, tab }: { session: SessionPlan; tab: FormatTab }) {
   if (tab === 'lesson') return (
     <div>
       {session.lesson_content?.trim() ? (
-        <div style={{ fontSize: 14, color: 'var(--ink)', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
-          {session.lesson_content}
+        <div style={{ padding: '0 4px', maxWidth: 720 }}>
+          <Markdown content={session.lesson_content} />
         </div>
       ) : session.lesson_outline?.length ? (
         <ol style={{ margin: 0, padding: '0 0 0 20px', display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -189,10 +192,8 @@ function SessionFormatContent({ session, tab }: { session: SessionPlan; tab: For
   )
 
   if (tab === 'video_script') return (
-    <div style={{ background: '#FAFAF8', border: '1px solid var(--border)', borderRadius: 10, padding: '18px 20px' }}>
-      <p style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.8, margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'var(--font-sans)' }}>
-        {session.video_script}
-      </p>
+    <div style={{ background: '#FAFAF8', border: '1px solid var(--border)', borderRadius: 10, padding: '18px 24px', maxWidth: 720 }}>
+      <Markdown content={session.video_script} />
     </div>
   )
 
@@ -552,7 +553,13 @@ export default function DashboardPage() {
           {nav === 'settings' && <p style={{ fontSize: 14, color: 'var(--ink-muted)', paddingTop: 12 }}>Settings coming soon.</p>}
 
           {/* ── Course detail ── */}
-          {nav === 'course' && threadId && <CourseView threadId={threadId} onBack={goToDashboard} />}
+          {nav === 'course' && threadId && (() => {
+            const courseStatus = courses?.find(c => c.thread_id === threadId)?.status
+            const isActiveStatus = courseStatus && isActive(courseStatus)
+            return isActiveStatus
+              ? <PipelineTracker threadId={threadId} onReset={goToDashboard} />
+              : <CourseView threadId={threadId} onBack={goToDashboard} />
+          })()}
         </main>
       </div>
 
