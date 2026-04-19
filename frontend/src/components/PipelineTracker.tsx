@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { api } from '@/lib/api'
 import { Ico, I } from './Icon'
 
@@ -161,17 +161,29 @@ function ValidationView({ data, threadId, onResume }: {
         </div>
       )}
 
-      {/* Raw feasibility keys that aren't flags/suggestions */}
+      {/* Feasibility report details — each value is {ok: bool, note: string} */}
       {Object.keys(report).length > 0 && (
         <div style={{ marginBottom: 20 }}>
           <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--ink-muted)', margin: '0 0 8px' }}>Details</p>
           <div style={{ background: '#FAFAF8', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
-            {Object.entries(report).map(([k, v], i, arr) => (
-              <div key={k} style={{ display: 'flex', gap: 12, padding: '10px 14px', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-muted)', minWidth: 120, textTransform: 'capitalize' }}>{k.replace(/_/g, ' ')}</span>
-                <span style={{ fontSize: 13, color: 'var(--ink)' }}>{String(v)}</span>
-              </div>
-            ))}
+            {Object.entries(report).map(([k, v], i, arr) => {
+              const item = v as { ok?: boolean; note?: string }
+              const ok   = item?.ok
+              const note = item?.note ?? String(v)
+              return (
+                <div key={k} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '10px 14px', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-muted)', minWidth: 140, textTransform: 'capitalize', paddingTop: 1 }}>{k.replace(/_/g, ' ')}</span>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7, flex: 1 }}>
+                    {ok !== undefined && (
+                      <span style={{ fontSize: 13, flexShrink: 0, color: ok ? 'var(--accent-green-text)' : 'var(--accent-yellow-text)', fontWeight: 600 }}>
+                        {ok ? '✓' : '✗'}
+                      </span>
+                    )}
+                    <span style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.4 }}>{note}</span>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       )}
@@ -371,8 +383,7 @@ function CompletedView({ threadId }: { threadId: string }) {
   )
 }
 
-function RejectedView() {
-  const navigate = useNavigate()
+function RejectedView({ onReset }: { onReset: () => void }) {
   return (
     <div style={{ textAlign: 'center', padding: '24px 0', animation: 'enter 400ms ease' }}>
       <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56, borderRadius: 16, background: 'var(--accent-red-bg)', marginBottom: 18 }}>
@@ -380,15 +391,14 @@ function RejectedView() {
       </div>
       <h3 className="serif" style={{ fontSize: 26, color: 'var(--ink)', margin: '0 0 8px', letterSpacing: '-0.02em' }}>Brief rejected</h3>
       <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: '0 0 28px', lineHeight: 1.5 }}>The validation check flagged this brief as not feasible. Start a new course with a revised brief.</p>
-      <button type="button" onClick={() => navigate('/dashboard')} style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', background: '#fff', border: '1px solid var(--border)', padding: '11px 28px', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+      <button type="button" onClick={onReset} style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', background: '#fff', border: '1px solid var(--border)', padding: '11px 28px', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
         Start over
       </button>
     </div>
   )
 }
 
-function FailedView() {
-  const navigate = useNavigate()
+function FailedView({ onReset }: { onReset: () => void }) {
   return (
     <div style={{ textAlign: 'center', padding: '24px 0', animation: 'enter 400ms ease' }}>
       <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56, borderRadius: 16, background: 'var(--accent-red-bg)', marginBottom: 18 }}>
@@ -396,7 +406,7 @@ function FailedView() {
       </div>
       <h3 className="serif" style={{ fontSize: 26, color: 'var(--ink)', margin: '0 0 8px', letterSpacing: '-0.02em' }}>Something went wrong</h3>
       <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: '0 0 28px' }}>The pipeline encountered an error. Try submitting again.</p>
-      <button type="button" onClick={() => navigate('/dashboard')} style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', background: '#fff', border: '1px solid var(--border)', padding: '11px 28px', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+      <button type="button" onClick={onReset} style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', background: '#fff', border: '1px solid var(--border)', padding: '11px 28px', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
         Try again
       </button>
     </div>
@@ -406,7 +416,7 @@ function FailedView() {
 /* ══════════════════════════════════════
    Step 4 container — owns polling
 ══════════════════════════════════════ */
-export default function PipelineTracker({ threadId }: { threadId: string }) {
+export default function PipelineTracker({ threadId, onReset }: { threadId: string; onReset: () => void }) {
   // Track what the backend last told us (allow mutations to override without waiting for refetch)
   const [overrideStatus, setOverrideStatus] = useState<string | null>(null)
   const [overrideData,   setOverrideData]   = useState<Record<string, unknown> | null>(null)
@@ -419,6 +429,16 @@ export default function PipelineTracker({ threadId }: { threadId: string }) {
       return (s === 'queued' || s === 'processing') ? 4000 : false
     },
   })
+
+  // When the query settles to a stable (non-transient) state, drop the
+  // optimistic override so the real status drives the UI.
+  useEffect(() => {
+    const qs = data?.status
+    if (qs && qs !== 'queued' && qs !== 'processing') {
+      setOverrideStatus(null)
+      setOverrideData(null)
+    }
+  }, [data?.status])
 
   function handleResume(status: string, d: Record<string, unknown>) {
     setOverrideStatus(status)
@@ -440,8 +460,8 @@ export default function PipelineTracker({ threadId }: { threadId: string }) {
         <CurriculumView data={payload} threadId={threadId} onResume={handleResume} />
       )}
       {status === 'completed'  && <CompletedView threadId={threadId} />}
-      {status === 'rejected'   && <RejectedView />}
-      {status === 'failed'     && <FailedView />}
+      {status === 'rejected'   && <RejectedView onReset={onReset} />}
+      {status === 'failed'     && <FailedView onReset={onReset} />}
     </div>
   )
 }

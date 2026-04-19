@@ -34,6 +34,9 @@ class CourseRecord(Base):
     # "awaiting_validation" | "awaiting_curriculum_review" | "completed" | "rejected"
     status: Mapped[str] = mapped_column(String)
 
+    # Uploaded file paths — stored so the backend can delete them on rejection/failure
+    uploaded_files: Mapped[list | None] = mapped_column(JSON, nullable=True)
+
     # Final output — null until the user approves at HITL #2
     curriculum_plan: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     session_content: Mapped[list | None] = mapped_column(JSON, nullable=True)

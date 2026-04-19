@@ -103,7 +103,7 @@ function Stepper({ value, min, max, onChange }: { value: number; min: number; ma
 /* ══════════════════════════════════════
    ROOT EXPORT — 3-step form + step 4
 ══════════════════════════════════════ */
-export default function NewCourseForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: (id: string) => void }) {
+export default function NewCourseForm({ onCancel, onSuccess, onReset }: { onCancel: () => void; onSuccess: (id: string) => void; onReset: () => void }) {
   const [step, setStep] = useState(1)
   const [threadId, setThreadId] = useState<string | null>(null)
 
@@ -152,6 +152,7 @@ export default function NewCourseForm({ onCancel, onSuccess }: { onCancel: () =>
       onSuccess(r.thread_id)
     },
   })
+
 
   function addFiles(incoming: FileList | null) {
     if (!incoming) return
@@ -377,7 +378,7 @@ export default function NewCourseForm({ onCancel, onSuccess }: { onCancel: () =>
 
         {/* ── STEP 4: PIPELINE ── */}
         {step === 4 && threadId && (
-          <PipelineTracker threadId={threadId} />
+          <PipelineTracker threadId={threadId} onReset={onReset} />
         )}
 
         {/* ── Footer (steps 1–3 only) ── */}

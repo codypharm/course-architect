@@ -82,6 +82,7 @@ async def start_course(
         user_id=body.user_id,
         subject=body.subject,
         status="queued",
+        uploaded_files=body.uploaded_file_paths or [],
     )
     db.add(record)
     await db.commit()

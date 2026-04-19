@@ -136,8 +136,9 @@ const NAV_ITEMS: { id: NavItem; label: string; icon: string }[] = [
 ]
 
 export default function DashboardPage() {
-  const [nav, setNav]       = useState<NavItem>('dashboard')
-  const [search, setSearch] = useState('')
+  const [nav, setNav]         = useState<NavItem>('dashboard')
+  const [search, setSearch]   = useState('')
+  const [formKey, setFormKey] = useState(0)
   const qc = useQueryClient()
 
   const { data: courses, isLoading } = useQuery({
@@ -303,7 +304,7 @@ export default function DashboardPage() {
           )}
 
           {/* ── New Course ── */}
-          {nav === 'new' && <NewCourseForm onCancel={() => setNav('dashboard')} onSuccess={handleSuccess} />}
+          {nav === 'new' && <NewCourseForm key={formKey} onCancel={() => setNav('dashboard')} onSuccess={handleSuccess} onReset={() => setFormKey(k => k + 1)} />}
 
           {/* ── Settings ── */}
           {nav === 'settings' && <p style={{ fontSize: 14, color: 'var(--ink-muted)', paddingTop: 12 }}>Settings coming soon.</p>}

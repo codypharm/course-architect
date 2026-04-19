@@ -117,46 +117,66 @@ async def validation_agent(state: CourseState) -> dict:
 - Additional Context: {state.get('additional_context') or 'None provided'}
 """
 
-    logger.info("Running feasibility check for: %s", state["subject"])
-    result = await validator.ainvoke([
-        SystemMessage(content=SYSTEM_PROMPT),
-        HumanMessage(content=brief),
-    ])
+    # on resume, check whether we already ran the LLM on a previous pass by
+    # looking for a cached report in state.  The first pass stores it; the
+    # resume pass skips the LLM and uses the cached values.
+    cached_report    = state.get("feasibility_report")
+    cached_flags     = state.get("flags")
+    cached_cost      = state.get("estimated_cost_usd")
 
-    estimated_cost = _estimate_cost(state)
-    logger.info("Estimated cost: $%.4f | Flags: %d | Suggestions: %d", estimated_cost, len(result.flags), len(result.suggestions))
-    if result.flags:
+    if cached_report and cached_flags is not None and cached_cost is not None:
+        # Resume pass — LLM already ran, reuse cached values
+        logger.info("Resuming validation for: %s (using cached report)", state["subject"])
+        feasibility_report = cached_report
+        flags              = cached_flags
+        suggestions        = state.get("suggestions", [])
+        estimated_cost     = cached_cost
+    else:
+        # First pass — run the LLM
+        logger.info("Running feasibility check for: %s", state["subject"])
+        result = await validator.ainvoke([
+            SystemMessage(content=SYSTEM_PROMPT),
+            HumanMessage(content=brief),
+        ])
+
+        estimated_cost = _estimate_cost(state)
+        logger.info(
+            "Estimated cost: $%.4f | Flags: %d | Suggestions: %d",
+            estimated_cost, len(result.flags), len(result.suggestions),
+        )
         for flag in result.flags:
             logger.warning("FLAG: %s", flag)
 
-    feasibility_report = {
-        "age_appropriateness": {
-            "ok": result.age_appropriateness_ok,
-            "note": result.age_appropriateness_note,
-        },
-        "duration_feasibility": {
-            "ok": result.duration_feasibility_ok,
-            "note": result.duration_feasibility_note,
-        },
-        "knowledge_base": {
-            "ok": result.knowledge_base_ok,
-            "note": result.knowledge_base_note,
-        },
-    }
+        feasibility_report = {
+            "age_appropriateness": {
+                "ok": result.age_appropriateness_ok,
+                "note": result.age_appropriateness_note,
+            },
+            "duration_feasibility": {
+                "ok": result.duration_feasibility_ok,
+                "note": result.duration_feasibility_note,
+            },
+            "knowledge_base": {
+                "ok": result.knowledge_base_ok,
+                "note": result.knowledge_base_note,
+            },
+        }
+        flags       = result.flags
+        suggestions = result.suggestions
 
     logger.info("Awaiting tutor approval at HITL checkpoint")
     verdict = interrupt({
         "feasibility_report": feasibility_report,
-        "flags": result.flags,
-        "suggestions": result.suggestions,
+        "flags": flags,
+        "suggestions": suggestions,
         "estimated_cost_usd": estimated_cost,
     })
 
     logger.info("Tutor verdict: %s", "approved" if verdict["approved"] else "revision requested")
     return {
         "feasibility_report": feasibility_report,
-        "flags": result.flags,
-        "suggestions": result.suggestions,
+        "flags": flags,
+        "suggestions": suggestions,
         "estimated_cost_usd": estimated_cost,
         "user_approved": verdict["approved"],
     }

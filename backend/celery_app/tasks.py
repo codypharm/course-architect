@@ -20,6 +20,7 @@ import asyncio
 import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+from pathlib import Path
 
 from celery.utils.log import get_task_logger
 from langgraph.checkpoint.redis.aio import AsyncRedisSaver
@@ -56,8 +57,38 @@ async def _fresh_graph():
         yield build_graph(checkpointer)
 
 
+def _delete_uploaded_files(paths: list[str], thread_id: str) -> None:
+    """Delete uploaded files and their batch directories from disk.
+
+    Files live at uploads/{batch_id}/{filename}.  After removing each file
+    the parent batch directory is removed if it is now empty, avoiding
+    orphaned folders in storage.
+    """
+    dirs_to_check: set[Path] = set()
+    for path in paths or []:
+        try:
+            p = Path(path)
+            p.unlink(missing_ok=True)
+            dirs_to_check.add(p.parent)
+            logger.info("Deleted uploaded file %s (thread_id=%s)", path, thread_id)
+        except Exception:
+            logger.warning("Failed to delete file %s", path, exc_info=True)
+
+    for d in dirs_to_check:
+        try:
+            if d.exists() and not any(d.iterdir()):
+                d.rmdir()
+                logger.info("Removed empty upload dir %s (thread_id=%s)", d, thread_id)
+        except Exception:
+            logger.warning("Failed to remove dir %s", d, exc_info=True)
+
+
 async def _update_db(thread_id: str, status: str, data: dict) -> None:
-    """Open a fresh DB session and update the CourseRecord for this thread."""
+    """Open a fresh DB session and update the CourseRecord for this thread.
+
+    On rejection or failure, deletes uploaded files from disk to avoid
+    accumulating orphaned files in storage.
+    """
     async with AsyncSessionLocal() as session:
         result = await session.execute(
             select(CourseRecord).where(CourseRecord.thread_id == thread_id)
@@ -73,6 +104,9 @@ async def _update_db(thread_id: str, status: str, data: dict) -> None:
         if status == "completed":
             record.curriculum_plan = data.get("curriculum_plan")
             record.session_content = data.get("session_content")
+
+        if status in ("rejected", "failed"):
+            _delete_uploaded_files(record.uploaded_files or [], thread_id)
 
         await session.commit()
         logger.info("DB updated — thread_id=%s status=%s", thread_id, status)
