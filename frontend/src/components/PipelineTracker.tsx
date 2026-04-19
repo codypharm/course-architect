@@ -34,14 +34,14 @@ const PIPELINE_STAGES = [
   { key: 'reviewing',   label: 'Reviewing output',           sub: 'Critic agent checking coherence' },
 ]
 
-function stageFromStatus(status: string, minStage = 0): number {
+function stageFromStatus(status: string, minStage = 0, serverStage?: number): number {
   if (status === 'queued')     return 0
-  if (status === 'processing') return Math.max(1, minStage)
+  if (status === 'processing') return Math.max(1, minStage, serverStage ?? 0)
   return -1
 }
 
-function ProcessingView({ status, minStage = 0 }: { status: string; minStage?: number }) {
-  const activeIdx = stageFromStatus(status, minStage)
+function ProcessingView({ status, minStage = 0, serverStage }: { status: string; minStage?: number; serverStage?: number }) {
+  const activeIdx = stageFromStatus(status, minStage, serverStage)
   return (
     <div style={{ animation: 'enter 300ms ease' }}>
       <div style={{ textAlign: 'center', marginBottom: 32, padding: '8px 0 4px' }}>
@@ -534,7 +534,11 @@ export default function PipelineTracker({ threadId, onReset }: { threadId: strin
   return (
     <div>
       {(status === 'queued' || status === 'processing') && (
-        <ProcessingView status={status} minStage={processingMinStage} />
+        <ProcessingView
+          status={status}
+          minStage={processingMinStage}
+          serverStage={data?.data?.processing_stage as number | undefined}
+        />
       )}
       {status === 'awaiting_validation' && (
         <ValidationView data={payload} threadId={threadId} onResume={handleResume} />

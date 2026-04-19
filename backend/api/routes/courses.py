@@ -27,7 +27,7 @@ from api.schemas.courses import (
     ValidationResumeRequest,
 )
 from graph.graph import graph
-from utils.pipeline import derive_pipeline_status, graph_config
+from utils.pipeline import derive_pipeline_status, graph_config, infer_processing_stage
 from celery_app.tasks import pipeline_resume_curriculum, pipeline_resume_validation, pipeline_start
 from storage.database import get_db
 from storage.models import CourseRecord
@@ -128,9 +128,22 @@ async def get_course(
     """
     record = await _get_record_or_404(thread_id, db)
 
-    # For terminal/transient statuses the DB is authoritative
-    if record.status in ("queued", "processing", "failed"):
+    # Queued/failed: DB is authoritative, no graph state available
+    if record.status in ("queued", "failed"):
         return CourseStatusResponse(thread_id=thread_id, status=record.status, data={})
+
+    # Processing: read graph state to infer which stage the pipeline is currently at
+    if record.status == "processing":
+        try:
+            snapshot = await graph.aget_state(graph_config(thread_id))
+            stage = infer_processing_stage(snapshot.values if snapshot else {})
+        except Exception:
+            stage = 1
+        return CourseStatusResponse(
+            thread_id=thread_id,
+            status="processing",
+            data={"processing_stage": stage},
+        )
 
     # For pause/completion statuses, read live graph state for the interrupt payload
     # AsyncRedisSaver only implements async methods — must use aget_state.

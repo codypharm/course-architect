@@ -1,6 +1,39 @@
 """Shared LangGraph helpers used by both the API layer and Celery tasks."""
 
 
+def infer_processing_stage(values: dict) -> int:
+    """Infer which pipeline stage is currently active from the last saved checkpoint.
+
+    LangGraph checkpoints state at node *completion*, so snapshot.values reflects
+    the end of the most recently finished node.  We use the presence of key fields
+    to deduce how far the pipeline has progressed:
+
+      0 — submitted / queued
+      1 — validating feasibility      (preprocessor ran, no feasibility_report yet)
+      2 — enriching knowledge base    (validation passed, gap enrichment running)
+      3 — generating curriculum       (enrichment done, curriculum planner running)
+      4 — finalising                  (curriculum plan exists, content saving)
+
+    Returns an int in [0, 4].
+    """
+    if values.get("curriculum_plan") or values.get("session_content"):
+        return 4
+
+    if values.get("knowledge_summary"):
+        ks = values["knowledge_summary"]
+        # gaps == [] means enrichment finished → curriculum planner is now running
+        if isinstance(ks, dict) and not ks.get("gaps"):
+            return 3
+        # knowledge_summary present but gaps still listed → enrichment running
+        return 2
+
+    if values.get("feasibility_report"):
+        # validation done, enrichment not yet started
+        return 2
+
+    return 1
+
+
 def graph_config(thread_id: str) -> dict:
     """Build the LangGraph config dict for a given thread."""
     return {"configurable": {"thread_id": thread_id}}

@@ -1,6 +1,43 @@
 from pydantic import BaseModel, Field
 
 
+class SessionOutline(BaseModel):
+    """Lightweight per-session outline produced in Phase 2 of synthesis.
+
+    Contains only structural fields — format content (lesson_content, video_script, etc.)
+    is generated separately in Phase 3 to stay within LLM output token limits.
+    """
+    week:    int        = Field(description="Week number (1-based).")
+    session: int        = Field(description="Session number within the week (1-based).")
+    topic:   str        = Field(description="Specific topic covered in this session.")
+    objectives: list[str] = Field(
+        description=(
+            "2–4 measurable learning objectives. Each a complete sentence starting with "
+            "an action verb (e.g. 'Explain...', 'Apply...', 'Compare...')."
+        )
+    )
+    lesson_outline: list[str] = Field(
+        default=[],
+        description="4–8 brief ordered teaching points summarising the lesson flow.",
+    )
+
+
+class CurriculumOutline(BaseModel):
+    """First-pass curriculum — all sessions with outline only, no format content.
+
+    Used internally by curriculum_planner_agent Phase 2; merged with per-session
+    format content in Phase 3 to produce the final CurriculumPlan.
+    """
+    course_overview: str = Field(
+        description=(
+            "One paragraph (3–5 sentences) describing the arc of the full course."
+        )
+    )
+    sessions: list[SessionOutline] = Field(
+        description="One SessionOutline per session. Must match the number of sessions in the prompt."
+    )
+
+
 class QuizQuestion(BaseModel):
     """A single multiple-choice quiz question."""
     question: str    = Field(description="The question text.")
