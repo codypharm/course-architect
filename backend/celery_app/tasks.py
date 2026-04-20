@@ -56,6 +56,22 @@ async def _fresh_graph():
         yield build_graph(checkpointer)
 
 
+def _delete_thread_vectors(thread_id: str) -> None:
+    """Delete all S3 Vectors for a pipeline run.
+
+    Called at every terminal state (completed, rejected, failed).
+    A revised brief gets a new thread_id, so the old run's vectors are
+    orphaned and must be cleaned up here.
+    """
+    try:
+        from storage.s3vectors import delete_thread_vectors
+        delete_thread_vectors(thread_id)
+    except Exception:
+        logger.warning(
+            "Failed to delete S3 Vectors for thread_id=%s", thread_id, exc_info=True
+        )
+
+
 def _delete_uploaded_files(paths: list[str], thread_id: str) -> None:
     """Delete uploaded files from S3.
 
@@ -101,12 +117,18 @@ async def _update_db(thread_id: str, status: str, data: dict) -> None:
             record.curriculum_plan = data.get("curriculum_plan")
             record.session_content = data.get("session_content")
 
-        # Only delete files on hard failure — rejected means the tutor is
-        # revising and resubmitting, so the uploaded files are still needed.
+        # Only delete uploaded files on hard failure — rejected means the tutor
+        # is revising and the uploaded files are still needed for the new run.
         if status == "failed":
             _delete_uploaded_files(record.uploaded_files or [], thread_id)
 
         await session.commit()
+
+    # Always clean up S3 Vectors at terminal states regardless of DB outcome.
+    # Vectors are scoped to thread_id; a revised brief uses a new thread_id
+    # and re-ingests the files, so old vectors are always safe to delete.
+    if status in ("completed", "rejected", "failed"):
+        _delete_thread_vectors(thread_id)
         logger.info("DB updated — thread_id=%s status=%s", thread_id, status)
 
 

@@ -5543,3 +5543,127 @@ celery.utils.serialization.UnpickleableExceptionWrapper: ExceptionGroup('unhandl
 [2026-04-20 11:50:50,220: INFO/ForkPoolWorker-16] Retrying request to /chat/completions in 0.383489 seconds
 [2026-04-20 11:50:55,581: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 [2026-04-20 11:51:02,289: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:30,420: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:32,263: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:38,454: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:43,739: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:44,442: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:44,475: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:44,476: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:44,494: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:44,494: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:44,495: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:44,495: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:44,495: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:44,496: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:44,527: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:44,529: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:44,563: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 11:51:45,564: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:45,619: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:45,625: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:45,678: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:45,689: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:45,693: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:45,807: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:45,815: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:45,816: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:45,857: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:45,891: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:51:48,366: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:04,061: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:26,588: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:38,155: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:38,659: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:39,228: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:39,486: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:39,487: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:39,518: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:40,006: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:40,011: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:40,012: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:40,860: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:41,141: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:42,506: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 11:52:42,564: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[cf807fff-ecb9-4ce1-aa97-6e565c91b9cf]: DB updated — thread_id=deceb988-bc40-413b-802c-e24ca40f57ff status=awaiting_curriculum_review
+[2026-04-20 11:52:42,568: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_validation[cf807fff-ecb9-4ce1-aa97-6e565c91b9cf] succeeded in 112.3914865120023s: None
+[2026-04-20 12:01:41,642: INFO/MainProcess] Task queue.tasks.pipeline_resume_curriculum[015dc5b0-ee54-4ff7-b72e-0e947a4f57c7] received
+[2026-04-20 12:01:41,643: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[015dc5b0-ee54-4ff7-b72e-0e947a4f57c7]: pipeline_resume_curriculum — thread_id=deceb988-bc40-413b-802c-e24ca40f57ff approved=True
+[2026-04-20 12:01:41,649: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-20 12:01:41,650: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-20 12:01:41,650: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-20 12:01:41,725: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[015dc5b0-ee54-4ff7-b72e-0e947a4f57c7]: DB updated — thread_id=deceb988-bc40-413b-802c-e24ca40f57ff status=completed
+[2026-04-20 12:01:41,728: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_curriculum[015dc5b0-ee54-4ff7-b72e-0e947a4f57c7] succeeded in 0.08581708700512536s: None
+[2026-04-20 12:19:49,663: INFO/MainProcess] Task queue.tasks.pipeline_start[94edbf62-b6ce-492e-b926-b2ed471a6df2] received
+[2026-04-20 12:19:49,665: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[94edbf62-b6ce-492e-b926-b2ed471a6df2]: pipeline_start — thread_id=4485765e-fc6c-4392-a32e-f383e61513c4
+[2026-04-20 12:19:49,671: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-20 12:19:49,672: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-20 12:19:49,673: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-20 12:20:04,166: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:20:09,256: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:20:19,545: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:20:27,676: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:20:28,233: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:20:28,249: INFO/ForkPoolWorker-16] Retrying request to /chat/completions in 0.436779 seconds
+[2026-04-20 12:20:34,435: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:20:34,540: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[94edbf62-b6ce-492e-b926-b2ed471a6df2]: DB updated — thread_id=4485765e-fc6c-4392-a32e-f383e61513c4 status=awaiting_validation
+[2026-04-20 12:20:34,546: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[94edbf62-b6ce-492e-b926-b2ed471a6df2] succeeded in 44.88028798099549s: None
+[2026-04-20 12:20:41,897: INFO/MainProcess] Task queue.tasks.pipeline_resume_validation[5684d97c-6c9e-4532-9036-3766203f0fd1] received
+[2026-04-20 12:20:41,898: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[5684d97c-6c9e-4532-9036-3766203f0fd1]: pipeline_resume_validation — thread_id=4485765e-fc6c-4392-a32e-f383e61513c4 approved=True
+[2026-04-20 12:20:41,905: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-20 12:20:41,907: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-20 12:20:41,907: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-20 12:20:41,950: INFO/ForkPoolWorker-16] Retrying request to /chat/completions in 0.456680 seconds
+[2026-04-20 12:20:46,457: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:20:54,032: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:23,405: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:24,442: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:34,729: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:39,151: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:39,908: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:39,933: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:39,993: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:39,996: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:40,650: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:40,651: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:40,653: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:40,665: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:40,666: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:40,703: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:40,704: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:40,912: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-20 12:21:41,440: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:41,471: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:41,568: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:41,958: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:41,959: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:41,960: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:42,265: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:42,266: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:42,296: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:42,426: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:42,459: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:44,522: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:21:56,908: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:15,752: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:26,707: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:27,286: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:27,455: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:28,191: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:28,389: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:28,483: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:28,526: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:28,681: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:28,816: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:30,409: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:30,499: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:30,521: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-20 12:22:30,616: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[5684d97c-6c9e-4532-9036-3766203f0fd1]: DB updated — thread_id=4485765e-fc6c-4392-a32e-f383e61513c4 status=awaiting_curriculum_review
+[2026-04-20 12:22:30,624: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_validation[5684d97c-6c9e-4532-9036-3766203f0fd1] succeeded in 108.72627574700164s: None
+[2026-04-20 12:23:05,885: INFO/MainProcess] Task queue.tasks.pipeline_resume_curriculum[90083d39-1a40-40a2-8905-7b9c3e6df2ff] received
+[2026-04-20 12:23:05,887: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[90083d39-1a40-40a2-8905-7b9c3e6df2ff]: pipeline_resume_curriculum — thread_id=4485765e-fc6c-4392-a32e-f383e61513c4 approved=True
+[2026-04-20 12:23:05,898: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-20 12:23:05,901: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-20 12:23:05,901: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-20 12:23:06,048: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[90083d39-1a40-40a2-8905-7b9c3e6df2ff]: DB updated — thread_id=4485765e-fc6c-4392-a32e-f383e61513c4 status=completed
+[2026-04-20 12:23:06,054: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_curriculum[90083d39-1a40-40a2-8905-7b9c3e6df2ff] succeeded in 0.16788544598966837s: None

@@ -33,7 +33,7 @@ from langchain.chat_models import init_chat_model
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langgraph.prebuilt import create_react_agent
 
-from tools.curriculum_planner import query_knowledge_base
+from tools.curriculum_planner import build_query_tool
 from graph.state import CourseState
 from schemas.curriculum import CurriculumOutline, CurriculumPlan, SessionPlan
 from utils.logging import get_logger
@@ -271,7 +271,7 @@ async def curriculum_planner_agent(state: CourseState) -> dict:
         knowledge_summary=json.dumps(knowledge_summary, indent=2),
     )
 
-    agent = create_react_agent(_get_react_llm(), [query_knowledge_base])
+    agent = create_react_agent(_get_react_llm(), [build_query_tool(state["thread_id"])])
     research_result = await agent.ainvoke({
         "messages": [
             SystemMessage(content=research_system),

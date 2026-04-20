@@ -264,7 +264,7 @@ async def gap_enrichment_agent(state: CourseState) -> dict:
         return _clear_gaps()
 
     # Ingest full raw content into vector store for RAG retrieval at generation time
-    chunk_count = ingest_texts(texts)
+    chunk_count = ingest_texts(texts, thread_id=state["thread_id"])
     logger.info(
         "Ingested %d result(s) → %d chunks for %d gap(s)",
         len(texts), chunk_count, len(gaps),

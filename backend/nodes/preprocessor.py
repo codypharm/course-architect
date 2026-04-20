@@ -171,8 +171,8 @@ async def knowledge_base_preprocessor(state: CourseState) -> dict:
 
     summary = _merge(extractions, state, merger)
 
-    file_chunks = ingest(state.get("uploaded_files", []))
-    url_chunks = ingest_texts(url_contents)
+    file_chunks = ingest(state.get("uploaded_files", []), thread_id=state["thread_id"])
+    url_chunks = ingest_texts(url_contents, thread_id=state["thread_id"])
     logger.info("Vector store populated with %d file chunks and %d URL chunks", file_chunks, url_chunks)
 
     return {"knowledge_summary": summary.model_dump()}

@@ -475,7 +475,7 @@ export default function DashboardPage() {
           {NAV_ITEMS.map(item => {
             const on = nav === item.id
             return (
-              <button key={item.id} onClick={() => { setNav(item.id); if (item.id === 'dashboard') navigate('/dashboard') }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '9px 12px', borderRadius: 7, marginBottom: 2, background: on ? '#F7F6F3' : 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)', color: on ? 'var(--ink)' : 'var(--ink-muted)', fontWeight: on ? 600 : 400, fontSize: 14, textAlign: 'left', transition: 'background 150ms' }}>
+              <button key={item.id} onClick={() => { if (item.id === 'new') { setInitialBrief(undefined); setFormKey(k => k + 1) } setNav(item.id); if (item.id === 'dashboard') navigate('/dashboard') }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '9px 12px', borderRadius: 7, marginBottom: 2, background: on ? '#F7F6F3' : 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)', color: on ? 'var(--ink)' : 'var(--ink-muted)', fontWeight: on ? 600 : 400, fontSize: 14, textAlign: 'left', transition: 'background 150ms' }}>
                 <Ico d={item.icon} size={15} color={on ? 'var(--ink)' : 'var(--ink-muted)'} />
                 {item.label}
                 {on && <div style={{ marginLeft: 'auto', width: 3, height: 14, borderRadius: 2, background: 'var(--ink)' }} />}
@@ -485,7 +485,7 @@ export default function DashboardPage() {
         </nav>
 
         <div style={{ padding: '12px 14px 20px' }}>
-          <button onClick={() => setNav('new')} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, padding: '11px', borderRadius: 8, background: 'var(--ink)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'var(--font-sans)' }}>
+          <button onClick={() => { setInitialBrief(undefined); setFormKey(k => k + 1); setNav('new') }} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, padding: '11px', borderRadius: 8, background: 'var(--ink)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'var(--font-sans)' }}>
             <Ico d={I.plus} size={14} color="#fff" /> Generate Course
           </button>
         </div>

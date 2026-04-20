@@ -25,13 +25,16 @@ UPLOAD_DIR = Path("uploads")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup: create uploads dir, DB tables, and Redis checkpoint indexes."""
+    """Startup: create uploads dir, DB tables, Redis checkpoint indexes, and S3 Vectors index."""
     UPLOAD_DIR.mkdir(exist_ok=True)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     # Creates the Redis search indexes (checkpoint, checkpoint_write) that
     # AsyncRedisSaver needs before it can store or retrieve any state.
     await _checkpointer.asetup()
+    # Create the S3 Vectors index if it does not already exist (idempotent).
+    from storage.s3vectors import ensure_index
+    ensure_index()
     yield
 
 
