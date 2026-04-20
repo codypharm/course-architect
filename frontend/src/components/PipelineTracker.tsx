@@ -398,7 +398,7 @@ function CurriculumView({ data, threadId, onResume }: {
           <textarea
             value={retryContext}
             onChange={e => setRetryContext(e.target.value)}
-            placeholder="e.g. Make it shorter, reduce Week 3 sessions, add more practical exercises…"
+            placeholder="e.g. Use simpler language, add more quizzes, make Week 2 deeper… Session count and duration are fixed from your original brief and cannot be changed here."
             style={{
               width: '100%', height: 90, fontSize: 14, color: 'var(--ink)',
               background: '#FAFAF8', border: '1px solid var(--border)',
