@@ -38,6 +38,20 @@ async function startCourse(p: StartCoursePayload): Promise<CourseStatusResponse>
   return res.data
 }
 
+/* ─── Types ─── */
+export interface CourseBrief {
+  subject?: string
+  formats?: string[]
+  audienceAge?: string
+  audienceLevel?: string
+  tone?: string
+  durationWeeks?: number
+  sessionsPerWeek?: number
+  enrichmentUrls?: string[]
+  additionalContext?: string
+  uploadedFilePaths?: string[]  // S3 keys carried over from a rejected brief
+}
+
 /* ─── Option constants ─── */
 const FORMAT_OPTIONS = [
   { id: 'lesson',        label: 'Lesson',        desc: 'Structured written lesson per session', icon: I.book },
@@ -103,23 +117,31 @@ function Stepper({ value, min, max, onChange }: { value: number; min: number; ma
 /* ══════════════════════════════════════
    ROOT EXPORT — 3-step form + step 4
 ══════════════════════════════════════ */
-export default function NewCourseForm({ onCancel, onSuccess, onReset }: { onCancel: () => void; onSuccess: (id: string) => void; onReset: () => void }) {
+export default function NewCourseForm({ onCancel, onSuccess, onReset, initialValues, onRevise }: {
+  onCancel: () => void
+  onSuccess: (id: string) => void
+  onReset: () => void
+  initialValues?: CourseBrief
+  onRevise?: (threadId: string) => void
+}) {
   const [step, setStep] = useState(1)
   const [threadId, setThreadId] = useState<string | null>(null)
 
-  // Form state
-  const [subject, setSubject]                 = useState('')
-  const [formats, setFormats]                 = useState<string[]>(['lesson', 'quiz'])
-  const [audienceAge, setAudienceAge]         = useState('')
-  const [audienceLevel, setAudienceLevel]     = useState('')
-  const [tone, setTone]                       = useState('')
-  const [durationWeeks, setDurationWeeks]     = useState(6)
-  const [sessionsPerWeek, setSessionsPerWeek] = useState(3)
+  // Form state — seeded from initialValues when revising a rejected brief
+  const [subject, setSubject]                 = useState(initialValues?.subject ?? '')
+  const [formats, setFormats]                 = useState<string[]>(initialValues?.formats ?? ['lesson', 'quiz'])
+  const [audienceAge, setAudienceAge]         = useState(initialValues?.audienceAge ?? '')
+  const [audienceLevel, setAudienceLevel]     = useState(initialValues?.audienceLevel ?? '')
+  const [tone, setTone]                       = useState(initialValues?.tone ?? '')
+  const [durationWeeks, setDurationWeeks]     = useState(initialValues?.durationWeeks ?? 6)
+  const [sessionsPerWeek, setSessionsPerWeek] = useState(initialValues?.sessionsPerWeek ?? 3)
   const [files, setFiles]                     = useState<File[]>([])
+  // S3 keys from a previously rejected brief — submitted as-is, no re-upload needed
+  const [carriedPaths, setCarriedPaths]       = useState<string[]>(initialValues?.uploadedFilePaths ?? [])
   const [dragOver, setDragOver]               = useState(false)
   const [urlInput, setUrlInput]               = useState('')
-  const [enrichmentUrls, setEnrichmentUrls]   = useState<string[]>([])
-  const [additionalContext, setAdditionalContext] = useState('')
+  const [enrichmentUrls, setEnrichmentUrls]   = useState<string[]>(initialValues?.enrichmentUrls ?? [])
+  const [additionalContext, setAdditionalContext] = useState(initialValues?.additionalContext ?? '')
   const fileRef = useRef<HTMLInputElement>(null)
 
   const sessionsTotal = durationWeeks * sessionsPerWeek
@@ -129,7 +151,8 @@ export default function NewCourseForm({ onCancel, onSuccess, onReset }: { onCanc
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const paths = files.length ? await uploadFiles(files) : []
+      const newPaths = files.length ? await uploadFiles(files) : []
+      const paths = [...carriedPaths, ...newPaths]
       return startCourse({
         user_id: USER_ID,
         subject: subject.trim(),
@@ -324,6 +347,21 @@ export default function NewCourseForm({ onCancel, onSuccess, onReset }: { onCanc
               </div>
               <input ref={fileRef} type="file" multiple accept=".pdf,.txt,.md" style={{ display: 'none' }} onChange={e => addFiles(e.target.files)} />
 
+              {carriedPaths.length > 0 && (
+                <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-muted)', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Carried over from previous brief</p>
+                  {carriedPaths.map((key, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#F7F6F3', border: '1px solid var(--border)', borderRadius: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <Ico d={I.book} size={14} color="var(--ink-muted)" />
+                        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>{key.split('/').pop()}</span>
+                      </div>
+                      <button type="button" onClick={() => setCarriedPaths(p => p.filter((_, j) => j !== i))} style={{ fontSize: 12, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer' }}>Remove</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {files.length > 0 && (
                 <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {files.map((f, i) => (
@@ -378,7 +416,7 @@ export default function NewCourseForm({ onCancel, onSuccess, onReset }: { onCanc
 
         {/* ── STEP 4: PIPELINE ── */}
         {step === 4 && threadId && (
-          <PipelineTracker threadId={threadId} onReset={onReset} />
+          <PipelineTracker threadId={threadId} onReset={onReset} onRevise={onRevise ? () => onRevise(threadId) : undefined} />
         )}
 
         {/* ── Footer (steps 1–3 only) ── */}

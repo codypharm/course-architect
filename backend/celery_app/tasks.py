@@ -20,7 +20,6 @@ import asyncio
 import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from pathlib import Path
 
 from celery.utils.log import get_task_logger
 from langgraph.checkpoint.redis.aio import AsyncRedisSaver
@@ -58,29 +57,26 @@ async def _fresh_graph():
 
 
 def _delete_uploaded_files(paths: list[str], thread_id: str) -> None:
-    """Delete uploaded files and their batch directories from disk.
+    """Delete uploaded files from S3.
 
-    Files live at uploads/{batch_id}/{filename}.  After removing each file
-    the parent batch directory is removed if it is now empty, avoiding
-    orphaned folders in storage.
+    Accepts S3 keys (``uploads/{batch_id}/{filename}``) stored in
+    CourseRecord.uploaded_files.  Any entry that is not an S3 key (e.g. a
+    legacy local path from dev) is silently skipped.
     """
-    dirs_to_check: set[Path] = set()
-    for path in paths or []:
-        try:
-            p = Path(path)
-            p.unlink(missing_ok=True)
-            dirs_to_check.add(p.parent)
-            logger.info("Deleted uploaded file %s (thread_id=%s)", path, thread_id)
-        except Exception:
-            logger.warning("Failed to delete file %s", path, exc_info=True)
+    from storage.s3 import delete_keys
 
-    for d in dirs_to_check:
-        try:
-            if d.exists() and not any(d.iterdir()):
-                d.rmdir()
-                logger.info("Removed empty upload dir %s (thread_id=%s)", d, thread_id)
-        except Exception:
-            logger.warning("Failed to remove dir %s", d, exc_info=True)
+    s3_keys = [p for p in (paths or []) if p.startswith("uploads/")]
+    if not s3_keys:
+        return
+    try:
+        delete_keys(s3_keys)
+        logger.info(
+            "Deleted %d S3 object(s) for thread_id=%s", len(s3_keys), thread_id
+        )
+    except Exception:
+        logger.warning(
+            "Failed to delete S3 objects for thread_id=%s", thread_id, exc_info=True
+        )
 
 
 async def _update_db(thread_id: str, status: str, data: dict) -> None:
@@ -105,7 +101,9 @@ async def _update_db(thread_id: str, status: str, data: dict) -> None:
             record.curriculum_plan = data.get("curriculum_plan")
             record.session_content = data.get("session_content")
 
-        if status in ("rejected", "failed"):
+        # Only delete files on hard failure — rejected means the tutor is
+        # revising and resubmitting, so the uploaded files are still needed.
+        if status == "failed":
             _delete_uploaded_files(record.uploaded_files or [], thread_id)
 
         await session.commit()

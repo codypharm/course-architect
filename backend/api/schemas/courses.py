@@ -64,3 +64,21 @@ class CourseListItem(BaseModel):
     updated_at: datetime
     curriculum_plan: dict | None = None
     session_content: list | None = None
+
+
+class CourseBriefResponse(BaseModel):
+    """Original brief fields returned by GET /courses/{thread_id}/brief.
+
+    Used to pre-populate the NewCourse form when a tutor wants to revise
+    a rejected brief without starting from scratch.
+    """
+    subject: str
+    audience_age: str
+    audience_level: str
+    duration_weeks: int
+    sessions_per_week: int
+    preferred_formats: list[str]
+    tone: str
+    additional_context: str
+    enrichment_urls: list[str]
+    uploaded_file_paths: list[str] = []  # S3 keys from the original upload

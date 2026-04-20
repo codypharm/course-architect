@@ -1,23 +1,22 @@
 """File upload endpoint.
 
 Clients call POST /files before POST /courses to upload knowledge base documents.
-The response returns absolute file paths that are passed to the course creation request.
+The response returns S3 object keys that are passed to the course creation request.
 
 Supported formats: .pdf, .txt, .md
 """
-import shutil
 from pathlib import Path
 from uuid import uuid4
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from api.schemas.files import FileUploadResponse
+from storage.s3 import get_object_size, upload_fileobj
 from utils.logging import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter(tags=["files"])
 
-UPLOAD_DIR = Path("uploads")
 ALLOWED_SUFFIXES = {".pdf", ".txt", ".md"}
 
 
@@ -25,18 +24,18 @@ ALLOWED_SUFFIXES = {".pdf", ".txt", ".md"}
 async def upload_files(
     files: list[UploadFile] = File(..., description="Knowledge base documents (.pdf, .txt, .md)"),
 ) -> list[FileUploadResponse]:
-    """Upload one or more knowledge base documents.
+    """Upload one or more knowledge base documents to S3.
 
-    Files are saved to uploads/{batch_id}/ on disk. The absolute path for each
-    file is returned and must be passed in `uploaded_file_paths` when calling
-    POST /courses.
+    Files are stored at ``uploads/{batch_id}/{filename}`` in the configured
+    S3 bucket.  The S3 key for each file is returned in the ``path`` field and
+    must be passed in ``uploaded_file_paths`` when calling POST /courses.
 
     Rejects any file whose extension is not .pdf, .txt, or .md.
     """
     if not files:
         raise HTTPException(status_code=422, detail="At least one file is required.")
 
-    # Validate extensions before touching disk
+    # Validate extensions before touching S3
     for upload in files:
         suffix = Path(upload.filename or "").suffix.lower()
         if suffix not in ALLOWED_SUFFIXES:
@@ -47,26 +46,26 @@ async def upload_files(
             )
 
     batch_id = str(uuid4())
-    batch_dir = UPLOAD_DIR / batch_id
-    batch_dir.mkdir(parents=True, exist_ok=True)
-
     results: list[FileUploadResponse] = []
+
     for upload in files:
-        file_id = str(uuid4())
+        file_id  = str(uuid4())
         filename = upload.filename or file_id
-        dest = batch_dir / filename
+        key      = f"uploads/{batch_id}/{filename}"
+        content_type = upload.content_type or "application/octet-stream"
 
-        with dest.open("wb") as fh:
-            shutil.copyfileobj(upload.file, fh)
+        # Reset stream position in case Starlette already read headers
+        await upload.seek(0)
+        upload_fileobj(upload.file, key, content_type=content_type)
 
-        size = dest.stat().st_size
-        abs_path = str(dest.resolve())
+        # Starlette sets .size after the file is fully read; fall back to HeadObject
+        size = upload.size if upload.size is not None else get_object_size(key)
 
-        logger.info("Uploaded file — batch=%s file=%s size=%d", batch_id, filename, size)
+        logger.info("Uploaded file to S3 — key=%s size=%d", key, size)
         results.append(FileUploadResponse(
             file_id=file_id,
             filename=filename,
-            path=abs_path,
+            path=key,
             size_bytes=size,
         ))
 

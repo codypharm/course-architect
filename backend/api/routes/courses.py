@@ -20,6 +20,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.schemas.courses import (
+    CourseBriefResponse,
     CourseListItem,
     CourseStatusResponse,
     CurriculumResumeRequest,
@@ -67,7 +68,12 @@ async def start_course(
     Enqueues pipeline_start on the high_priority queue and returns immediately.
     Client should poll GET /courses/{thread_id} until status changes from "queued".
     """
-    missing = [p for p in body.uploaded_file_paths if not Path(p).exists()]
+    # S3 keys (starts with "uploads/") are validated by the upload endpoint;
+    # only local paths need an existence check (dev/legacy fallback).
+    missing = [
+        p for p in body.uploaded_file_paths
+        if not p.startswith("uploads/") and not Path(p).exists()
+    ]
     if missing:
         raise HTTPException(
             status_code=422,
@@ -153,6 +159,43 @@ async def get_course(
 
     status, data = derive_pipeline_status(snapshot.values, snapshot.next, snapshot.tasks)
     return CourseStatusResponse(thread_id=thread_id, status=status, data=data)
+
+
+# ---------------------------------------------------------------------------
+# GET /courses/{thread_id}/brief
+# ---------------------------------------------------------------------------
+
+@router.get("/courses/{thread_id}/brief", response_model=CourseBriefResponse)
+async def get_course_brief(
+    thread_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> CourseBriefResponse:
+    """Return the original brief fields for a course from the LangGraph checkpoint.
+
+    Used by the frontend to pre-populate the NewCourse form when a tutor wants
+    to revise a rejected brief without retyping everything from scratch.
+    The graph checkpoint is preserved even after the graph reaches END, so
+    this works for rejected courses.
+    """
+    await _get_record_or_404(thread_id, db)
+
+    snapshot = await graph.aget_state(graph_config(thread_id))
+    if not snapshot or not snapshot.values:
+        raise HTTPException(status_code=404, detail="Brief not found in graph checkpoint.")
+
+    v = snapshot.values
+    return CourseBriefResponse(
+        subject=v.get("subject", ""),
+        audience_age=v.get("audience_age", ""),
+        audience_level=v.get("audience_level", ""),
+        duration_weeks=v.get("duration_weeks", 6),
+        sessions_per_week=v.get("sessions_per_week", 3),
+        preferred_formats=v.get("preferred_formats", []),
+        tone=v.get("tone", ""),
+        additional_context=v.get("additional_context", ""),
+        enrichment_urls=v.get("enrichment_urls", []),
+        uploaded_file_paths=v.get("uploaded_files", []),
+    )
 
 
 # ---------------------------------------------------------------------------

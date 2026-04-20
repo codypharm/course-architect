@@ -6,14 +6,13 @@ store so every downstream agent can call retrieve() freely.
 """
 import asyncio
 import json
-from pathlib import Path
 
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage
 
 from graph.state import CourseState
 from utils.fetchers import fetch_url, fetch_youtube, is_youtube
-from rag.ingest import ingest, ingest_texts
+from rag.ingest import ingest, ingest_texts, _read_file as _read_file_from_store
 from schemas.preprocessor import DocumentExtraction, KnowledgeSummary
 from utils.logging import get_logger
 
@@ -85,22 +84,12 @@ async def _fetch_urls(urls: list[str]) -> list[tuple[str, str]]:
 
 
 def _read_file(path: str) -> str | None:
-    """Read a PDF, txt, or md file and return its text content. Returns None on any failure."""
-    p = Path(path)
-    try:
-        suffix = p.suffix.lower()
-        if suffix == ".pdf":
-            from pypdf import PdfReader
-            reader = PdfReader(path)
-            return "\n".join(page.extract_text() or "" for page in reader.pages)
-        elif suffix in (".txt", ".md"):
-            return p.read_text(encoding="utf-8")
-        else:
-            logger.warning("Unsupported file format %s for %s", suffix, path)
-            return None
-    except Exception:
-        logger.error("Failed to read file %s", path, exc_info=True)
-        return None
+    """Read a file from S3 (key starting with 'uploads/') or local disk.
+
+    Delegates to rag.ingest._read_file which handles both S3 keys and local
+    paths so all file access goes through a single code path.
+    """
+    return _read_file_from_store(path)
 
 
 def _extract(content: str, extractor) -> DocumentExtraction | None:

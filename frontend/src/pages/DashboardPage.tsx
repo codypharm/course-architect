@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import type { CourseListItem, CourseStatus } from '@/types/course'
 import { Ico, I } from '@/components/Icon'
-import NewCourseForm from '@/components/NewCourseForm'
+import NewCourseForm, { type CourseBrief } from '@/components/NewCourseForm'
 import PipelineTracker from '@/components/PipelineTracker'
 
 const USER_ID = 'demo-user'
@@ -383,7 +383,8 @@ export default function DashboardPage() {
   const navigate               = useNavigate()
   const [nav, setNav]          = useState<NavItem>(threadId ? 'course' : 'dashboard')
   const [search, setSearch]    = useState('')
-  const [formKey, setFormKey]  = useState(0)
+  const [formKey, setFormKey]      = useState(0)
+  const [initialBrief, setInitialBrief] = useState<CourseBrief | undefined>(undefined)
   const qc = useQueryClient()
 
   // When navigating to /courses/:threadId, switch to course view
@@ -410,6 +411,35 @@ export default function DashboardPage() {
   function goToDashboard() {
     setNav('dashboard')
     navigate('/dashboard')
+  }
+
+  async function handleRevise(tid: string) {
+    try {
+      const res = await api.get<CourseBrief & {
+        audience_age: string; audience_level: string;
+        duration_weeks: number; sessions_per_week: number;
+        preferred_formats: string[]; tone: string;
+        additional_context: string; enrichment_urls: string[];
+        uploaded_file_paths: string[];
+      }>(`/courses/${tid}/brief`)
+      const d = res.data
+      setInitialBrief({
+        subject:           d.subject,
+        audienceAge:       d.audience_age,
+        audienceLevel:     d.audience_level,
+        tone:              d.tone.charAt(0).toUpperCase() + d.tone.slice(1),
+        durationWeeks:     d.duration_weeks,
+        sessionsPerWeek:   d.sessions_per_week,
+        formats:           d.preferred_formats,
+        enrichmentUrls:    d.enrichment_urls,
+        additionalContext: d.additional_context,
+        uploadedFilePaths: d.uploaded_file_paths,
+      })
+    } catch {
+      setInitialBrief(undefined)
+    }
+    setFormKey(k => k + 1)
+    setNav('new')
   }
 
   const Logo = () => (
@@ -547,7 +577,7 @@ export default function DashboardPage() {
           )}
 
           {/* ── New Course ── */}
-          {nav === 'new' && <NewCourseForm key={formKey} onCancel={goToDashboard} onSuccess={handleSuccess} onReset={() => setFormKey(k => k + 1)} />}
+          {nav === 'new' && <NewCourseForm key={formKey} onCancel={goToDashboard} onSuccess={handleSuccess} onReset={() => { setInitialBrief(undefined); setFormKey(k => k + 1) }} initialValues={initialBrief} onRevise={handleRevise} />}
 
           {/* ── Settings ── */}
           {nav === 'settings' && <p style={{ fontSize: 14, color: 'var(--ink-muted)', paddingTop: 12 }}>Settings coming soon.</p>}
@@ -557,7 +587,7 @@ export default function DashboardPage() {
             const courseStatus = courses?.find(c => c.thread_id === threadId)?.status
             const isActiveStatus = courseStatus && isActive(courseStatus)
             return isActiveStatus
-              ? <PipelineTracker threadId={threadId} onReset={goToDashboard} />
+              ? <PipelineTracker threadId={threadId} onReset={goToDashboard} onRevise={() => handleRevise(threadId)} />
               : <CourseView threadId={threadId} onBack={goToDashboard} />
           })()}
         </main>

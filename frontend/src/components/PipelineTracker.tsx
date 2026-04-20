@@ -465,17 +465,26 @@ function CompletedView({ threadId }: { threadId: string }) {
   )
 }
 
-function RejectedView({ onReset }: { onReset: () => void }) {
+function RejectedView({ onReset, onRevise }: { onReset: () => void; onRevise?: () => void }) {
   return (
     <div style={{ textAlign: 'center', padding: '24px 0', animation: 'enter 400ms ease' }}>
       <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56, borderRadius: 16, background: 'var(--accent-red-bg)', marginBottom: 18 }}>
         <Ico d={I.bell} size={24} color="var(--accent-red-text)" />
       </div>
       <h3 className="serif" style={{ fontSize: 26, color: 'var(--ink)', margin: '0 0 8px', letterSpacing: '-0.02em' }}>Brief rejected</h3>
-      <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: '0 0 28px', lineHeight: 1.5 }}>The validation check flagged this brief as not feasible. Start a new course with a revised brief.</p>
-      <button type="button" onClick={onReset} style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', background: '#fff', border: '1px solid var(--border)', padding: '11px 28px', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
-        Start over
-      </button>
+      <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: '0 0 28px', lineHeight: 1.5 }}>
+        The validation check flagged issues with this brief. Revise your settings and try again — your previous answers will be carried over.
+      </p>
+      <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+        {onRevise && (
+          <button type="button" onClick={onRevise} style={{ fontSize: 14, fontWeight: 600, color: '#fff', background: 'var(--ink)', border: 'none', padding: '11px 28px', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--font-sans)', boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }}>
+            Revise brief
+          </button>
+        )}
+        <button type="button" onClick={onReset} style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', background: '#fff', border: '1px solid var(--border)', padding: '11px 28px', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+          Start over
+        </button>
+      </div>
     </div>
   )
 }
@@ -498,7 +507,7 @@ function FailedView({ onReset }: { onReset: () => void }) {
 /* ══════════════════════════════════════
    Step 4 container — owns polling
 ══════════════════════════════════════ */
-export default function PipelineTracker({ threadId, onReset }: { threadId: string; onReset: () => void }) {
+export default function PipelineTracker({ threadId, onReset, onRevise }: { threadId: string; onReset: () => void; onRevise?: () => void }) {
   // Track what the backend last told us (allow mutations to override without waiting for refetch)
   const [overrideStatus,   setOverrideStatus]   = useState<string | null>(null)
   const [overrideData,     setOverrideData]     = useState<Record<string, unknown> | null>(null)
@@ -548,7 +557,7 @@ export default function PipelineTracker({ threadId, onReset }: { threadId: strin
         <CurriculumView data={payload} threadId={threadId} onResume={handleResume} />
       )}
       {status === 'completed'  && <CompletedView threadId={threadId} />}
-      {status === 'rejected'   && <RejectedView onReset={onReset} />}
+      {status === 'rejected'   && <RejectedView onReset={onReset} onRevise={onRevise} />}
       {status === 'failed'     && <FailedView onReset={onReset} />}
     </div>
   )
