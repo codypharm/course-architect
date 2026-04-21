@@ -218,91 +218,168 @@ function ValidationView({ data, threadId, onResume }: {
 }
 
 /** HITL #2 — Curriculum review */
+interface QuizQ { question: string; options: string[]; answer: string; explanation: string }
 interface SessionRow {
   week: number; session: number; topic: string; objectives: string[]
   lesson_outline: string[]; lesson_content: string
-  video_script: string; quiz_questions: unknown[]; worksheet_exercises: string[]
+  video_script: string; quiz_questions: QuizQ[]; worksheet_exercises: string[]
 }
 
-const FORMAT_BADGE: { key: keyof SessionRow; label: string }[] = [
-  { key: 'lesson_content',        label: 'Lesson' },
-  { key: 'video_script',          label: 'Script' },
-  { key: 'quiz_questions',        label: 'Quiz' },
-  { key: 'worksheet_exercises',   label: 'Worksheet' },
-]
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: '0 0 8px' }}>
+      {children}
+    </p>
+  )
+}
 
 function hasContent(v: unknown): boolean {
-  if (typeof v === 'string')  return v.trim().length > 0
-  if (Array.isArray(v))       return v.length > 0
+  if (typeof v === 'string') return v.trim().length > 0
+  if (Array.isArray(v))      return v.length > 0
   return false
 }
 
-/** Expandable session row with format badges and content preview. */
+/** Full quiz question card shown during curriculum review. */
+function ReviewQuizCard({ q, idx }: { q: QuizQ; idx: number }) {
+  const [revealed, setRevealed] = useState(false)
+  return (
+    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 14px', marginBottom: 6 }}>
+      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', margin: '0 0 8px', lineHeight: 1.4 }}>
+        Q{idx + 1}. {q.question}
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 8 }}>
+        {q.options.map((opt, i) => {
+          const correct = revealed && opt === q.answer
+          return (
+            <div key={i} style={{ display: 'flex', gap: 8, padding: '6px 10px', borderRadius: 6, border: `1px solid ${correct ? 'var(--accent-green-text)' : 'var(--border)'}`, background: correct ? 'var(--accent-green-bg)' : '#FAFAF8' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: correct ? 'var(--accent-green-text)' : 'var(--ink-muted)', minWidth: 14, flexShrink: 0 }}>{['A','B','C','D'][i]}</span>
+              <span style={{ fontSize: 12, color: correct ? 'var(--accent-green-text)' : 'var(--ink)' }}>{opt}</span>
+            </div>
+          )
+        })}
+      </div>
+      {revealed ? (
+        <p style={{ fontSize: 11, color: 'var(--ink-muted)', margin: 0, lineHeight: 1.4, borderTop: '1px solid var(--border)', paddingTop: 7 }}>
+          <strong style={{ color: 'var(--ink)' }}>Explanation:</strong> {q.explanation}
+        </p>
+      ) : (
+        <button onClick={() => setRevealed(true)} style={{ fontSize: 11, fontWeight: 500, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-sans)' }}>
+          Reveal answer →
+        </button>
+      )}
+    </div>
+  )
+}
+
+/** Expandable session row — shows ALL content when opened so the tutor can make an informed decision. */
 function SessionRowCard({ s }: { s: SessionRow }) {
   const [open, setOpen] = useState(false)
-  const badges = FORMAT_BADGE.filter(b => hasContent(s[b.key]))
+
+  const hasBadge = (key: keyof SessionRow) => hasContent(s[key])
+  const badgeKeys: { key: keyof SessionRow; label: string }[] = [
+    { key: 'lesson_content',      label: 'Lesson' },
+    { key: 'video_script',        label: 'Script' },
+    { key: 'quiz_questions',      label: 'Quiz' },
+    { key: 'worksheet_exercises', label: 'Worksheet' },
+  ]
+  const activeBadges = badgeKeys.filter(b => hasBadge(b.key))
 
   return (
     <div style={{ borderBottom: '1px solid var(--border)' }}>
+      {/* Row header — always visible */}
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
         style={{ width: '100%', textAlign: 'left', padding: '12px 16px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: badges.length ? 6 : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-faint)', minWidth: 64, flexShrink: 0 }}>Session {s.session}</span>
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', flex: 1 }}>{s.topic}</span>
-          <span style={{ fontSize: 11, color: 'var(--ink-faint)', flexShrink: 0 }}>{open ? '▲' : '▼'}</span>
-        </div>
-        {badges.length > 0 && (
-          <div style={{ paddingLeft: 72, display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-            {badges.map(b => (
-              <span key={b.key} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', padding: '2px 7px', borderRadius: 9999, background: 'var(--accent-green-bg)', color: 'var(--accent-green-text)' }}>
-                ✓ {b.label}
-              </span>
-            ))}
-          </div>
-        )}
-      </button>
-
-      {open && (
-        <div style={{ padding: '0 16px 14px', paddingLeft: 88 }}>
-          {/* Objectives */}
-          {s.objectives?.length > 0 && (
-            <div style={{ marginBottom: 10 }}>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: '0 0 5px' }}>Objectives</p>
-              {s.objectives.map((o, i) => <p key={i} style={{ fontSize: 12, color: 'var(--ink-muted)', margin: '0 0 2px', lineHeight: 1.4 }}>· {o}</p>)}
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', flex: 1, textAlign: 'left' }}>{s.topic}</span>
+          {activeBadges.length > 0 && (
+            <div style={{ display: 'flex', gap: 4 }}>
+              {activeBadges.map(b => (
+                <span key={String(b.key)} style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 9999, background: 'var(--accent-green-bg)', color: 'var(--accent-green-text)' }}>
+                  {b.label}
+                </span>
+              ))}
             </div>
           )}
-          {/* Lesson preview */}
+          <span style={{ fontSize: 11, color: 'var(--ink-faint)', flexShrink: 0, marginLeft: 4 }}>{open ? '▲' : '▼'}</span>
+        </div>
+      </button>
+
+      {/* Expanded content — full detail, no truncation */}
+      {open && (
+        <div style={{ padding: '4px 16px 20px 16px', borderTop: '1px solid var(--border)', background: '#FAFAFA' }}>
+
+          {/* Learning objectives */}
+          {s.objectives?.length > 0 && (
+            <div style={{ marginBottom: 16, paddingTop: 14 }}>
+              <SectionLabel>Learning objectives</SectionLabel>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {s.objectives.map((o, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 8, padding: '6px 10px', background: '#fff', border: '1px solid var(--border)', borderRadius: 6 }}>
+                    <span style={{ fontSize: 12, color: 'var(--ink-muted)', flexShrink: 0 }}>→</span>
+                    <span style={{ fontSize: 12, color: 'var(--ink)', lineHeight: 1.4 }}>{o}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Lesson outline (always present) */}
+          {s.lesson_outline?.length > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              <SectionLabel>Lesson outline</SectionLabel>
+              <ol style={{ margin: 0, padding: '0 0 0 18px', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {s.lesson_outline.map((pt, i) => (
+                  <li key={i} style={{ fontSize: 12, color: 'var(--ink)', lineHeight: 1.4 }}>{pt}</li>
+                ))}
+              </ol>
+            </div>
+          )}
+
+          {/* Full lesson content */}
           {s.lesson_content?.trim() && (
-            <div style={{ marginBottom: 14 }}>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: '0 0 5px' }}>Lesson preview</p>
-              <div style={{ maxHeight: 90, overflow: 'hidden', WebkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)', pointerEvents: 'none' }}>
+            <div style={{ marginBottom: 16 }}>
+              <SectionLabel>Full lesson</SectionLabel>
+              <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px' }}>
                 <Markdown content={s.lesson_content} />
               </div>
             </div>
           )}
-          {/* Video script preview */}
+
+          {/* Full video script */}
           {s.video_script?.trim() && (
-            <div style={{ marginBottom: 14 }}>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: '0 0 5px' }}>Script preview</p>
-              <div style={{ maxHeight: 90, overflow: 'hidden', WebkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)', pointerEvents: 'none' }}>
+            <div style={{ marginBottom: 16 }}>
+              <SectionLabel>Video script</SectionLabel>
+              <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px' }}>
                 <Markdown content={s.video_script} />
               </div>
             </div>
           )}
-          {/* Quiz count */}
+
+          {/* Quiz questions — fully expanded with answers */}
           {s.quiz_questions?.length > 0 && (
-            <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: 0 }}>
-              {s.quiz_questions.length} quiz question{s.quiz_questions.length !== 1 ? 's' : ''} generated
-            </p>
+            <div style={{ marginBottom: 16 }}>
+              <SectionLabel>Quiz ({s.quiz_questions.length} question{s.quiz_questions.length !== 1 ? 's' : ''})</SectionLabel>
+              {s.quiz_questions.map((q, i) => <ReviewQuizCard key={i} q={q} idx={i} />)}
+            </div>
           )}
-          {/* Worksheet count */}
+
+          {/* Worksheet exercises — full list */}
           {s.worksheet_exercises?.length > 0 && (
-            <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: '4px 0 0' }}>
-              {s.worksheet_exercises.length} worksheet exercise{s.worksheet_exercises.length !== 1 ? 's' : ''} generated
-            </p>
+            <div>
+              <SectionLabel>Worksheet ({s.worksheet_exercises.length} exercise{s.worksheet_exercises.length !== 1 ? 's' : ''})</SectionLabel>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {s.worksheet_exercises.map((ex, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 10, padding: '9px 12px', background: '#fff', border: '1px solid var(--border)', borderRadius: 7 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink-muted)', flexShrink: 0, minWidth: 18 }}>{i + 1}.</span>
+                    <span style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.5 }}>{ex}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       )}
@@ -320,29 +397,44 @@ function CurriculumView({ data, threadId, onResume }: {
 
   const plan       = (data.curriculum_plan as Record<string, unknown>) ?? {}
   const retryCount = (data.retry_count as number) ?? 0
-  const sessions: SessionRow[] = Array.isArray(plan.sessions) ? (plan.sessions as SessionRow[]) : []
+  const overview   = (plan.course_overview as string) ?? ''
 
-  // Group sessions by week for display
-  const byWeek: Record<number, SessionRow[]> = {}
-  sessions.forEach(s => {
-    if (!byWeek[s.week]) byWeek[s.week] = []
-    byWeek[s.week].push(s)
+  // sessions come from curriculum_plan; session_content carries the same sessions
+  // with full format content. Merge by (week, session) key so generated content
+  // from session_content fills in any gaps in curriculum_plan.sessions.
+  const planSessions: SessionRow[] = Array.isArray(plan.sessions) ? (plan.sessions as SessionRow[]) : []
+  const contentSessions: SessionRow[] = Array.isArray(data.session_content) ? (data.session_content as SessionRow[]) : []
+
+  const sessionMap = new Map<string, SessionRow>()
+  planSessions.forEach(s => sessionMap.set(`${s.week}-${s.session}`, s))
+  contentSessions.forEach(s => {
+    const key = `${s.week}-${s.session}`
+    // content session overrides plan session (has full generated content)
+    sessionMap.set(key, { ...(sessionMap.get(key) ?? {}), ...s })
   })
+  const sessions = Array.from(sessionMap.values()).sort((a, b) =>
+    a.week !== b.week ? a.week - b.week : a.session - b.session
+  )
+
+  // Group by week
+  const byWeek: Record<number, SessionRow[]> = {}
+  sessions.forEach(s => { if (!byWeek[s.week]) byWeek[s.week] = []; byWeek[s.week].push(s) })
 
   const approveM = useMutation({
     mutationFn: () => resumeCurriculum(threadId, true, ''),
-    onSuccess: r => onResume(r.status, r.data, 4), // post-curriculum: reviewing stage
+    onSuccess: r => onResume(r.status, r.data, 4),
   })
   const retryM = useMutation({
     mutationFn: () => resumeCurriculum(threadId, false, retryContext.trim()),
-    onSuccess: r => onResume(r.status, r.data, 3), // retry: back to generating
+    onSuccess: r => onResume(r.status, r.data, 3),
   })
 
-  const busy = approveM.isPending || retryM.isPending
+  const busy     = approveM.isPending || retryM.isPending
   const canRetry = retryContext.trim().length > 0
 
   return (
     <div style={{ animation: 'enter 300ms ease' }}>
+      {/* Header */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent-yellow-text)' }} />
@@ -351,29 +443,48 @@ function CurriculumView({ data, threadId, onResume }: {
             <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-faint)', marginLeft: 'auto' }}>Revision {retryCount}/5</span>
           )}
         </div>
-        <h3 className="serif" style={{ fontSize: 26, color: 'var(--ink)', margin: 0, letterSpacing: '-0.02em' }}>Review the curriculum plan</h3>
-        <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: '5px 0 0' }}>Full content has been generated. Review each session below, then approve or request changes.</p>
+        <h3 className="serif" style={{ fontSize: 26, color: 'var(--ink)', margin: 0, letterSpacing: '-0.02em' }}>Review the curriculum</h3>
+        <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: '5px 0 0' }}>
+          Expand each session to read the full lesson, script, quiz, and worksheet. Approve when satisfied or request changes.
+        </p>
       </div>
 
-      {/* Curriculum plan */}
+      {/* Course overview */}
+      {overview && (
+        <div style={{ padding: '14px 16px', background: '#F7F6F3', border: '1px solid var(--border)', borderRadius: 10, marginBottom: 16 }}>
+          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: '0 0 6px' }}>Course overview</p>
+          <p style={{ fontSize: 14, color: 'var(--ink)', lineHeight: 1.65, margin: 0 }}>{overview}</p>
+        </div>
+      )}
+
+      {/* Stats row */}
+      {sessions.length > 0 && (
+        <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
+          <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>
+            <strong style={{ color: 'var(--ink)' }}>{Object.keys(byWeek).length}</strong> week{Object.keys(byWeek).length !== 1 ? 's' : ''}
+          </span>
+          <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>
+            <strong style={{ color: 'var(--ink)' }}>{sessions.length}</strong> session{sessions.length !== 1 ? 's' : ''}
+          </span>
+          <span style={{ fontSize: 12, color: 'var(--ink-faint)' }}>Click any row to expand full content</span>
+        </div>
+      )}
+
+      {/* Session list grouped by week */}
       {sessions.length > 0 ? (
-        <>
-          <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: '0 0 8px' }}>
-            {Object.keys(byWeek).length} week{Object.keys(byWeek).length !== 1 ? 's' : ''} · {sessions.length} session{sessions.length !== 1 ? 's' : ''}
-          </p>
-          <div style={{ background: '#FAFAF8', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>
-            {Object.entries(byWeek).map(([week, rows]) => (
-              <div key={week}>
-                <div style={{ padding: '10px 16px', background: '#F7F6F3', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0 }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-muted)', margin: 0 }}>Week {week}</p>
-                </div>
-                {rows.map((s, i) => <SessionRowCard key={i} s={s} />)}
+        <div style={{ background: '#FAFAF8', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>
+          {Object.entries(byWeek).map(([week, rows]) => (
+            <div key={week}>
+              <div style={{ padding: '8px 16px', background: '#F7F6F3', borderBottom: '1px solid var(--border)' }}>
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--ink-muted)', margin: 0 }}>
+                  Week {week} — {rows.length} session{rows.length !== 1 ? 's' : ''}
+                </p>
               </div>
-            ))}
-          </div>
-        </>
+              {rows.map((s, i) => <SessionRowCard key={i} s={s} />)}
+            </div>
+          ))}
+        </div>
       ) : (
-        /* Fallback: render raw plan as JSON if sessions aren't structured */
         <div style={{ background: '#FAFAF8', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px', marginBottom: 20, maxHeight: 320, overflowY: 'auto' }}>
           <pre style={{ fontSize: 12, color: 'var(--ink)', margin: 0, fontFamily: 'var(--font-mono)', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
             {JSON.stringify(plan, null, 2)}
@@ -381,7 +492,7 @@ function CurriculumView({ data, threadId, onResume }: {
         </div>
       )}
 
-      {/* Retry toggle */}
+      {/* Revision request */}
       {!showRetry ? (
         <button
           type="button"
@@ -393,19 +504,13 @@ function CurriculumView({ data, threadId, onResume }: {
       ) : (
         <div style={{ marginBottom: 16, animation: 'enter 200ms ease' }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', margin: '0 0 8px' }}>
-            What should change? <span style={{ fontWeight: 400, color: 'var(--ink-muted)' }}>(this becomes a hard constraint for the AI)</span>
+            What should change? <span style={{ fontWeight: 400, color: 'var(--ink-muted)' }}>(becomes a hard constraint for the AI)</span>
           </p>
           <textarea
             value={retryContext}
             onChange={e => setRetryContext(e.target.value)}
-            placeholder="e.g. Use simpler language, add more quizzes, make Week 2 deeper… Session count and duration are fixed from your original brief and cannot be changed here."
-            style={{
-              width: '100%', height: 90, fontSize: 14, color: 'var(--ink)',
-              background: '#FAFAF8', border: '1px solid var(--border)',
-              borderRadius: 10, padding: '12px 14px', outline: 'none',
-              fontFamily: 'var(--font-sans)', boxSizing: 'border-box',
-              resize: 'vertical', lineHeight: 1.4,
-            }}
+            placeholder="e.g. Use simpler language, add more quizzes, make Week 2 deeper…"
+            style={{ width: '100%', height: 90, fontSize: 14, color: 'var(--ink)', background: '#FAFAF8', border: '1px solid var(--border)', borderRadius: 10, padding: '12px 14px', outline: 'none', fontFamily: 'var(--font-sans)', boxSizing: 'border-box', resize: 'vertical', lineHeight: 1.4 }}
             onFocus={e => e.currentTarget.style.borderColor = 'var(--ink)'}
             onBlur={e => e.currentTarget.style.borderColor = 'var(--border)'}
             autoFocus

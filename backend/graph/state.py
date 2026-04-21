@@ -2,6 +2,9 @@ from typing_extensions import TypedDict
 
 
 class CourseState(TypedDict):
+    # Pipeline identity — passed through state so nodes can reference the run
+    thread_id: str
+
     # Form submission
     subject: str
     audience_age: str

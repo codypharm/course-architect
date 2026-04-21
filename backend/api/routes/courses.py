@@ -96,6 +96,7 @@ async def start_course(
     await db.commit()
 
     initial_state = {
+        "thread_id": thread_id,
         "subject": body.subject,
         "audience_age": body.audience_age,
         "audience_level": body.audience_level,

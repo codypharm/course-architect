@@ -5679,3 +5679,199 @@ celery.utils.serialization.UnpickleableExceptionWrapper: ExceptionGroup('unhandl
 [2026-04-21 09:51:30,054: INFO/MainProcess] mingle: searching for neighbors
 [2026-04-21 09:51:31,073: INFO/MainProcess] mingle: all alone
 [2026-04-21 09:51:31,105: INFO/MainProcess] celery@codypharm ready.
+[2026-04-21 09:58:54,157: INFO/MainProcess] Task queue.tasks.pipeline_start[6a74916f-ee61-4868-b72b-69a035085ba4] received
+[2026-04-21 09:58:54,163: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[6a74916f-ee61-4868-b72b-69a035085ba4]: pipeline_start — thread_id=89d19d42-4bcd-438c-aa06-9cd4a5785c53
+[2026-04-21 09:58:54,189: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 09:58:54,191: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 09:58:54,191: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-21 09:58:54,736: INFO/ForkPoolWorker-16] Found credentials in environment variables.
+[2026-04-21 09:59:05,630: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 09:59:13,300: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 09:59:13,329: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_start[6a74916f-ee61-4868-b72b-69a035085ba4]: pipeline_start failed — thread_id=89d19d42-4bcd-438c-aa06-9cd4a5785c53: 'thread_id'
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 183, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 142, in _run_pipeline_start
+    await g.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3181, in astream
+    async for _ in runner.atick(
+    ...<16 lines>...
+            yield o
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_runner.py", line 304, in atick
+    await arun_with_retry(
+    ...<15 lines>...
+    )
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_retry.py", line 242, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 705, in ainvoke
+    input = await asyncio.create_task(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        step.ainvoke(input, config, **kwargs), context=context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 473, in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/nodes/preprocessor.py", line 174, in knowledge_base_preprocessor
+    file_chunks = ingest(state.get("uploaded_files", []), thread_id=state["thread_id"])
+                                                                    ~~~~~^^^^^^^^^^^^^
+KeyError: 'thread_id'
+During task with name 'preprocessor' and id 'f704cfbe-dff7-09a1-fc41-2127d875b86b'
+[2026-04-21 09:59:15,395: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[6a74916f-ee61-4868-b72b-69a035085ba4]: Deleted 1 S3 object(s) for thread_id=89d19d42-4bcd-438c-aa06-9cd4a5785c53
+[2026-04-21 09:59:20,573: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[6a74916f-ee61-4868-b72b-69a035085ba4]: DB updated — thread_id=89d19d42-4bcd-438c-aa06-9cd4a5785c53 status=failed
+[2026-04-21 09:59:20,593: INFO/MainProcess] Task queue.tasks.pipeline_start[6a74916f-ee61-4868-b72b-69a035085ba4] received
+[2026-04-21 09:59:20,602: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[6a74916f-ee61-4868-b72b-69a035085ba4] retry: Retry in 1s: KeyError('thread_id')
+[2026-04-21 09:59:21,579: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[6a74916f-ee61-4868-b72b-69a035085ba4]: pipeline_start — thread_id=89d19d42-4bcd-438c-aa06-9cd4a5785c53
+[2026-04-21 09:59:21,587: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 09:59:21,588: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 09:59:21,589: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-21 09:59:26,526: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 09:59:26,589: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[6a74916f-ee61-4868-b72b-69a035085ba4] succeeded in 5.010209225000835s: None
+[2026-04-21 10:04:29,876: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-21 10:04:29,882: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-21 10:04:30,899: INFO/MainProcess] mingle: all alone
+[2026-04-21 10:04:30,933: INFO/MainProcess] celery@codypharm ready.
+[2026-04-21 10:05:01,585: INFO/MainProcess] Task queue.tasks.pipeline_start[cc5b0049-94d5-4132-b0e0-f9670e8b3350] received
+[2026-04-21 10:05:01,587: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[cc5b0049-94d5-4132-b0e0-f9670e8b3350]: pipeline_start — thread_id=7d6425ce-f697-41ce-8d0c-26d82725ed6a
+[2026-04-21 10:05:01,612: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 10:05:01,615: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 10:05:01,615: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-21 10:05:02,112: INFO/ForkPoolWorker-16] Found credentials in environment variables.
+[2026-04-21 10:05:13,657: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:05:22,095: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:05:22,120: ERROR/ForkPoolWorker-16] queue.tasks.pipeline_start[cc5b0049-94d5-4132-b0e0-f9670e8b3350]: pipeline_start failed — thread_id=7d6425ce-f697-41ce-8d0c-26d82725ed6a: 'thread_id'
+Traceback (most recent call last):
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 183, in pipeline_start
+    asyncio.run(_run_pipeline_start(thread_id, initial_state))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/a0000/.local/share/uv/python/cpython-3.13.11-macos-x86_64-none/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/a0000/projects/andela/capstone/backend/celery_app/tasks.py", line 142, in _run_pipeline_start
+    await g.ainvoke(initial_state, config=graph_config(thread_id))
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3535, in ainvoke
+    async for chunk in self.astream(
+    ...<29 lines>...
+            chunks.append(chunk)
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/main.py", line 3181, in astream
+    async for _ in runner.atick(
+    ...<16 lines>...
+            yield o
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_runner.py", line 304, in atick
+    await arun_with_retry(
+    ...<15 lines>...
+    )
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/pregel/_retry.py", line 242, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 705, in ainvoke
+    input = await asyncio.create_task(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        step.ainvoke(input, config, **kwargs), context=context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/a0000/projects/andela/capstone/backend/.venv/lib/python3.13/site-packages/langgraph/_internal/_runnable.py", line 473, in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/a0000/projects/andela/capstone/backend/nodes/preprocessor.py", line 174, in knowledge_base_preprocessor
+    file_chunks = ingest(state.get("uploaded_files", []), thread_id=state["thread_id"])
+                                                                    ~~~~~^^^^^^^^^^^^^
+KeyError: 'thread_id'
+During task with name 'preprocessor' and id 'ec5ab3e9-716e-ad36-da8d-671f00d53ce4'
+[2026-04-21 10:05:23,079: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[cc5b0049-94d5-4132-b0e0-f9670e8b3350]: Deleted 1 S3 object(s) for thread_id=7d6425ce-f697-41ce-8d0c-26d82725ed6a
+[2026-04-21 10:05:25,014: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[cc5b0049-94d5-4132-b0e0-f9670e8b3350]: DB updated — thread_id=7d6425ce-f697-41ce-8d0c-26d82725ed6a status=failed
+[2026-04-21 10:05:25,033: INFO/MainProcess] Task queue.tasks.pipeline_start[cc5b0049-94d5-4132-b0e0-f9670e8b3350] received
+[2026-04-21 10:05:25,045: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[cc5b0049-94d5-4132-b0e0-f9670e8b3350] retry: Retry in 1s: KeyError('thread_id')
+[2026-04-21 10:05:26,019: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[cc5b0049-94d5-4132-b0e0-f9670e8b3350]: pipeline_start — thread_id=7d6425ce-f697-41ce-8d0c-26d82725ed6a
+[2026-04-21 10:05:26,027: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 10:05:26,029: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 10:05:26,030: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-21 10:05:33,478: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:05:33,516: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[cc5b0049-94d5-4132-b0e0-f9670e8b3350] succeeded in 7.4970573809996495s: None
+[2026-04-21 10:08:20,700: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-21 10:08:20,709: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-21 10:08:21,736: INFO/MainProcess] mingle: all alone
+[2026-04-21 10:08:21,772: INFO/MainProcess] celery@codypharm ready.
+[2026-04-21 10:09:04,940: INFO/MainProcess] Task queue.tasks.pipeline_start[85d89281-3fb8-419a-b0d8-dbfc9eaf8abc] received
+[2026-04-21 10:09:04,942: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[85d89281-3fb8-419a-b0d8-dbfc9eaf8abc]: pipeline_start — thread_id=b064b86e-d093-4f45-a7c7-9bb43f476550
+[2026-04-21 10:09:04,975: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 10:09:04,977: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 10:09:04,978: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-21 10:09:05,480: INFO/ForkPoolWorker-16] Found credentials in environment variables.
+[2026-04-21 10:09:14,296: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:09:18,698: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:09:31,213: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-21 10:09:38,031: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:09:38,091: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[85d89281-3fb8-419a-b0d8-dbfc9eaf8abc] succeeded in 33.149791802000436s: None
+[2026-04-21 10:09:52,430: INFO/MainProcess] Task queue.tasks.pipeline_resume_validation[414f27b6-ceb9-47bc-9be3-100d64e88e6a] received
+[2026-04-21 10:09:52,432: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_validation[414f27b6-ceb9-47bc-9be3-100d64e88e6a]: pipeline_resume_validation — thread_id=b064b86e-d093-4f45-a7c7-9bb43f476550 approved=True
+[2026-04-21 10:09:52,438: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 10:09:52,440: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 10:09:52,441: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-21 10:09:52,486: INFO/ForkPoolWorker-16] Retrying request to /chat/completions in 0.477861 seconds
+[2026-04-21 10:09:57,198: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:03,342: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:26,895: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:28,647: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-21 10:10:40,822: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:45,338: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:46,093: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-21 10:10:46,097: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-21 10:10:46,103: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-21 10:10:46,107: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-21 10:10:46,130: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-21 10:10:46,161: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-21 10:10:46,174: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-21 10:10:46,248: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-21 10:10:46,254: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-21 10:10:47,749: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:48,398: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:48,459: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:48,503: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:48,581: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:48,676: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:48,714: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:48,760: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:10:49,346: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:11:02,597: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:11:21,270: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:11:32,017: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:11:32,069: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:11:32,080: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:11:32,829: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:11:32,993: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:11:33,079: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:11:33,241: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:11:33,796: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:11:34,109: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-21 10:11:34,200: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_validation[414f27b6-ceb9-47bc-9be3-100d64e88e6a] succeeded in 101.76794054899983s: None
+[2026-04-21 10:11:55,611: INFO/MainProcess] Task queue.tasks.pipeline_resume_curriculum[56609ae9-54d9-43b4-aa75-7317f9cf8da8] received
+[2026-04-21 10:11:55,613: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[56609ae9-54d9-43b4-aa75-7317f9cf8da8]: pipeline_resume_curriculum — thread_id=b064b86e-d093-4f45-a7c7-9bb43f476550 approved=True
+[2026-04-21 10:11:55,622: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 10:11:55,625: INFO/ForkPoolWorker-16] Index already exists, not overwriting.
+[2026-04-21 10:11:55,626: INFO/ForkPoolWorker-16] Redis client is a standalone client
+[2026-04-21 10:11:57,427: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[56609ae9-54d9-43b4-aa75-7317f9cf8da8]: DB updated — thread_id=b064b86e-d093-4f45-a7c7-9bb43f476550 status=completed
+[2026-04-21 10:11:57,431: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_curriculum[56609ae9-54d9-43b4-aa75-7317f9cf8da8] succeeded in 1.8174400620000597s: None
