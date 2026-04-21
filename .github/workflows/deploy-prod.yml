@@ -128,7 +128,7 @@ jobs:
       - name: Build
         env:
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
-          VITE_API_BASE_URL: "http://${{ steps.tf.outputs.alb_dns }}"
+          VITE_API_BASE_URL: "https://${{ steps.tf.outputs.cf_domain }}"
         run: npm run build
 
       - name: Sync to S3

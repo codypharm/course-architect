@@ -23,6 +23,7 @@ module "cloudfront" {
   env                             = local.env
   frontend_bucket_regional_domain = module.s3.frontend_bucket_regional_domain
   frontend_oac_id                 = module.s3.frontend_oac_id
+  alb_dns_name                    = module.alb.alb_dns_name
 }
 
 module "vpc" {
