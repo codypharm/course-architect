@@ -5667,3 +5667,7 @@ celery.utils.serialization.UnpickleableExceptionWrapper: ExceptionGroup('unhandl
 [2026-04-20 12:23:05,901: INFO/ForkPoolWorker-16] Redis client is a standalone client
 [2026-04-20 12:23:06,048: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[90083d39-1a40-40a2-8905-7b9c3e6df2ff]: DB updated — thread_id=4485765e-fc6c-4392-a32e-f383e61513c4 status=completed
 [2026-04-20 12:23:06,054: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_curriculum[90083d39-1a40-40a2-8905-7b9c3e6df2ff] succeeded in 0.16788544598966837s: None
+[2026-04-21 09:22:54,703: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-21 09:22:54,709: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-21 09:22:55,731: INFO/MainProcess] mingle: all alone
+[2026-04-21 09:22:55,768: INFO/MainProcess] celery@codypharm ready.

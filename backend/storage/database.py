@@ -1,8 +1,10 @@
 """Async SQLAlchemy engine and session factory.
 
-Phase 1: SQLite via aiosqlite (DATABASE_URL defaults to a local file).
-Phase 2: swap DATABASE_URL to postgresql+asyncpg://... pointing at Aurora RDS.
-No other code changes needed — SQLAlchemy async API is identical across drivers.
+Supports two databases selected by DATABASE_URL at startup:
+  sqlite+aiosqlite:///./courses.db          — local dev, no setup needed
+  postgresql+asyncpg://user:pass@host/db    — Aurora RDS Serverless v2 (production)
+
+The SQLAlchemy async API is identical across both drivers 
 """
 import os
 from collections.abc import AsyncGenerator
@@ -19,11 +21,27 @@ DATABASE_URL: str = os.getenv(
     "sqlite+aiosqlite:///./courses.db",
 )
 
+_is_sqlite   = DATABASE_URL.startswith("sqlite")
+_is_postgres = DATABASE_URL.startswith("postgresql")
+
 engine = create_async_engine(
     DATABASE_URL,
     echo=False,
-    # SQLite-specific: allow the same connection to be used across threads
-    connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {},
+    # Validate connections before checkout — essential for Aurora Serverless v2
+    # which can pause after inactivity and silently drop idle connections.
+    pool_pre_ping=True,
+    # Driver-specific connection arguments
+    connect_args=(
+        {"check_same_thread": False} if _is_sqlite   # SQLite: allow cross-thread reuse
+        else {"ssl": "require"}      if _is_postgres  # Aurora: SSL required
+        else {}
+    ),
+    # Connection pool sizing — PostgreSQL only.
+    # SQLite uses NullPool / StaticPool internally and ignores these.
+    **({
+        "pool_size": 5,
+        "max_overflow": 10,
+    } if _is_postgres else {}),
 )
 
 AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)

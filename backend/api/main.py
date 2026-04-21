@@ -2,11 +2,11 @@
 
 Mounts all routes under /api/v1. On startup:
   - Loads .env so LANGCHAIN_* and DATABASE_URL are available before any import
-  - Creates the uploads/ directory for knowledge base file storage
-  - Creates all DB tables (SQLite in Phase 1, Aurora asyncpg in Phase 2)
+  - Creates all DB tables via Base.metadata.create_all (Aurora or SQLite, idempotent)
+  - Creates Redis checkpoint indexes for LangGraph
+  - Creates S3 Vectors index for RAG pipeline (idempotent)
 """
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -20,13 +20,9 @@ from api.routes.files import router as files_router
 from graph.graph import _checkpointer
 from storage.database import Base, engine
 
-UPLOAD_DIR = Path("uploads")
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup: create uploads dir, DB tables, Redis checkpoint indexes, and S3 Vectors index."""
-    UPLOAD_DIR.mkdir(exist_ok=True)
+    """Startup: create DB tables, Redis checkpoint indexes, and S3 Vectors index."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     # Creates the Redis search indexes (checkpoint, checkpoint_write) that
