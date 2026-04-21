@@ -1,0 +1,148 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "ECR image tag to promote (leave blank for staging-latest)"
+        required: false
+        default: "staging-latest"
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  PROJECT: ai-course-architect
+  ENV: prod
+  TF_DIR: infra/terraform/envs/prod
+
+jobs:
+  # ── 1. Deploy backend ─────────────────────────────────────────────────────────
+  deploy-backend:
+    name: Deploy backend (Terraform + ECS)
+    runs-on: ubuntu-latest
+    # GitHub Environment with required reviewer — approvals gated here
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Verify image exists in ECR
+        run: |
+          IMAGE_TAG="${{ github.event.inputs.image_tag }}"
+          REPO="${{ env.PROJECT }}"
+          echo "Verifying $REPO:$IMAGE_TAG exists..."
+          aws ecr describe-images \
+            --repository-name "$REPO" \
+            --image-ids imageTag="$IMAGE_TAG" \
+            --query 'imageDetails[0].imageTags' \
+            --output text
+          echo "Image verified."
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.6"
+
+      - name: Terraform init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init -input=false
+
+      - name: Terraform apply
+        working-directory: ${{ env.TF_DIR }}
+        env:
+          TF_VAR_image_tag: ${{ github.event.inputs.image_tag }}
+        run: terraform apply -auto-approve -input=false
+
+      - name: Force new ECS deployments
+        run: |
+          CLUSTER="${{ env.PROJECT }}-${{ env.ENV }}"
+          for SERVICE in api worker beat flower; do
+            echo "Updating $SERVICE..."
+            aws ecs update-service \
+              --cluster "$CLUSTER" \
+              --service "$SERVICE" \
+              --force-new-deployment \
+              --query 'service.serviceName' \
+              --output text
+          done
+
+      - name: Wait for API + Worker to stabilise
+        run: |
+          aws ecs wait services-stable \
+            --cluster "${{ env.PROJECT }}-${{ env.ENV }}" \
+            --services api worker
+          echo "Production services are stable."
+
+  # ── 2. Deploy frontend ────────────────────────────────────────────────────────
+  deploy-frontend:
+    name: Deploy frontend (S3 + CloudFront)
+    runs-on: ubuntu-latest
+    needs: deploy-backend
+    environment: production
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform (to read outputs)
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.6"
+          terraform_wrapper: false
+
+      - name: Read Terraform outputs
+        id: tf
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          terraform init -input=false -reconfigure
+          echo "alb_dns=$(terraform output -raw alb_dns_name)" >> "$GITHUB_OUTPUT"
+          echo "cf_id=$(terraform output -raw cloudfront_distribution_id)" >> "$GITHUB_OUTPUT"
+          echo "cf_domain=$(terraform output -raw cloudfront_domain)" >> "$GITHUB_OUTPUT"
+          echo "bucket=$(terraform output -raw frontend_bucket)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        env:
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+          VITE_API_BASE_URL: "http://${{ steps.tf.outputs.alb_dns }}"
+        run: npm run build
+
+      - name: Sync to S3
+        run: |
+          aws s3 sync dist/ "s3://${{ steps.tf.outputs.bucket }}" \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "index.html"
+
+          aws s3 cp dist/index.html "s3://${{ steps.tf.outputs.bucket }}/index.html" \
+            --cache-control "no-cache,no-store,must-revalidate"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ steps.tf.outputs.cf_id }}" \
+            --paths "/*"
+          echo "Production frontend deployed to https://${{ steps.tf.outputs.cf_domain }}"

@@ -16,10 +16,23 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase
 
-DATABASE_URL: str = os.getenv(
-    "DATABASE_URL",
-    "sqlite+aiosqlite:///./courses.db",
-)
+def _build_database_url() -> str:
+    """Build DATABASE_URL from individual parts when running on ECS.
+
+    On ECS, DB_HOST/DB_NAME/DB_USER/DB_PASSWORD are injected separately so the
+    password can come from Secrets Manager without being embedded in a URL string.
+    Falls back to DATABASE_URL env var (local dev SQLite or full Postgres URL).
+    """
+    host = os.getenv("DB_HOST")
+    if host:
+        name = os.getenv("DB_NAME", "courses")
+        user = os.getenv("DB_USER", "courses_admin")
+        password = os.getenv("DB_PASSWORD", "")
+        return f"postgresql+asyncpg://{user}:{password}@{host}:5432/{name}"
+    return os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./courses.db")
+
+
+DATABASE_URL: str = _build_database_url()
 
 _is_sqlite   = DATABASE_URL.startswith("sqlite")
 _is_postgres = DATABASE_URL.startswith("postgresql")
