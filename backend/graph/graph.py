@@ -43,7 +43,13 @@ if _is_postgres:
         _PG_CONN_STR += "?sslmode=require"
     # Pool is created closed; api/main.py lifespan calls open_checkpointer() to open it.
     # open=False prevents an attempt to connect at import time (before the event loop is running).
-    _pg_pool = AsyncConnectionPool(conninfo=_PG_CONN_STR, open=False)
+    # autocommit=True is required because setup() runs CREATE INDEX CONCURRENTLY which
+    # cannot execute inside a transaction block.
+    _pg_pool = AsyncConnectionPool(
+        conninfo=_PG_CONN_STR,
+        open=False,
+        kwargs={"autocommit": True},
+    )
     _checkpointer = AsyncPostgresSaver(_pg_pool)
 
     async def open_checkpointer() -> None:
