@@ -1,5 +1,4 @@
 import ReactMarkdown from 'react-markdown'
-import React from 'react'
 
 export function Markdown({ content }: { content: string }) {
   return (

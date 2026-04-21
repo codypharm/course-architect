@@ -13,7 +13,6 @@ export function QuizCard({ q, idx }: { q: QuizQuestion; idx: number }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
         {q.options.map((opt, i) => {
           const isCorrect = revealed && opt === q.answer
-          const isSelectedAndWrong = revealed && !isCorrect // Optionally we could track user selection, but here we just show the correct answer upon reveal.
           const letter = ['A', 'B', 'C', 'D'][i]
           return (
             <div key={i} style={{
