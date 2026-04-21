@@ -15,21 +15,35 @@ validation  (HITL #1 — tutor approves feasibility report)
                          ├─ approved → END
                          └─ retry    → curriculum_planner  (retry_context injected as HARD CONSTRAINT)
 
-Checkpointer: AsyncRedisSaver — shared across all Celery workers and the API process so that
-graph state persists between task runs and survives worker restarts.
-AsyncRedisSaver is required because graph.ainvoke uses async checkpointer methods (aget_tuple).
-Phase 2: swap REDIS_URL to point at ElastiCache; swap AsyncRedisSaver → AsyncPostgresSaver for Aurora.
+Checkpointer:
+  - Production (Aurora Postgres): AsyncPostgresSaver — persists across Celery workers and API restarts.
+  - Local dev (SQLite): MemorySaver — in-process only, no extra infra needed.
+
+ElastiCache is plain Redis and does not include the RediSearch module, so
+langgraph-checkpoint-redis (which requires FT._LIST from Redis Stack) cannot be used.
 """
 import os
 
 from dotenv import load_dotenv
-from langgraph.checkpoint.redis.aio import AsyncRedisSaver
 from langgraph.graph import END, START, StateGraph
 
 load_dotenv()
 
-_REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-_checkpointer = AsyncRedisSaver(_REDIS_URL)
+from storage.database import DATABASE_URL
+
+_is_postgres = DATABASE_URL.startswith("postgresql")
+
+if _is_postgres:
+    from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+    # psycopg uses standard postgresql:// URLs; strip the +asyncpg SQLAlchemy driver prefix
+    _PG_CONN_STR = DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
+    if os.getenv("DB_HOST"):
+        # Aurora requires SSL; append only when running on ECS (DB_HOST is set by Terraform)
+        _PG_CONN_STR += "?sslmode=require"
+    _checkpointer = AsyncPostgresSaver.from_conn_string(_PG_CONN_STR)
+else:
+    from langgraph.checkpoint.memory import MemorySaver
+    _checkpointer = MemorySaver()
 
 from nodes.curriculum_planner import curriculum_planner_agent
 from nodes.curriculum_review import curriculum_review_node

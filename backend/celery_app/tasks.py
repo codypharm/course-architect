@@ -8,7 +8,7 @@ Each task wraps one segment of the LangGraph graph run:
 
 All tasks:
 - Run async LangGraph code via asyncio.run()
-- Create a FRESH AsyncRedisSaver + compiled graph per task invocation so that
+- Create a FRESH checkpointer + compiled graph per task invocation so that
   connections are always bound to the current event loop.  The module-level
   graph singleton in graph.py is for the FastAPI process only; importing and
   reusing it here would cause "Event loop is closed" errors on Celery retry
@@ -22,38 +22,48 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from celery.utils.log import get_task_logger
-from langgraph.checkpoint.redis.aio import AsyncRedisSaver
 from langgraph.types import Command
 from sqlalchemy import select
 
 from graph.graph import build_graph
 from utils.pipeline import derive_pipeline_status, graph_config
 from celery_app.worker import celery_app
-from storage.database import AsyncSessionLocal
+from storage.database import AsyncSessionLocal, DATABASE_URL
 from storage.models import CourseRecord
 
 logger = get_task_logger(__name__)
 
-_REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+_is_postgres = DATABASE_URL.startswith("postgresql")
+if _is_postgres:
+    from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+    _PG_CONN_STR = DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
+    if os.getenv("DB_HOST"):
+        _PG_CONN_STR += "?sslmode=require"
 
 
 @asynccontextmanager
 async def _fresh_graph():
-    """Async context manager that yields a compiled graph with a setup AsyncRedisSaver.
+    """Async context manager yielding a compiled graph with a fresh checkpointer.
 
-    Using AsyncRedisSaver as an async context manager ensures:
-    1. asetup() is called — creates the Redis search indexes (checkpoint,
-       checkpoint_write) needed before any ainvoke / aget_state call.
-    2. The connection is properly closed on exit.
-    3. All connections are bound to the current event loop (each asyncio.run()
-       call gets its own loop, so this must be called inside the coroutine).
+    Each Celery task calls asyncio.run(), which creates a new event loop, so
+    the checkpointer connection must be created inside the coroutine.
+
+    - Postgres (ECS): AsyncPostgresSaver opened as an async context manager so
+      the psycopg connection pool is properly closed on exit.
+    - SQLite (local dev): MemorySaver — no connection needed, state lives only
+      for the duration of the task run.
 
     Usage::
         async with _fresh_graph() as g:
             await g.ainvoke(...)
     """
-    async with AsyncRedisSaver(_REDIS_URL) as checkpointer:
-        yield build_graph(checkpointer)
+    if _is_postgres:
+        async with AsyncPostgresSaver.from_conn_string(_PG_CONN_STR) as checkpointer:
+            await checkpointer.setup()
+            yield build_graph(checkpointer)
+    else:
+        from langgraph.checkpoint.memory import MemorySaver
+        yield build_graph(MemorySaver())
 
 
 def _delete_thread_vectors(thread_id: str) -> None:

@@ -3,7 +3,7 @@
 Mounts all routes under /api/v1. On startup:
   - Loads .env so LANGCHAIN_* and DATABASE_URL are available before any import
   - Creates all DB tables via Base.metadata.create_all (Aurora or SQLite, idempotent)
-  - Creates Redis checkpoint indexes for LangGraph
+  - Creates LangGraph checkpoint tables (Postgres) or no-ops (MemorySaver for local dev)
   - Creates S3 Vectors index for RAG pipeline (idempotent)
 """
 import os
@@ -26,9 +26,10 @@ async def lifespan(app: FastAPI):
     """Startup: create DB tables, Redis checkpoint indexes, and S3 Vectors index."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    # Creates the Redis search indexes (checkpoint, checkpoint_write) that
-    # AsyncRedisSaver needs before it can store or retrieve any state.
-    await _checkpointer.asetup()
+    # AsyncPostgresSaver.setup() creates the checkpoint tables (idempotent).
+    # MemorySaver (local dev) has no setup method — the hasattr guard handles that.
+    if hasattr(_checkpointer, "setup"):
+        await _checkpointer.setup()
     # Create the S3 Vectors index if it does not already exist (idempotent).
     from storage.s3vectors import ensure_index
     ensure_index()
