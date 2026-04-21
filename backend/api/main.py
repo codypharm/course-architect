@@ -6,6 +6,7 @@ Mounts all routes under /api/v1. On startup:
   - Creates Redis checkpoint indexes for LangGraph
   - Creates S3 Vectors index for RAG pipeline (idempotent)
 """
+import os
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -41,9 +42,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+_ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # tighten to specific origins in production
+    allow_origins=_ALLOWED_ORIGINS,
     allow_methods=["*"],
     allow_headers=["*"],
 )

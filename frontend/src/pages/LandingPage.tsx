@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
 
 /* ─── Inline SVG icon primitives (no emoji, no icon library needed) ─── */
 function Icon({ path, size = 18 }: { path: string; size?: number }) {
@@ -462,24 +463,22 @@ export default function LandingPage() {
 
         {/* CTA */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Link to="/dashboard" style={{ fontSize: 14, color: 'var(--ink-muted)', textDecoration: 'none' }}>
-            Sign in
-          </Link>
-          <Link
-            to="/dashboard"
-            style={{
-              fontSize: 13,
-              fontWeight: 500,
-              color: '#fff',
-              background: 'var(--ink)',
-              padding: '7px 16px',
-              borderRadius: 5,
-              textDecoration: 'none',
-              transition: 'background 150ms',
-            }}
-          >
-            Get started
-          </Link>
+          <SignedOut>
+            <SignInButton mode="redirect">
+              <button style={{ fontSize: 14, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+                Sign in
+              </button>
+            </SignInButton>
+            <SignUpButton mode="redirect">
+              <button style={{ fontSize: 13, fontWeight: 500, color: '#fff', background: 'var(--ink)', padding: '7px 16px', borderRadius: 5, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+                Get started
+              </button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <Link to="/dashboard" style={{ fontSize: 14, color: 'var(--ink-muted)', textDecoration: 'none' }}>Dashboard</Link>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
         </div>
       </nav>
 
@@ -550,24 +549,20 @@ export default function LandingPage() {
 
           {/* CTA row */}
           <div className="enter" style={{ display: 'flex', gap: 12, alignItems: 'center', animationDelay: '240ms' }}>
-            <Link
-              to="/dashboard"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                fontSize: 14,
-                fontWeight: 500,
-                color: '#fff',
-                background: 'var(--ink)',
-                padding: '10px 22px',
-                borderRadius: 5,
-                textDecoration: 'none',
-              }}
-            >
-              Start generating for free
-              <Icon path={ICONS.arrow} size={14} />
-            </Link>
+            <SignedOut>
+              <SignUpButton mode="redirect">
+                <button style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'var(--ink)', padding: '10px 22px', borderRadius: 5, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+                  Start generating for free
+                  <Icon path={ICONS.arrow} size={14} />
+                </button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <Link to="/dashboard" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'var(--ink)', padding: '10px 22px', borderRadius: 5, textDecoration: 'none' }}>
+                Go to dashboard
+                <Icon path={ICONS.arrow} size={14} />
+              </Link>
+            </SignedIn>
             <button
               style={{
                 display: 'inline-flex',
@@ -928,24 +923,20 @@ export default function LandingPage() {
           <p style={{ fontSize: 15, color: 'var(--ink-muted)', margin: '0 0 40px' }}>
             No credit card required. Start with your first course, free.
           </p>
-          <Link
-            to="/dashboard"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              fontSize: 14,
-              fontWeight: 500,
-              color: '#fff',
-              background: 'var(--ink)',
-              padding: '12px 28px',
-              borderRadius: 5,
-              textDecoration: 'none',
-            }}
-          >
-            Start generating for free
-            <Icon path={ICONS.arrow} size={14} />
-          </Link>
+          <SignedOut>
+            <SignUpButton mode="redirect">
+              <button style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'var(--ink)', padding: '12px 28px', borderRadius: 5, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+                Start generating for free
+                <Icon path={ICONS.arrow} size={14} />
+              </button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <Link to="/dashboard" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'var(--ink)', padding: '12px 28px', borderRadius: 5, textDecoration: 'none' }}>
+              Go to dashboard
+              <Icon path={ICONS.arrow} size={14} />
+            </Link>
+          </SignedIn>
         </div>
       </section>
 

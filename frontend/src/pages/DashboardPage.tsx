@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useAuth } from '@clerk/clerk-react'
 import { api } from '@/lib/api'
 import type { CourseListItem, CourseStatus } from '@/types/course'
 import { Ico, I } from '@/components/Icon'
 import NewCourseForm, { type CourseBrief } from '@/components/NewCourseForm'
 import PipelineTracker from '@/components/PipelineTracker'
 
-const USER_ID = 'demo-user'
-
 /* ─── API ─── */
-async function fetchCourses(): Promise<CourseListItem[]> {
-  const res = await api.get<CourseListItem[]>(`/users/${USER_ID}/courses`)
+async function fetchCourses(userId: string): Promise<CourseListItem[]> {
+  const res = await api.get<CourseListItem[]>(`/users/${userId}/courses`)
   return res.data
 }
 
@@ -381,6 +380,7 @@ const NAV_ITEMS: { id: Exclude<NavItem, 'course'>; label: string; icon: string }
 export default function DashboardPage() {
   const { threadId }          = useParams<{ threadId: string }>()
   const navigate               = useNavigate()
+  const { userId }             = useAuth()
   const [nav, setNav]          = useState<NavItem>(threadId ? 'course' : 'dashboard')
   const [search, setSearch]    = useState('')
   const [formKey, setFormKey]      = useState(0)
@@ -393,8 +393,9 @@ export default function DashboardPage() {
   }, [threadId])
 
   const { data: courses, isLoading } = useQuery({
-    queryKey: ['courses', USER_ID],
-    queryFn: fetchCourses,
+    queryKey: ['courses', userId],
+    queryFn: () => fetchCourses(userId!),
+    enabled: !!userId,
     refetchInterval: q => q.state.data?.some(c => isActive(c.status)) ? 5000 : false,
   })
 
@@ -405,7 +406,7 @@ export default function DashboardPage() {
     : null
 
   function handleSuccess(_id: string) {
-    qc.invalidateQueries({ queryKey: ['courses', USER_ID] })
+    qc.invalidateQueries({ queryKey: ['courses', userId] })
   }
 
   function goToDashboard() {

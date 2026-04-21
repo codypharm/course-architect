@@ -10,7 +10,6 @@ class StartCourseRequest(BaseModel):
     Files must be uploaded first via POST /files. Pass the returned paths
     in `uploaded_file_paths`.
     """
-    user_id: str = Field(description="Clerk user ID — unverified in Phase 1, required for course listing")
     subject: str
     audience_age: str
     audience_level: str

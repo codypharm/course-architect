@@ -5671,3 +5671,11 @@ celery.utils.serialization.UnpickleableExceptionWrapper: ExceptionGroup('unhandl
 [2026-04-21 09:22:54,709: INFO/MainProcess] mingle: searching for neighbors
 [2026-04-21 09:22:55,731: INFO/MainProcess] mingle: all alone
 [2026-04-21 09:22:55,768: INFO/MainProcess] celery@codypharm ready.
+[2026-04-21 09:34:42,600: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-21 09:34:42,610: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-21 09:34:43,628: INFO/MainProcess] mingle: all alone
+[2026-04-21 09:34:43,658: INFO/MainProcess] celery@codypharm ready.
+[2026-04-21 09:51:30,047: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-21 09:51:30,054: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-21 09:51:31,073: INFO/MainProcess] mingle: all alone
+[2026-04-21 09:51:31,105: INFO/MainProcess] celery@codypharm ready.

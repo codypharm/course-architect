@@ -8,8 +8,9 @@ Supported formats: .pdf, .txt, .md
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
+from api.dependencies.auth import get_current_user_id
 from api.schemas.files import FileUploadResponse
 from storage.s3 import get_object_size, upload_fileobj
 from utils.logging import get_logger
@@ -23,6 +24,7 @@ ALLOWED_SUFFIXES = {".pdf", ".txt", ".md"}
 @router.post("/files", response_model=list[FileUploadResponse], status_code=201)
 async def upload_files(
     files: list[UploadFile] = File(..., description="Knowledge base documents (.pdf, .txt, .md)"),
+    _user_id: str = Depends(get_current_user_id),
 ) -> list[FileUploadResponse]:
     """Upload one or more knowledge base documents to S3.
 

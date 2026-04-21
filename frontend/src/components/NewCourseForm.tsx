@@ -4,11 +4,8 @@ import { api } from '@/lib/api'
 import { Ico, I } from './Icon'
 import PipelineTracker, { type CourseStatusResponse } from './PipelineTracker'
 
-const USER_ID = 'demo-user'
-
 /* ─── Types ─── */
 interface StartCoursePayload {
-  user_id: string
   subject: string
   audience_age: string
   audience_level: string
@@ -154,7 +151,6 @@ export default function NewCourseForm({ onCancel, onSuccess, onReset, initialVal
       const newPaths = files.length ? await uploadFiles(files) : []
       const paths = [...carriedPaths, ...newPaths]
       return startCourse({
-        user_id: USER_ID,
         subject: subject.trim(),
         audience_age: audienceAge,
         audience_level: audienceLevel,

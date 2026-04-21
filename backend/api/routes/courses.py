@@ -19,6 +19,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.dependencies.auth import get_current_user_id
 from api.schemas.courses import (
     CourseBriefResponse,
     CourseListItem,
@@ -61,6 +62,7 @@ async def _get_record_or_404(thread_id: str, db: AsyncSession) -> CourseRecord:
 async def start_course(
     body: StartCourseRequest,
     db: AsyncSession = Depends(get_db),
+    user_id: str = Depends(get_current_user_id),
 ) -> CourseStatusResponse:
     """Start a new course generation pipeline.
 
@@ -85,7 +87,7 @@ async def start_course(
     record = CourseRecord(
         id=str(uuid4()),
         thread_id=thread_id,
-        user_id=body.user_id,
+        user_id=user_id,
         subject=body.subject,
         status="queued",
         uploaded_files=body.uploaded_file_paths or [],
@@ -125,6 +127,7 @@ async def start_course(
 async def get_course(
     thread_id: str,
     db: AsyncSession = Depends(get_db),
+    current_user_id: str = Depends(get_current_user_id),
 ) -> CourseStatusResponse:
     """Poll the current state of a course pipeline run.
 
@@ -133,6 +136,9 @@ async def get_course(
     from live graph state (reads RedisSaver directly).
     """
     record = await _get_record_or_404(thread_id, db)
+
+    if record.user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
     # Queued/failed: DB is authoritative, no graph state available
     if record.status in ("queued", "failed"):
@@ -169,6 +175,7 @@ async def get_course(
 async def get_course_brief(
     thread_id: str,
     db: AsyncSession = Depends(get_db),
+    current_user_id: str = Depends(get_current_user_id),
 ) -> CourseBriefResponse:
     """Return the original brief fields for a course from the LangGraph checkpoint.
 
@@ -177,7 +184,9 @@ async def get_course_brief(
     The graph checkpoint is preserved even after the graph reaches END, so
     this works for rejected courses.
     """
-    await _get_record_or_404(thread_id, db)
+    record = await _get_record_or_404(thread_id, db)
+    if record.user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
     snapshot = await graph.aget_state(graph_config(thread_id))
     if not snapshot or not snapshot.values:
@@ -207,6 +216,7 @@ async def resume_validation(
     thread_id: str,
     body: ValidationResumeRequest,
     db: AsyncSession = Depends(get_db),
+    current_user_id: str = Depends(get_current_user_id),
 ) -> CourseStatusResponse:
     """Submit tutor verdict at HITL #1 (validation feasibility report).
 
@@ -218,6 +228,8 @@ async def resume_validation(
     Returns immediately with status="processing". Poll GET /courses/{thread_id} for result.
     """
     record = await _get_record_or_404(thread_id, db)
+    if record.user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
     record.status = "processing"
     record.updated_at = datetime.now(timezone.utc)
@@ -238,6 +250,7 @@ async def resume_curriculum(
     thread_id: str,
     body: CurriculumResumeRequest,
     db: AsyncSession = Depends(get_db),
+    current_user_id: str = Depends(get_current_user_id),
 ) -> CourseStatusResponse:
     """Submit tutor verdict at HITL #2 (curriculum review).
 
@@ -254,6 +267,8 @@ async def resume_curriculum(
         )
 
     record = await _get_record_or_404(thread_id, db)
+    if record.user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
     record.status = "processing"
     record.updated_at = datetime.now(timezone.utc)
@@ -281,11 +296,16 @@ async def resume_curriculum(
 async def list_user_courses(
     user_id: str,
     db: AsyncSession = Depends(get_db),
+    current_user_id: str = Depends(get_current_user_id),
 ) -> list[CourseListItem]:
+
     """Return all courses created by a user, newest first.
 
     Reads from DB — does not hit the graph. Returns empty list if user has no courses.
     """
+    if user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
     result = await db.execute(
         select(CourseRecord)
         .where(CourseRecord.user_id == user_id)
