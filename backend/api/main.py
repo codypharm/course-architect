@@ -18,22 +18,22 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes.courses import router as courses_router
 from api.routes.files import router as files_router
-from graph.graph import _checkpointer
+from graph.graph import open_checkpointer, close_checkpointer
 from storage.database import Base, engine
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup: create DB tables, Redis checkpoint indexes, and S3 Vectors index."""
+    """Startup: create DB tables, open Postgres checkpoint pool, create S3 Vectors index."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    # AsyncPostgresSaver.setup() creates the checkpoint tables (idempotent).
-    # MemorySaver (local dev) has no setup method — the hasattr guard handles that.
-    if hasattr(_checkpointer, "setup"):
-        await _checkpointer.setup()
+    # Open the psycopg connection pool and create LangGraph checkpoint tables (idempotent).
+    # For local dev (MemorySaver) this is a no-op.
+    await open_checkpointer()
     # Create the S3 Vectors index if it does not already exist (idempotent).
     from storage.s3vectors import ensure_index
     ensure_index()
     yield
+    await close_checkpointer()
 
 
 app = FastAPI(

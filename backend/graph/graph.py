@@ -34,16 +34,36 @@ from storage.database import DATABASE_URL
 _is_postgres = DATABASE_URL.startswith("postgresql")
 
 if _is_postgres:
+    from psycopg_pool import AsyncConnectionPool
     from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
     # psycopg uses standard postgresql:// URLs; strip the +asyncpg SQLAlchemy driver prefix
     _PG_CONN_STR = DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
     if os.getenv("DB_HOST"):
         # Aurora requires SSL; append only when running on ECS (DB_HOST is set by Terraform)
         _PG_CONN_STR += "?sslmode=require"
-    _checkpointer = AsyncPostgresSaver.from_conn_string(_PG_CONN_STR)
+    # Pool is created closed; api/main.py lifespan calls open_checkpointer() to open it.
+    # open=False prevents an attempt to connect at import time (before the event loop is running).
+    _pg_pool = AsyncConnectionPool(conninfo=_PG_CONN_STR, open=False)
+    _checkpointer = AsyncPostgresSaver(_pg_pool)
+
+    async def open_checkpointer() -> None:
+        """Open the connection pool and create checkpoint tables (idempotent)."""
+        await _pg_pool.open()
+        await _checkpointer.setup()
+
+    async def close_checkpointer() -> None:
+        """Close the connection pool on app shutdown."""
+        await _pg_pool.close()
+
 else:
     from langgraph.checkpoint.memory import MemorySaver
     _checkpointer = MemorySaver()
+
+    async def open_checkpointer() -> None:
+        """No-op for local dev MemorySaver."""
+
+    async def close_checkpointer() -> None:
+        """No-op for local dev MemorySaver."""
 
 from nodes.curriculum_planner import curriculum_planner_agent
 from nodes.curriculum_review import curriculum_review_node
