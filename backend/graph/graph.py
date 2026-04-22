@@ -60,10 +60,14 @@ if _is_postgres:
         AsyncPostgresSaver is constructed here (not at module level) specifically
         because its __init__ calls asyncio.get_running_loop().
         """
-        global _checkpointer
+        global _checkpointer, graph
         await _pg_pool.open()
         _checkpointer = AsyncPostgresSaver(_pg_pool)
         await _checkpointer.setup()
+        # Recompile the module-level graph now that the checkpointer is ready.
+        # build_graph() at import time ran with _checkpointer=None; FastAPI's
+        # get_course endpoint calls graph.aget_state() which requires a checkpointer.
+        graph = build_graph(_checkpointer)
 
     async def close_checkpointer() -> None:
         """Close the connection pool on app shutdown."""
