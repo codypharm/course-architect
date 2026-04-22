@@ -215,4 +215,3 @@ npm run dev
 ## Further Reading
 
 - [Backend README](./backend/README.md) — pipeline nodes, API reference, local dev setup
-- [CLAUDE.md](./.claude/CLAUDE.md) — architecture decisions and build rules
