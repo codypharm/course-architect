@@ -67,6 +67,7 @@ resource "aws_iam_role_policy" "task_s3" {
     Version = "2012-10-17"
     Statement = [
       {
+        # Raw file uploads bucket (standard S3)
         Effect = "Allow"
         Action = ["s3:PutObject", "s3:GetObject", "s3:DeleteObject", "s3:ListBucket"]
         Resource = [
@@ -75,15 +76,38 @@ resource "aws_iam_role_policy" "task_s3" {
         ]
       },
       {
+        # Vectors bucket — standard S3 actions (bucket-level ops)
         Effect = "Allow"
-        Action = ["s3:PutObject", "s3:GetObject", "s3:DeleteObject", "s3:ListBucket",
-                  "s3vectors:PutVectors", "s3vectors:GetVectors", "s3vectors:DeleteVectors",
-                  "s3vectors:QueryVectors", "s3vectors:CreateIndex", "s3vectors:DescribeIndex"]
+        Action = ["s3:PutObject", "s3:GetObject", "s3:DeleteObject", "s3:ListBucket"]
         Resource = [
           "arn:aws:s3:::${var.project}-${var.env}-vectors",
           "arn:aws:s3:::${var.project}-${var.env}-vectors/*",
         ]
-      }
+      },
+      {
+        # S3 Vectors API actions — resource ARN uses arn:aws:s3vectors, NOT arn:aws:s3
+        # Bucket-level: CreateIndex, ListIndexes
+        Effect = "Allow"
+        Action = [
+          "s3vectors:CreateIndex",
+          "s3vectors:DescribeIndex",
+          "s3vectors:DeleteIndex",
+          "s3vectors:ListIndexes",
+        ]
+        Resource = "arn:aws:s3vectors:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:bucket/${var.project}-${var.env}-vectors"
+      },
+      {
+        # S3 Vectors API actions — index-level operations
+        Effect = "Allow"
+        Action = [
+          "s3vectors:PutVectors",
+          "s3vectors:GetVectors",
+          "s3vectors:DeleteVectors",
+          "s3vectors:QueryVectors",
+          "s3vectors:ListVectors",
+        ]
+        Resource = "arn:aws:s3vectors:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:bucket/${var.project}-${var.env}-vectors/index/*"
+      },
     ]
   })
 }
