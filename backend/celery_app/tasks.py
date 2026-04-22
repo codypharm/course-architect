@@ -149,10 +149,9 @@ async def _update_db(thread_id: str, status: str, data: dict) -> None:
             record.curriculum_plan = data.get("curriculum_plan")
             record.session_content = data.get("session_content")
 
-        # Only delete uploaded files on hard failure — rejected means the tutor
-        # is revising and the uploaded files are still needed for the new run.
-        if status == "failed":
-            _delete_uploaded_files(record.uploaded_files or [], thread_id)
+        # Raw uploaded files are NOT deleted on failure — the user needs them
+        # to retry without re-uploading. Files are only cleaned up when the
+        # course is explicitly deleted (handled by the delete endpoint).
 
         await session.commit()
 
