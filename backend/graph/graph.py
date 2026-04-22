@@ -41,20 +41,28 @@ if _is_postgres:
     if os.getenv("DB_HOST"):
         # Aurora requires SSL; append only when running on ECS (DB_HOST is set by Terraform)
         _PG_CONN_STR += "?sslmode=require"
-    # Pool is created closed; api/main.py lifespan calls open_checkpointer() to open it.
-    # open=False prevents an attempt to connect at import time (before the event loop is running).
-    # autocommit=True is required because setup() runs CREATE INDEX CONCURRENTLY which
-    # cannot execute inside a transaction block.
+    # Pool is created closed at module level — safe to construct without a running event loop.
+    # AsyncPostgresSaver is NOT created here because its __init__ calls
+    # asyncio.get_running_loop(), which raises RuntimeError when graph.py is imported
+    # by the Celery worker (synchronous process, no event loop at import time).
+    # open_checkpointer() runs inside FastAPI's async lifespan and creates it there.
     _pg_pool = AsyncConnectionPool(
         conninfo=_PG_CONN_STR,
         open=False,
         kwargs={"autocommit": True},
     )
-    _checkpointer = AsyncPostgresSaver(_pg_pool)
+    _checkpointer = None  # set by open_checkpointer() once the event loop is running
 
     async def open_checkpointer() -> None:
-        """Open the connection pool and create checkpoint tables (idempotent)."""
+        """Open the connection pool and create checkpoint tables (idempotent).
+
+        Called from FastAPI lifespan — a running event loop is guaranteed here.
+        AsyncPostgresSaver is constructed here (not at module level) specifically
+        because its __init__ calls asyncio.get_running_loop().
+        """
+        global _checkpointer
         await _pg_pool.open()
+        _checkpointer = AsyncPostgresSaver(_pg_pool)
         await _checkpointer.setup()
 
     async def close_checkpointer() -> None:
@@ -95,10 +103,15 @@ def _after_review(state: CourseState) -> str:
 def build_graph(checkpointer=None):
     """Construct and compile the LangGraph pipeline.
 
-    Accepts an optional checkpointer so Celery tasks can supply a freshly
-    created AsyncRedisSaver bound to the current event loop.  When omitted
-    the module-level AsyncRedisSaver (suitable for the long-lived FastAPI
-    event loop) is used.
+    Callers:
+    - FastAPI: called without arguments after open_checkpointer() sets _checkpointer.
+    - Celery tasks: always pass their own fresh AsyncPostgresSaver so that
+      connections are bound to the task's event loop, not the FastAPI loop.
+
+    _checkpointer may be None when this is called at module level during Celery
+    worker startup (before any event loop exists). That's fine — the module-level
+    graph singleton is only used by FastAPI; Celery tasks call build_graph(cp)
+    with an explicit checkpointer each time.
     """
     cp = checkpointer if checkpointer is not None else _checkpointer
 
