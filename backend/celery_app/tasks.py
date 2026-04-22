@@ -24,11 +24,13 @@ from datetime import datetime, timezone
 from celery.utils.log import get_task_logger
 from langgraph.types import Command
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.pool import NullPool
 
 from graph.graph import build_graph
 from utils.pipeline import derive_pipeline_status, graph_config
 from celery_app.worker import celery_app
-from storage.database import AsyncSessionLocal, DATABASE_URL
+from storage.database import DATABASE_URL, _is_postgres as _db_is_postgres, _is_sqlite
 from storage.models import CourseRecord
 
 logger = get_task_logger(__name__)
@@ -39,6 +41,26 @@ if _is_postgres:
     _PG_CONN_STR = DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
     if os.getenv("DB_HOST"):
         _PG_CONN_STR += "?sslmode=require"
+
+# Dedicated engine for Celery tasks — uses NullPool (no connection reuse).
+# Each Celery task calls asyncio.run() which creates a NEW event loop.  The
+# module-level engine in database.py has an asyncpg pool whose connections are
+# bound to whichever loop was current on first use.  Reusing those connections
+# in a different loop raises "Future attached to a different loop".
+# NullPool creates a fresh connection per session.open() and closes it on
+# session.close(), so every asyncio.run() call gets connections on its own loop.
+_celery_engine = create_async_engine(
+    DATABASE_URL,
+    echo=False,
+    pool_pre_ping=True,
+    poolclass=NullPool,
+    connect_args=(
+        {"check_same_thread": False} if _is_sqlite
+        else {"ssl": "require"} if _db_is_postgres
+        else {}
+    ),
+)
+_CelerySession = async_sessionmaker(_celery_engine, expire_on_commit=False)
 
 
 @asynccontextmanager
@@ -111,7 +133,7 @@ async def _update_db(thread_id: str, status: str, data: dict) -> None:
     On rejection or failure, deletes uploaded files from disk to avoid
     accumulating orphaned files in storage.
     """
-    async with AsyncSessionLocal() as session:
+    async with _CelerySession() as session:
         result = await session.execute(
             select(CourseRecord).where(CourseRecord.thread_id == thread_id)
         )
