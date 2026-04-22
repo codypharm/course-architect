@@ -78,16 +78,63 @@ produces a full session-by-session course pack with lessons, quizzes, and video 
 
 ## User Flow
 
-1. Tutor uploads knowledge base (PDFs, notes, URLs)
-2. Tutor configures subject, audience age, duration, session count, and preferred formats
-3. Pipeline preprocesses uploads — chunks, embeds, stores in S3 Vectors
-4. Validation Agent vets feasibility, age-appropriateness, content gaps, estimated cost
-5. **HITL #1** — tutor sees the pre-flight report and approves or abandons
-6. Gap Enrichment Agent searches Google (Serper MCP) to fill flagged knowledge gaps
-7. Curriculum Planner Agent generates the session-by-session schedule
-8. Content Agents generate per-session lessons, video scripts, quizzes, and worksheets in parallel
-9. **HITL #2** — tutor approves the curriculum or requests a retry with refinement context
-10. Tutor receives the complete structured course pack
+**1. Tutor uploads knowledge base (PDFs, notes, URLs)**
+The frontend POSTs the brief to `/api/v1/courses`. FastAPI generates a `thread_id` (UUID), creates
+a `CourseRecord` row in the database with status `queued`, enqueues a `pipeline_start` task onto
+the Redis `high_priority` queue, and immediately returns the `thread_id` to the frontend. The
+frontend starts polling `GET /api/v1/courses/:thread_id` on an interval from this point.
+
+**2. Tutor configures subject, audience age, duration, session count, and preferred formats**
+These fields are submitted with the brief and written into the LangGraph initial state.
+
+**3. Preprocessor runs**
+The Celery worker picks up the task from Redis and calls `asyncio.run()`, which creates a fresh
+event loop and builds a LangGraph graph with a Postgres checkpointer keyed to the `thread_id`.
+The preprocessor node reads uploaded files from S3 and fetches any URLs the tutor provided — all
+URL fetches run concurrently via `asyncio.gather`. The combined text is chunked (~1 500 tokens,
+200 overlap), each chunk is embedded using OpenAI `text-embedding-3-small`, and the embeddings are
+stored in S3 Vectors under the key prefix `{thread_id}#` so they are isolated to this run.
+
+**4. Validation Agent vets feasibility, age-appropriateness, content gaps, and estimated cost**
+The validation node reads the knowledge summary produced by the preprocessor and produces a
+structured feasibility report. It then calls LangGraph `interrupt()` — the graph pauses here, the
+worker writes status `awaiting_validation` to the database and returns. The `thread_id` is now the
+address of the paused graph state in Postgres.
+
+**5. HITL #1 — tutor sees the pre-flight report and approves or abandons**
+The frontend poll hits `GET /api/v1/courses/:thread_id`. The API reads the `CourseRecord` status
+from the database, then calls `graph.aget_state(thread_id)` to read the full interrupt payload from
+the LangGraph Postgres checkpoint — feasibility report, flags, estimated cost — and returns it to
+the frontend. The tutor approves or rejects via `POST .../validation/resume`, which enqueues a
+`pipeline_resume_validation` task. If rejected the graph routes to END and status becomes
+`rejected`. If approved the pipeline continues.
+
+**6. Gap Enrichment Agent searches Google to fill flagged knowledge gaps**
+If the validation report flagged missing topics, the gap enrichment node spawns a Serper MCP server
+subprocess via `npx` and runs a ReAct agent that issues one Google search per gap. Results are
+embedded and added to S3 Vectors alongside the original knowledge base. On any failure (missing key,
+network error) gaps are cleared and the pipeline advances without stalling.
+
+**7. Curriculum Planner Agent generates the session-by-session schedule**
+The curriculum planner queries S3 Vectors to retrieve the most relevant chunks for each session
+topic, builds a session outline with an LLM call, then generates the full content for every session
+in parallel — all sessions run concurrently via `asyncio.gather`, so a 12-session course takes the
+same wall-clock time as generating one session.
+
+**8. HITL #2 — tutor approves the curriculum or requests a retry with refinement context**
+The graph hits another `interrupt()`. Status becomes `awaiting_curriculum_review`. Same polling
+pattern — the frontend reads the checkpoint via `graph.aget_state(thread_id)` and displays the
+full generated plan. The tutor approves via `POST .../curriculum/resume` or clicks retry and
+types a refinement note (e.g. "make it shorter", "add more exercises").
+
+**9. On approval — course is saved and vectors are cleaned up**
+The graph routes to END. The worker writes `curriculum_plan` and `session_content` into the
+database, status becomes `completed`, and all S3 Vectors for this `thread_id` are deleted.
+
+**10. On retry — pipeline re-runs from the curriculum planner**
+The retry context is injected as a hard constraint (`HARD CONSTRAINT: {text}`) into the curriculum
+planner's system prompt. The plan is regenerated with that constraint honoured and loops back to
+HITL #2. Up to 5 retries are allowed; the `thread_id` and all prior state are preserved throughout.
 
 ---
 
