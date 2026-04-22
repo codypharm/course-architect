@@ -51,15 +51,19 @@ def _check_bucket() -> bool:
     return True
 
 
-def ensure_index() -> None:
+def ensure_index() -> bool:
     """Create the vector index if it does not already exist (idempotent).
 
     Safe to call multiple times — ConflictException (index already exists)
     is silently ignored. Other errors are logged but NOT re-raised so a
     transient S3 Vectors outage does not block app startup.
+
+    Returns:
+        True if the index is confirmed to exist (created or already present).
+        False if creation failed for any reason.
     """
     if not _check_bucket():
-        return
+        return False
     try:
         _s3v().create_index(
             vectorBucketName=VECTOR_BUCKET,
@@ -72,24 +76,35 @@ def ensure_index() -> None:
             "S3 Vectors index created — bucket=%s index=%s dim=%d",
             VECTOR_BUCKET, INDEX_NAME, EMBEDDING_DIM,
         )
+        return True
     except ClientError as exc:
         if exc.response["Error"]["Code"] == "ConflictException":
             logger.debug("S3 Vectors index already exists — bucket=%s index=%s", VECTOR_BUCKET, INDEX_NAME)
+            return True
         else:
             # Non-fatal: log and continue; index is also created lazily on first put_vectors call.
             logger.error("Failed to create S3 Vectors index (ClientError) — RAG writes will retry lazily", exc_info=True)
+            return False
     except Exception:
         # Catches UnknownServiceError if boto3 doesn't recognise "s3vectors" in this region,
         # or any other unexpected error — must not crash the app startup.
         logger.error("Failed to create S3 Vectors index (unexpected) — RAG writes will retry lazily", exc_info=True)
+        return False
 
 
-def _ensure_index_once() -> None:
-    """Call ensure_index() at most once per process to avoid redundant API calls."""
+def _ensure_index_once() -> bool:
+    """Call ensure_index() at most once per process to avoid redundant API calls.
+
+    Only marks the index ready when ensure_index() confirms the index exists.
+    If ensure_index() fails, _index_ready stays False so the next call retries.
+
+    Returns:
+        True if the index is confirmed ready, False otherwise.
+    """
     global _index_ready
     if not _index_ready:
-        ensure_index()
-        _index_ready = True
+        _index_ready = ensure_index()
+    return _index_ready
 
 
 def put_vectors(thread_id: str, chunks: list[dict]) -> int:
@@ -131,11 +146,31 @@ def put_vectors(thread_id: str, chunks: list[dict]) -> int:
     # S3 Vectors does not document a hard per-request limit; batch at 500 to be safe
     batch_size = 500
     for i in range(0, len(vectors), batch_size):
-        _s3v().put_vectors(
-            vectorBucketName=VECTOR_BUCKET,
-            indexName=INDEX_NAME,
-            vectors=vectors[i : i + batch_size],
-        )
+        try:
+            _s3v().put_vectors(
+                vectorBucketName=VECTOR_BUCKET,
+                indexName=INDEX_NAME,
+                vectors=vectors[i : i + batch_size],
+            )
+        except ClientError as exc:
+            if exc.response["Error"]["Code"] == "NotFoundException":
+                # Index does not exist yet — reset the ready flag so ensure_index()
+                # is retried, then attempt to create the index and retry this batch once.
+                global _index_ready
+                _index_ready = False
+                if not _ensure_index_once():
+                    logger.error(
+                        "put_vectors: index still missing after recreation attempt — thread_id=%s",
+                        thread_id,
+                    )
+                    return 0
+                _s3v().put_vectors(
+                    vectorBucketName=VECTOR_BUCKET,
+                    indexName=INDEX_NAME,
+                    vectors=vectors[i : i + batch_size],
+                )
+            else:
+                raise
 
     logger.debug("put_vectors — thread_id=%s count=%d", thread_id, len(vectors))
     return len(vectors)

@@ -31,17 +31,11 @@ resource "aws_s3_bucket_cors_configuration" "uploads" {
   }
 }
 
-resource "aws_s3_bucket" "vectors" {
-  bucket = "${var.project}-${var.env}-vectors"
-  tags   = { Project = var.project, Env = var.env }
-}
-
-resource "aws_s3_bucket_public_access_block" "vectors" {
-  bucket                  = aws_s3_bucket.vectors.id
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+# S3 Vectors vector bucket — NOT a regular S3 bucket.
+# Vector buckets are a separate resource type; standard s3:* IAM actions and
+# aws_s3_bucket do not apply. Use arn:aws:s3vectors:... ARNs in IAM policies.
+resource "aws_s3vectors_vector_bucket" "vectors" {
+  vector_bucket_name = "${var.project}-${var.env}-vectors"
 }
 
 resource "aws_s3_bucket" "frontend" {
