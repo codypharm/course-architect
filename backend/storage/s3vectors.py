@@ -55,7 +55,8 @@ def ensure_index() -> None:
     """Create the vector index if it does not already exist (idempotent).
 
     Safe to call multiple times — ConflictException (index already exists)
-    is silently ignored.
+    is silently ignored. Other errors are logged but NOT re-raised so a
+    transient S3 Vectors outage does not block app startup.
     """
     if not _check_bucket():
         return
@@ -75,8 +76,12 @@ def ensure_index() -> None:
         if exc.response["Error"]["Code"] == "ConflictException":
             logger.debug("S3 Vectors index already exists — bucket=%s index=%s", VECTOR_BUCKET, INDEX_NAME)
         else:
-            logger.error("Failed to create S3 Vectors index", exc_info=True)
-            raise
+            # Non-fatal: log and continue; index is also created lazily on first put_vectors call.
+            logger.error("Failed to create S3 Vectors index (ClientError) — RAG writes will retry lazily", exc_info=True)
+    except Exception:
+        # Catches UnknownServiceError if boto3 doesn't recognise "s3vectors" in this region,
+        # or any other unexpected error — must not crash the app startup.
+        logger.error("Failed to create S3 Vectors index (unexpected) — RAG writes will retry lazily", exc_info=True)
 
 
 def _ensure_index_once() -> None:

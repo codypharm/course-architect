@@ -4,8 +4,9 @@ Mounts all routes under /api/v1. On startup:
   - Loads .env so LANGCHAIN_* and DATABASE_URL are available before any import
   - Creates all DB tables via Base.metadata.create_all (Aurora or SQLite, idempotent)
   - Creates LangGraph checkpoint tables (Postgres) or no-ops (MemorySaver for local dev)
-  - Creates S3 Vectors index for RAG pipeline (idempotent)
+  - Creates S3 Vectors index for RAG pipeline (best-effort, non-fatal)
 """
+import logging
 import os
 from contextlib import asynccontextmanager
 
@@ -21,6 +22,8 @@ from api.routes.files import router as files_router
 from graph.graph import open_checkpointer, close_checkpointer
 from storage.database import Base, engine
 
+logger = logging.getLogger(__name__)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup: create DB tables, open Postgres checkpoint pool, create S3 Vectors index."""
@@ -30,8 +33,13 @@ async def lifespan(app: FastAPI):
     # For local dev (MemorySaver) this is a no-op.
     await open_checkpointer()
     # Create the S3 Vectors index if it does not already exist (idempotent).
-    from storage.s3vectors import ensure_index
-    ensure_index()
+    # Non-fatal: S3 Vectors may be unavailable in some regions or during initial bootstrap;
+    # the index is also created lazily on first put_vectors call.
+    try:
+        from storage.s3vectors import ensure_index
+        ensure_index()
+    except Exception:
+        logger.warning("S3 Vectors index creation failed at startup — will retry lazily on first use", exc_info=True)
     yield
     await close_checkpointer()
 
