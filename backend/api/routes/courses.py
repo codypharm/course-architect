@@ -28,7 +28,7 @@ from api.schemas.courses import (
     StartCourseRequest,
     ValidationResumeRequest,
 )
-from graph.graph import graph
+import graph.graph as _graph_module  # import module so graph is always dereferenced at call time
 from utils.pipeline import derive_pipeline_status, graph_config, infer_processing_stage
 from celery_app.tasks import pipeline_resume_curriculum, pipeline_resume_validation, pipeline_start
 from storage.database import get_db
@@ -148,7 +148,7 @@ async def get_course(
     # Processing: read graph state to infer which stage the pipeline is currently at
     if record.status == "processing":
         try:
-            snapshot = await graph.aget_state(graph_config(thread_id))
+            snapshot = await _graph_module.graph.aget_state(graph_config(thread_id))
             stage = infer_processing_stage(snapshot.values if snapshot else {})
         except Exception:
             stage = 1
@@ -160,7 +160,7 @@ async def get_course(
 
     # For pause/completion statuses, read live graph state for the interrupt payload
     # AsyncRedisSaver only implements async methods — must use aget_state.
-    snapshot = await graph.aget_state(graph_config(thread_id))
+    snapshot = await _graph_module.graph.aget_state(graph_config(thread_id))
     if not snapshot or not snapshot.values:
         return CourseStatusResponse(thread_id=thread_id, status=record.status, data={})
 
@@ -189,7 +189,7 @@ async def get_course_brief(
     if record.user_id != current_user_id:
         raise HTTPException(status_code=403, detail="Forbidden")
 
-    snapshot = await graph.aget_state(graph_config(thread_id))
+    snapshot = await _graph_module.graph.aget_state(graph_config(thread_id))
     if not snapshot or not snapshot.values:
         raise HTTPException(status_code=404, detail="Brief not found in graph checkpoint.")
 
