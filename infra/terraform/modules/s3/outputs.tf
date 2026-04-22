@@ -3,7 +3,7 @@ output "uploads_bucket" {
 }
 
 output "vectors_bucket" {
-  value = aws_s3vectors_vector_bucket.vectors.vector_bucket_name
+  value = "${var.project}-${var.env}-vectors"
 }
 
 output "frontend_bucket" {

@@ -31,12 +31,13 @@ resource "aws_s3_bucket_cors_configuration" "uploads" {
   }
 }
 
-# S3 Vectors vector bucket — NOT a regular S3 bucket.
-# Vector buckets are a separate resource type; standard s3:* IAM actions and
-# aws_s3_bucket do not apply. Use arn:aws:s3vectors:... ARNs in IAM policies.
-resource "aws_s3vectors_vector_bucket" "vectors" {
-  vector_bucket_name = "${var.project}-${var.env}-vectors"
-}
+# S3 Vectors vector bucket is NOT managed by Terraform.
+# The hashicorp/aws provider does not yet support aws_s3vectors_vector_bucket.
+# The bucket and index were created manually via CLI:
+#   aws s3vectors create-vector-bucket --vector-bucket-name {project}-{env}-vectors --region {region}
+#   aws s3vectors create-index --vector-bucket-name {project}-{env}-vectors --index-name course-chunks \
+#     --data-type float32 --dimension 1536 --distance-metric cosine --region {region}
+# Repeat these two commands when provisioning a new environment.
 
 resource "aws_s3_bucket" "frontend" {
   bucket = "${var.project}-${var.env}-frontend"
