@@ -17,6 +17,13 @@ FROM python:3.13-slim AS final
 
 WORKDIR /app
 
+# Node.js is required by the Celery worker for the Serper MCP server (npx stdio transport).
+# nodejs-legacy provides the `node` binary; npm provides npx.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      nodejs \
+      npm \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy the venv from the deps stage
 COPY --from=deps /app/.venv /app/.venv
 
