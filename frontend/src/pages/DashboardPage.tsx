@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useAuth } from '@clerk/clerk-react'
+import { useAuth, UserButton } from '@clerk/clerk-react'
 import { api } from '@/lib/api'
 import type { CourseListItem, CourseStatus } from '@/types/course'
 import { Ico, I } from '@/components/Icon'
@@ -550,6 +550,7 @@ export default function DashboardPage() {
               <Ico d={I.bell} size={15} color="var(--ink-muted)" />
             </button>
           </>}
+          <UserButton />
         </header>
 
         <main className="dash-content-pad" style={{ flex: 1, padding: '24px', paddingTop: '68px', overflowY: 'auto' }}>

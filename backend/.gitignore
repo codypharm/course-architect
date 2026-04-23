@@ -2,4 +2,6 @@
 .env
 uploads/*
 celery.log
-langgraph.db
+*.db
+*.db-shm
+*.db-wal
