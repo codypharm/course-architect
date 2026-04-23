@@ -44,10 +44,13 @@ class CourseStatusResponse(BaseModel):
     """Standard response shape for all course pipeline endpoints.
 
     Status values:
+    - queued                       task queued 
+    - processing                   task processing
     - awaiting_validation          graph paused at HITL #1; data = interrupt payload
     - awaiting_curriculum_review   graph paused at HITL #2; data = interrupt payload
     - completed                    curriculum approved; data = curriculum_plan + session_content
     - rejected                     tutor declined at HITL #1; data = feasibility report
+    - failed                       task failed
     """
     thread_id: str
     status: str

@@ -106,7 +106,21 @@ function ActiveCard({ course }: { course: CourseListItem }) {
 }
 
 /* ─── Completed row ─── */
-function CompletedRow({ course }: { course: CourseListItem }) {
+function CompletedRow({ course, onDelete }: { course: CourseListItem; onDelete: () => void }) {
+  const [deleting, setDeleting] = useState(false)
+
+  async function handleDelete() {
+    if (!window.confirm(`Delete "${course.subject}"? This cannot be undone.`)) return
+    setDeleting(true)
+    try {
+      await api.delete(`/courses/${course.thread_id}`)
+      onDelete()
+    } catch {
+      alert('Failed to delete course. Please try again.')
+      setDeleting(false)
+    }
+  }
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
       <Thumb subject={course.subject} />
@@ -118,8 +132,13 @@ function CompletedRow({ course }: { course: CourseListItem }) {
         <Link to={`/courses/${course.thread_id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: 'var(--ink)', textDecoration: 'none', padding: '5px 10px', border: '1px solid var(--border)', borderRadius: 6, background: '#fff' }}>
           <Ico d={I.eye} size={12} color="var(--ink)" /> View
         </Link>
-        <button style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: 'var(--ink)', padding: '5px 10px', border: '1px solid var(--border)', borderRadius: 6, background: '#fff', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
-          <Ico d={I.download} size={12} /> Download
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: deleting ? 'var(--ink-faint)' : 'var(--accent-red-text)', padding: '5px 10px', border: `1px solid ${deleting ? 'var(--border)' : 'var(--accent-red-text)'}`, borderRadius: 6, background: '#fff', cursor: deleting ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-sans)', opacity: deleting ? 0.6 : 1 }}
+        >
+          <Ico d={I.trash} size={12} color={deleting ? 'var(--ink-faint)' : 'var(--accent-red-text)'} />
+          {deleting ? 'Deleting…' : 'Delete'}
         </button>
       </div>
     </div>
@@ -541,7 +560,7 @@ export default function DashboardPage() {
                 <section style={{ marginBottom: 32 }}>
                   <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)', margin: '0 0 4px' }}>Search results</h2>
                   <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: '0 0 14px' }}>{searched.length} match{searched.length !== 1 ? 'es' : ''} for "{search}"</p>
-                  <div className="course-grid">{searched.map(c => isActive(c.status) ? <ActiveCard key={c.thread_id} course={c} /> : <CompletedRow key={c.thread_id} course={c} />)}</div>
+                  <div className="course-grid">{searched.map(c => isActive(c.status) ? <ActiveCard key={c.thread_id} course={c} /> : <CompletedRow key={c.thread_id} course={c} onDelete={() => qc.invalidateQueries({ queryKey: ['courses', userId] })} />)}</div>
                 </section>
               )}
               {!searched && <>
@@ -569,7 +588,7 @@ export default function DashboardPage() {
                     </div>
                     <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: '0 0 14px' }}>Finalised course packs ready to use.</p>
                     <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 10, padding: '0 18px' }}>
-                      {completed.map(c => <CompletedRow key={c.thread_id} course={c} />)}
+                      {completed.map(c => <CompletedRow key={c.thread_id} course={c} onDelete={() => qc.invalidateQueries({ queryKey: ['courses', userId] })} />)}
                     </div>
                   </section>
                 )}

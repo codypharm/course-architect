@@ -74,14 +74,28 @@ if _is_postgres:
         await _pg_pool.close()
 
 else:
-    from langgraph.checkpoint.memory import MemorySaver
-    _checkpointer = MemorySaver()
+    # Local dev: AsyncSqliteSaver writes to a file so both FastAPI and the
+    # Celery worker (separate process) share the same checkpoint store.
+    # MemorySaver cannot be shared across processes — it lives only in RAM.
+    import os as _os
+    from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+    _SQLITE_CP_PATH = _os.path.join(_os.path.dirname(__file__), "..", "langgraph.db")
+    _checkpointer = None
+    _sqlite_cp_ctx = None
 
     async def open_checkpointer() -> None:
-        """No-op for local dev MemorySaver."""
+        """Open the SQLite checkpoint file and set up tables (idempotent)."""
+        global _checkpointer, graph, _sqlite_cp_ctx
+        _sqlite_cp_ctx = AsyncSqliteSaver.from_conn_string(_SQLITE_CP_PATH)
+        _checkpointer = await _sqlite_cp_ctx.__aenter__()
+        await _checkpointer.setup()
+        graph = build_graph(_checkpointer)
 
     async def close_checkpointer() -> None:
-        """No-op for local dev MemorySaver."""
+        """Close the SQLite checkpoint connection on app shutdown."""
+        global _sqlite_cp_ctx
+        if _sqlite_cp_ctx is not None:
+            await _sqlite_cp_ctx.__aexit__(None, None, None)
 
 from nodes.curriculum_planner import curriculum_planner_agent
 from nodes.curriculum_review import curriculum_review_node

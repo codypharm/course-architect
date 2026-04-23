@@ -22,4 +22,5 @@ export const I = {
   arrow:    'M5 12h14M12 5l7 7-7 7',
   upload:   'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12',
   check:    'M9 12l2 2 4-4',
+  trash:    'M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6',
 }

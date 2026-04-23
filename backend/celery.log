@@ -5875,3 +5875,22 @@ During task with name 'preprocessor' and id 'ec5ab3e9-716e-ad36-da8d-671f00d53ce
 [2026-04-21 10:11:55,626: INFO/ForkPoolWorker-16] Redis client is a standalone client
 [2026-04-21 10:11:57,427: INFO/ForkPoolWorker-16] queue.tasks.pipeline_resume_curriculum[56609ae9-54d9-43b4-aa75-7317f9cf8da8]: DB updated — thread_id=b064b86e-d093-4f45-a7c7-9bb43f476550 status=completed
 [2026-04-21 10:11:57,431: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_resume_curriculum[56609ae9-54d9-43b4-aa75-7317f9cf8da8] succeeded in 1.8174400620000597s: None
+[2026-04-23 17:50:23,789: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-23 17:50:23,795: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-23 17:50:24,813: INFO/MainProcess] mingle: all alone
+[2026-04-23 17:50:24,849: INFO/MainProcess] celery@codypharm ready.
+[2026-04-23 17:53:05,537: INFO/MainProcess] Task queue.tasks.pipeline_start[733a4381-c2bb-4b44-a896-64e1fe884120] received
+[2026-04-23 17:53:05,545: INFO/ForkPoolWorker-16] queue.tasks.pipeline_start[733a4381-c2bb-4b44-a896-64e1fe884120]: pipeline_start — thread_id=e077d4b7-4da8-4591-bbe5-2604b2a89e51
+[2026-04-23 17:53:07,916: INFO/ForkPoolWorker-16] HTTP Request: GET https://bio.libretexts.org/Courses/West_Los_Angeles_College/Biotechnology/05%3A_Bioinformatics-_Genomics_and_Proteomics/5.02%3A_Genomics "HTTP/1.1 200 OK"
+[2026-04-23 17:53:08,198: INFO/ForkPoolWorker-16] Found credentials in environment variables.
+[2026-04-23 17:53:19,373: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-23 17:53:25,715: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-23 17:53:32,657: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-23 17:53:42,376: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-23 17:53:48,825: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+[2026-04-23 17:53:53,220: INFO/ForkPoolWorker-16] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+[2026-04-23 17:53:53,278: INFO/ForkPoolWorker-16] Task queue.tasks.pipeline_start[733a4381-c2bb-4b44-a896-64e1fe884120] succeeded in 47.733873122997466s: None
+[2026-04-23 18:02:07,099: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-04-23 18:02:07,111: INFO/MainProcess] mingle: searching for neighbors
+[2026-04-23 18:02:08,129: INFO/MainProcess] mingle: all alone
+[2026-04-23 18:02:08,159: INFO/MainProcess] celery@codypharm ready.

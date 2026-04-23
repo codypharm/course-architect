@@ -2,3 +2,4 @@
 .env
 uploads/*
 celery.log
+langgraph.db

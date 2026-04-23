@@ -4,9 +4,8 @@ Mounts all routes under /api/v1. On startup:
   - Loads .env so LANGCHAIN_* and DATABASE_URL are available before any import
   - Creates all DB tables via Base.metadata.create_all (Aurora or SQLite, idempotent)
   - Creates LangGraph checkpoint tables (Postgres) or no-ops (MemorySaver for local dev)
-  - Creates S3 Vectors index for RAG pipeline (best-effort, non-fatal)
+  - Creates S3 Vectors index for RAG pipeline (idempotent)
 """
-import logging
 import os
 from contextlib import asynccontextmanager
 
@@ -22,8 +21,6 @@ from api.routes.files import router as files_router
 from graph.graph import open_checkpointer, close_checkpointer
 from storage.database import Base, engine
 
-logger = logging.getLogger(__name__)
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup: create DB tables, open Postgres checkpoint pool, create S3 Vectors index."""
@@ -33,13 +30,8 @@ async def lifespan(app: FastAPI):
     # For local dev (MemorySaver) this is a no-op.
     await open_checkpointer()
     # Create the S3 Vectors index if it does not already exist (idempotent).
-    # Non-fatal: S3 Vectors may be unavailable in some regions or during initial bootstrap;
-    # the index is also created lazily on first put_vectors call.
-    try:
-        from storage.s3vectors import ensure_index
-        ensure_index()
-    except Exception:
-        logger.warning("S3 Vectors index creation failed at startup — will retry lazily on first use", exc_info=True)
+    from storage.s3vectors import ensure_index
+    ensure_index()
     yield
     await close_checkpointer()
 
@@ -60,7 +52,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Root — human-readable entry point
+# Root
 @app.get("/", tags=["meta"])
 async def root():
     """API home. Lists available route groups."""
@@ -72,9 +64,11 @@ async def root():
         "endpoints": {
             "start_course":        "POST /api/v1/courses",
             "get_course":          "GET  /api/v1/courses/{thread_id}",
+            "get_course_brief":    "GET  /api/v1/courses/{thread_id}/brief",
             "validation_resume":   "POST /api/v1/courses/{thread_id}/validation/resume",
             "curriculum_resume":   "POST /api/v1/courses/{thread_id}/curriculum/resume",
             "list_user_courses":   "GET  /api/v1/users/{user_id}/courses",
+            "delete_course":       "DELETE /api/v1/courses/{thread_id}",
             "upload_files":        "POST /api/v1/files",
         },
     }

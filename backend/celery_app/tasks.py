@@ -84,8 +84,15 @@ async def _fresh_graph():
             await checkpointer.setup()
             yield build_graph(checkpointer)
     else:
-        from langgraph.checkpoint.memory import MemorySaver
-        yield build_graph(MemorySaver())
+        # Local dev: share checkpoint state with the FastAPI process via a
+        # SQLite file.  MemorySaver is in-process only — FastAPI and Celery
+        # are separate OS processes and cannot share a MemorySaver.
+        import os as _os
+        from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+        _sqlite_path = _os.path.join(_os.path.dirname(__file__), "..", "langgraph.db")
+        async with AsyncSqliteSaver.from_conn_string(_sqlite_path) as checkpointer:
+            await checkpointer.setup()
+            yield build_graph(checkpointer)
 
 
 def _delete_thread_vectors(thread_id: str) -> None:

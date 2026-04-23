@@ -28,7 +28,7 @@ from api.schemas.courses import (
     StartCourseRequest,
     ValidationResumeRequest,
 )
-import graph.graph as _graph_module  # import module so graph is always dereferenced at call time
+import graph.graph as _graph_module
 from utils.pipeline import derive_pipeline_status, graph_config, infer_processing_stage
 from celery_app.tasks import pipeline_resume_curriculum, pipeline_resume_validation, pipeline_start
 from storage.database import get_db
@@ -66,7 +66,6 @@ async def start_course(
 ) -> CourseStatusResponse:
     """Start a new course generation pipeline.
 
-    Upload files first via POST /files and pass their paths in `uploaded_file_paths`.
     Enqueues pipeline_start on the high_priority queue and returns immediately.
     Client should poll GET /courses/{thread_id} until status changes from "queued".
     """
@@ -159,7 +158,6 @@ async def get_course(
         )
 
     # For pause/completion statuses, read live graph state for the interrupt payload
-    # AsyncRedisSaver only implements async methods — must use aget_state.
     snapshot = await _graph_module.graph.aget_state(graph_config(thread_id))
     if not snapshot or not snapshot.values:
         return CourseStatusResponse(thread_id=thread_id, status=record.status, data={})
@@ -287,6 +285,48 @@ async def resume_curriculum(
     )
 
     return CourseStatusResponse(thread_id=thread_id, status="processing", data={})
+
+
+# ---------------------------------------------------------------------------
+# DELETE /courses/{thread_id}
+# ---------------------------------------------------------------------------
+
+@router.delete("/courses/{thread_id}", status_code=204)
+async def delete_course(
+    thread_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user_id: str = Depends(get_current_user_id),
+) -> None:
+    """Permanently delete a course and all associated data.
+
+    Deletes the DB record, S3 uploaded files, and any remaining S3 Vectors
+    embeddings (vectors are already deleted for completed courses, so this
+    is a no-op for those; it cleans up rejected/failed courses that still
+    have embeddings from the preprocessor run).
+    """
+    record = await _get_record_or_404(thread_id, db)
+    if record.user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    # Delete uploaded S3 files (best-effort — log and continue on failure)
+    if record.uploaded_files:
+        try:
+            from storage.s3 import delete_keys
+            s3_keys = [p for p in record.uploaded_files if p.startswith("uploads/")]
+            delete_keys(s3_keys)
+        except Exception:
+            logger.warning("Failed to delete S3 files for thread_id=%s", thread_id, exc_info=True)
+
+    # Delete any remaining S3 Vectors embeddings (best-effort)
+    try:
+        from storage.s3vectors import delete_thread_vectors
+        delete_thread_vectors(thread_id)
+    except Exception:
+        logger.warning("Failed to delete vectors for thread_id=%s", thread_id, exc_info=True)
+
+    await db.delete(record)
+    await db.commit()
+    logger.info("Deleted course — thread_id=%s user_id=%s", thread_id, current_user_id)
 
 
 # ---------------------------------------------------------------------------
