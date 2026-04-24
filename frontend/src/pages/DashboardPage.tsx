@@ -105,43 +105,92 @@ function ActiveCard({ course }: { course: CourseListItem }) {
   )
 }
 
+/* ─── Delete confirmation modal ─── */
+function DeleteModal({ subject, onConfirm, onCancel, deleting }: {
+  subject: string
+  onConfirm: () => void
+  onCancel: () => void
+  deleting: boolean
+}) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {/* Backdrop */}
+      <div onClick={!deleting ? onCancel : undefined} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(2px)' }} />
+      {/* Modal */}
+      <div style={{ position: 'relative', background: '#fff', borderRadius: 14, padding: '28px 28px 24px', width: 360, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', animation: 'enter 150ms ease' }}>
+        <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--accent-red-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+          <Ico d={I.trash} size={18} color="var(--accent-red-text)" />
+        </div>
+        <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)', margin: '0 0 6px' }}>Delete course?</p>
+        <p style={{ fontSize: 13, color: 'var(--ink-muted)', margin: '0 0 24px', lineHeight: 1.5 }}>
+          <strong style={{ color: 'var(--ink)', fontWeight: 600 }}>{subject}</strong> will be permanently removed. This cannot be undone.
+        </p>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={onCancel}
+            disabled={deleting}
+            style={{ flex: 1, padding: '9px', borderRadius: 8, border: '1px solid var(--border)', background: '#fff', fontSize: 13, fontWeight: 500, color: 'var(--ink)', cursor: deleting ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-sans)', opacity: deleting ? 0.5 : 1 }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={deleting}
+            style={{ flex: 1, padding: '9px', borderRadius: 8, border: 'none', background: 'var(--accent-red-text)', fontSize: 13, fontWeight: 600, color: '#fff', cursor: deleting ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-sans)', opacity: deleting ? 0.7 : 1 }}
+          >
+            {deleting ? 'Deleting…' : 'Delete'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ─── Completed row ─── */
 function CompletedRow({ course, onDelete }: { course: CourseListItem; onDelete: () => void }) {
-  const [deleting, setDeleting] = useState(false)
+  const [confirming, setConfirming] = useState(false)
+  const [deleting, setDeleting]     = useState(false)
 
-  async function handleDelete() {
-    if (!window.confirm(`Delete "${course.subject}"? This cannot be undone.`)) return
+  async function handleConfirm() {
     setDeleting(true)
     try {
       await api.delete(`/courses/${course.thread_id}`)
       onDelete()
     } catch {
-      alert('Failed to delete course. Please try again.')
       setDeleting(false)
+      setConfirming(false)
     }
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
-      <Thumb subject={course.subject} />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', margin: '0 0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{course.subject}</p>
-        <p style={{ fontSize: 11, color: 'var(--ink-faint)', margin: 0 }}>Completed {timeAgo(course.updated_at)}</p>
+    <>
+      {confirming && (
+        <DeleteModal
+          subject={course.subject}
+          onConfirm={handleConfirm}
+          onCancel={() => setConfirming(false)}
+          deleting={deleting}
+        />
+      )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
+        <Thumb subject={course.subject} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', margin: '0 0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{course.subject}</p>
+          <p style={{ fontSize: 11, color: 'var(--ink-faint)', margin: 0 }}>Completed {timeAgo(course.updated_at)}</p>
+        </div>
+        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+          <Link to={`/courses/${course.thread_id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: 'var(--ink)', textDecoration: 'none', padding: '5px 10px', border: '1px solid var(--border)', borderRadius: 6, background: '#fff' }}>
+            <Ico d={I.eye} size={12} color="var(--ink)" /> View
+          </Link>
+          <button
+            onClick={() => setConfirming(true)}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: 'var(--accent-red-text)', padding: '5px 10px', border: '1px solid var(--accent-red-text)', borderRadius: 6, background: '#fff', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}
+          >
+            <Ico d={I.trash} size={12} color="var(--accent-red-text)" /> Delete
+          </button>
+        </div>
       </div>
-      <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-        <Link to={`/courses/${course.thread_id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: 'var(--ink)', textDecoration: 'none', padding: '5px 10px', border: '1px solid var(--border)', borderRadius: 6, background: '#fff' }}>
-          <Ico d={I.eye} size={12} color="var(--ink)" /> View
-        </Link>
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: deleting ? 'var(--ink-faint)' : 'var(--accent-red-text)', padding: '5px 10px', border: `1px solid ${deleting ? 'var(--border)' : 'var(--accent-red-text)'}`, borderRadius: 6, background: '#fff', cursor: deleting ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-sans)', opacity: deleting ? 0.6 : 1 }}
-        >
-          <Ico d={I.trash} size={12} color={deleting ? 'var(--ink-faint)' : 'var(--accent-red-text)'} />
-          {deleting ? 'Deleting…' : 'Delete'}
-        </button>
-      </div>
-    </div>
+    </>
   )
 }
 
