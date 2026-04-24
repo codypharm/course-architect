@@ -81,6 +81,12 @@ jobs:
         working-directory: ${{ env.TF_DIR }}
         run: terraform init -input=false
 
+      - name: Import ECR repo if not in state
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          terraform state show module.ecr.aws_ecr_repository.app > /dev/null 2>&1 || \
+          terraform import module.ecr.aws_ecr_repository.app "${{ env.PROJECT }}"
+
       - name: Terraform apply
         working-directory: ${{ env.TF_DIR }}
         env:
