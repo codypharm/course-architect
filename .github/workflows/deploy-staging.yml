@@ -83,9 +83,12 @@ jobs:
 
       - name: Import ECR repo if not in state
         working-directory: ${{ env.TF_DIR }}
+        env:
+          TF_VAR_image_tag: ${{ needs.build-and-push.outputs.image_tag }}
+          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
         run: |
           terraform state show module.ecr.aws_ecr_repository.app > /dev/null 2>&1 || \
-          terraform import module.ecr.aws_ecr_repository.app "${{ env.PROJECT }}"
+          terraform import -input=false module.ecr.aws_ecr_repository.app "${{ env.PROJECT }}"
 
       - name: Terraform apply
         working-directory: ${{ env.TF_DIR }}
