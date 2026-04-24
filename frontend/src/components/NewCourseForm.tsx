@@ -26,7 +26,7 @@ interface UploadedFile { file_id: string; path: string }
 async function uploadFiles(files: File[]): Promise<string[]> {
   const form = new FormData()
   files.forEach(f => form.append('files', f))
-  const res = await api.post<UploadedFile[]>('/files', form)
+  const res = await api.post<UploadedFile[]>('/files', form, { headers: { 'Content-Type': undefined } })
   return res.data.map(f => f.path)
 }
 
