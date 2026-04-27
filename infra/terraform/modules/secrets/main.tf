@@ -32,9 +32,9 @@ resource "aws_secretsmanager_secret" "app" {
 }
 
 resource "aws_secretsmanager_secret_version" "app" {
-  for_each = aws_secretsmanager_secret.app
+  for_each = toset(local.secret_names)
 
-  secret_id     = each.value.id
+  secret_id     = aws_secretsmanager_secret.app[each.key].id
   secret_string = "PLACEHOLDER - set this before deploying"
 
   lifecycle {
