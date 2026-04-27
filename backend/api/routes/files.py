@@ -5,6 +5,7 @@ The response returns S3 object keys that are passed to the course creation reque
 
 Supported formats: .pdf, .txt, .md
 """
+import asyncio
 from pathlib import Path
 from uuid import uuid4
 
@@ -48,27 +49,22 @@ async def upload_files(
             )
 
     batch_id = str(uuid4())
-    results: list[FileUploadResponse] = []
+    loop = asyncio.get_event_loop()
 
-    for upload in files:
-        file_id  = str(uuid4())
-        filename = upload.filename or file_id
-        key      = f"uploads/{batch_id}/{filename}"
+    async def _upload_one(upload: UploadFile) -> FileUploadResponse:
+        """Upload a single file to S3 and return its response object."""
+        file_id      = str(uuid4())
+        filename     = upload.filename or file_id
+        key          = f"uploads/{batch_id}/{filename}"
         content_type = upload.content_type or "application/octet-stream"
 
-        # Reset stream position in case Starlette already read headers
         await upload.seek(0)
-        upload_fileobj(upload.file, key, content_type=content_type)
+        await loop.run_in_executor(None, upload_fileobj, upload.file, key, content_type)
 
-        # Starlette sets .size after the file is fully read; fall back to HeadObject
-        size = upload.size if upload.size is not None else get_object_size(key)
-
+        size = upload.size if upload.size is not None else await loop.run_in_executor(None, get_object_size, key)
         logger.info("Uploaded file to S3 — key=%s size=%d", key, size)
-        results.append(FileUploadResponse(
-            file_id=file_id,
-            filename=filename,
-            path=key,
-            size_bytes=size,
-        ))
+        return FileUploadResponse(file_id=file_id, filename=filename, path=key, size_bytes=size)
 
+    # Upload all files in parallel — each runs in a thread pool to avoid blocking the event loop
+    results: list[FileUploadResponse] = await asyncio.gather(*[_upload_one(f) for f in files])
     return results
